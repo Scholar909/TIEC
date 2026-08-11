@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — Innovative Explorer Club</title>
+<meta name="description" content="Get in touch with the Innovative Explorer Club — send us a message, find our address and contact details, or follow us on social media.">
+
+<!-- Default typeface: Poppins, all weights used across headings and body -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Icon set: Foundation Icons (used everywhere instead of emoji) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css">
+
+<style>
+/* =========================================================
+   DESIGN TOKENS — identical to home page
+   ========================================================= */
+:root{
+  --bg-primary:#071420;
+  --bg-secondary:#101B2D;
+  --card-bg:rgba(255,255,255,.08);
+  --card-border:rgba(255,255,255,.10);
+  --blue:#157BFF;
+  --blue-2:#4AA6FF;
+  --lime:#9AE600;
+  --white:#FFFFFF;
+  --gray:#C7CFD9;
+  --danger:#FF4B55;
+  --success:#2BD67B;
+
+  --accent-text:var(--blue-2);
+  --accent-lime-text:var(--lime);
+  --hero-fade:#0d2338;
+  --hero-h1-grad:linear-gradient(180deg,#ffffff 0%, #cfe4ff 55%, var(--blue-2) 100%);
+  --placeholder-grad:linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
+
+  --radius:16px;
+  --nav-h:76px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --font-body:'Poppins',sans-serif;
+}
+
+html.light-mode{
+  --bg-primary:#EEF3F8;
+  --bg-secondary:#FFFFFF;
+  --card-bg:rgba(7,20,32,.045);
+  --card-border:rgba(7,20,32,.09);
+  --white:#0B1B29;
+  --gray:#4B5C6B;
+
+  --accent-text:#0F62D6;
+  --accent-lime-text:#5B8A00;
+  --hero-fade:#dbe9f9;
+  --hero-h1-grad:linear-gradient(180deg,#0B1B29 0%, #163a5c 55%, var(--blue) 100%);
+  --placeholder-grad:linear-gradient(135deg, #dde7f2, #cddbea);
+}
+
+*,*::before,*::after{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg-primary);
+  color:var(--white);
+  font-family:var(--font-body);
+  font-weight:400;
+  line-height:1.6;
+  overflow-x:hidden;
+  transition:background .4s var(--ease), color .4s var(--ease);
+}
+h1,h2,h3,h4{
+  font-family:var(--font-body);
+  font-weight:700;
+  margin:0;
+  line-height:1.15;
+  letter-spacing:-.01em;
+}
+p{margin:0;color:var(--gray);}
+a{color:inherit;text-decoration:none;}
+img{max-width:100%;display:block;}
+button{font-family:inherit;cursor:pointer;}
+i[class^="fi-"]{line-height:1;}
+.eyebrow{
+  font-size:.72rem;
+  font-weight:600;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--accent-text);
+}
+.section{padding:100px 8vw 120px;position:relative;}
+.section-head{max-width:640px;margin:0 auto 56px;text-align:center;}
+.section-head h2{font-size:clamp(1.7rem,3.4vw,2.6rem);margin-top:10px;}
+.section-head p{margin-top:14px;font-size:1.05rem;}
+.container{max-width:1280px;margin:0 auto;}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important;}
+}
+
+/* Glass card */
+.glass{
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:var(--radius);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+
+/* Buttons */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:14px 28px;
+  border-radius:12px;
+  font-weight:600;
+  font-size:.92rem;
+  border:1px solid transparent;
+  transition:transform .35s var(--ease), box-shadow .35s var(--ease), background .35s var(--ease), border-color .35s var(--ease);
+  white-space:nowrap;
+}
+.btn:focus-visible{outline:2px solid var(--blue-2);outline-offset:3px;}
+.btn-lime{background:var(--lime);color:#08130A;}
+.btn-lime:hover{box-shadow:0 0 28px rgba(154,230,0,.55);transform:translateY(-2px);}
+.btn-outline{background:transparent;border-color:var(--blue);color:var(--accent-text);}
+.btn-outline:hover{box-shadow:0 0 22px rgba(21,123,255,.4);border-color:var(--blue-2);transform:translateY(-2px);}
+.btn-ghost{background:transparent;color:var(--white);border-color:var(--card-border);}
+.btn-ghost:hover{background:rgba(120,140,160,.08);}
+.btn[disabled]{opacity:.7;cursor:default;transform:none !important;}
+
+/* =========================================================
+   NAVBAR — identical to home page
+   ========================================================= */
+.navbar{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  height:var(--nav-h);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 5vw;gap:12px;
+  background:transparent;
+  transition:background .4s var(--ease), backdrop-filter .4s var(--ease), border-color .4s var(--ease);
+  border-bottom:1px solid transparent;
+}
+.navbar.scrolled{
+  background:rgba(7,20,32,.65);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--card-border);
+}
+html.light-mode .navbar.scrolled{background:rgba(238,243,248,.75);}
+.nav-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.02rem;min-width:0;}
+.nav-logo img{width:40px;height:40px;border-radius:50%;flex-shrink:0;}
+.nav-logo .logo-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nav-menu{display:flex;gap:32px;list-style:none;margin:0;padding:0;}
+.nav-menu a{
+  font-size:.9rem;font-weight:500;color:var(--gray);
+  position:relative;padding:4px 0;
+  transition:color .3s var(--ease);
+}
+.nav-menu a::after{
+  content:'';position:absolute;left:0;bottom:-2px;width:0;height:1px;
+  background:var(--blue-2);transition:width .3s var(--ease);
+}
+.nav-menu a:hover{color:var(--white);}
+.nav-menu a:hover::after{width:100%;}
+.nav-menu a.active{color:var(--white);}
+.nav-menu a.active::after{width:100%;}
+.nav-right{display:flex;align-items:center;gap:14px;flex-shrink:0;}
+.icon-btn{
+  background:none;border:none;color:var(--gray);
+  width:38px;height:38px;border-radius:10px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:1rem;
+  transition:background .3s var(--ease), color .3s var(--ease);
+}
+.icon-btn:hover{background:rgba(120,140,160,.12);color:var(--white);}
+.search-wrap{display:flex;align-items:center;}
+.search-input{
+  width:0;opacity:0;padding:0;border:none;background:rgba(120,140,160,.12);
+  border-radius:10px;color:var(--white);font-family:var(--font-body);
+  transition:width .4s var(--ease), opacity .3s var(--ease), padding .4s var(--ease);
+}
+.search-wrap.open .search-input{width:160px;opacity:1;padding:8px 12px;margin-right:6px;}
+.nav-join{padding:10px 20px;font-size:.82rem;}
+.hamburger{display:none;}
+
+@media (max-width:960px){
+  .nav-menu{
+    position:fixed;top:var(--nav-h);left:0;right:0;
+    flex-direction:column;gap:0;
+    background:rgba(7,20,32,.97);backdrop-filter:blur(20px);
+    max-height:0;overflow:hidden;
+    transition:max-height .45s var(--ease);
+  }
+  html.light-mode .nav-menu{background:rgba(238,243,248,.98);}
+  .nav-menu.open{max-height:520px;border-bottom:1px solid var(--card-border);}
+  .nav-menu li{border-top:1px solid var(--card-border);}
+  .nav-menu a{display:block;padding:16px 6vw;}
+  .hamburger{display:flex;}
+  .nav-right{gap:6px;}
+  .nav-join{padding:9px 16px;font-size:.75rem;}
+}
+@media (max-width:420px){
+  .nav-logo .logo-text{display:none;}
+  .search-wrap.open .search-input{width:110px;}
+  .nav-join span.full{display:none;}
+}
+
+/* =========================================================
+   PAGE HERO — shorter variant of the home hero, same visual language
+   ========================================================= */
+.hero{
+  position:relative;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+  padding:calc(var(--nav-h) + 40px) 6vw 60px;
+  overflow:hidden;
+  background:radial-gradient(ellipse at 50% -10%, var(--hero-fade) 0%, var(--bg-primary) 60%);
+  transition:background .4s var(--ease);
+}
+.hero.page-hero{min-height:44vh;padding:calc(var(--nav-h) + 56px) 6vw 60px;}
+.hero canvas{position:absolute;inset:0;z-index:0;}
+.hero-glow{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(320px 320px at var(--mx,50%) var(--my,50%), rgba(21,123,255,.16), transparent 70%);
+}
+.hero-content{position:relative;z-index:2;max-width:820px;width:100%;}
+.breadcrumb{
+  position:relative;z-index:2;display:flex;align-items:center;justify-content:center;gap:8px;
+  font-size:.82rem;color:var(--gray);margin-bottom:22px;
+}
+.breadcrumb a{color:var(--gray);transition:color .3s var(--ease);}
+.breadcrumb a:hover{color:var(--accent-text);}
+.breadcrumb i{font-size:.6rem;}
+.breadcrumb .current{color:var(--accent-text);font-weight:500;}
+.hero .eyebrow{display:inline-block;margin-bottom:18px;}
+.hero h1{
+  font-size:clamp(2.1rem,6.2vw,4.6rem);
+  font-weight:800;
+  background:var(--hero-h1-grad);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero .subtitle{margin:22px auto 0;max-width:600px;font-size:1.1rem;color:var(--gray);}
+@media (max-width:420px){
+  .hero.page-hero{padding-top:calc(var(--nav-h) + 30px);}
+}
+
+/* =========================================================
+   QUICK REASON CHIPS
+   ========================================================= */
+.reason-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px;}
+.reason-chip{
+  padding:9px 18px;border-radius:999px;font-size:.82rem;font-weight:500;
+  border:1px solid var(--card-border);background:var(--card-bg);color:var(--gray);
+  transition:color .3s var(--ease), border-color .3s var(--ease), background .3s var(--ease);
+}
+.reason-chip:hover{color:var(--white);border-color:rgba(74,166,255,.4);}
+.reason-chip.active{color:#08130A;background:var(--lime);border-color:var(--lime);}
+
+/* =========================================================
+   CONTACT LAYOUT
+   ========================================================= */
+.contact-wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;align-items:start;}
+.contact-wrap,
+.contact-wrap > *,
+.form-card,
+.form-row,
+.form-group {
+  min-width: 0;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  max-width: 100%;
+}
+
+/* Form */
+.form-card{padding:40px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.form-group{margin-bottom:20px;position:relative;}
+.form-group label{display:block;font-size:.82rem;font-weight:600;margin-bottom:8px;color:var(--white);}
+.form-group input,
+.form-group select,
+.form-group textarea{
+  width:100%;padding:13px 16px;border-radius:12px;
+  border:1px solid var(--card-border);background:rgba(120,140,160,.07);
+  color:var(--white);font-family:var(--font-body);font-size:.92rem;
+  transition:border-color .3s var(--ease), box-shadow .3s var(--ease);
+}
+.form-group input::placeholder,
+.form-group textarea::placeholder{color:var(--gray);}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus{outline:none;border-color:var(--blue-2);box-shadow:0 0 0 3px rgba(74,166,255,.15);}
+.form-group textarea{resize:vertical;min-height:140px;}
+.form-group.error input,
+.form-group.error select,
+.form-group.error textarea{border-color:var(--danger);}
+.form-error-msg{display:none;font-size:.76rem;color:var(--danger);margin-top:6px;align-items:center;gap:5px;}
+.form-group.error .form-error-msg{display:flex;}
+.form-group.shake{animation:shake .4s var(--ease);}
+@keyframes shake{
+  0%,100%{transform:translateX(0);}
+  20%{transform:translateX(-6px);}
+  40%{transform:translateX(6px);}
+  60%{transform:translateX(-4px);}
+  80%{transform:translateX(4px);}
+}
+.form-submit{width:100%;margin-top:6px;position:relative;}
+.form-submit .spinner{
+  width:16px;height:16px;border-radius:50%;
+  border:2px solid rgba(8,19,10,.3);border-top-color:#08130A;
+  animation:spin .7s linear infinite;display:none;
+}
+.form-submit.loading .spinner{display:inline-block;}
+.form-submit.loading .btn-label{opacity:.7;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Success state */
+.form-success{display:none;text-align:center;padding:50px 20px;}
+.form-success.show{display:block;}
+.form-success .check{
+  width:64px;height:64px;border-radius:50%;background:rgba(154,230,0,.15);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 20px;
+  color:var(--accent-lime-text);font-size:1.6rem;
+}
+.form-success h3{font-size:1.2rem;margin-bottom:10px;}
+.form-success p{font-size:.92rem;}
+.form-success .btn{margin-top:22px;}
+#contactForm.hide{display:none;}
+
+@media (max-width:640px){
+  .form-card{padding:26px 22px;}
+  .form-row{grid-template-columns:1fr;}
+}
+
+/* Info column */
+.info-stack{display:flex;flex-direction:column;gap:18px;}
+.info-card{padding:26px;}
+.info-row{display:flex;align-items:flex-start;gap:16px;padding:14px 0;border-bottom:1px solid var(--card-border);}
+.info-row:last-child{border-bottom:none;}
+.info-icon{
+  flex-shrink:0;width:42px;height:42px;border-radius:11px;
+  background:rgba(21,123,255,.12);color:var(--accent-text);
+  display:flex;align-items:center;justify-content:center;font-size:1.05rem;
+}
+.info-row .label{font-size:.72rem;color:var(--gray);text-transform:uppercase;letter-spacing:.05em;font-weight:600;}
+.info-row .value{font-size:.92rem;color:var(--white);margin-top:3px;font-weight:500;}
+.info-row a.value:hover{color:var(--accent-text);}
+.social-card{padding:26px;}
+.social-card h4{font-size:.92rem;margin-bottom:14px;}
+.social-row-lg{display:flex;gap:10px;}
+.social-row-lg .icon-btn{width:44px;height:44px;font-size:1.1rem;border:1px solid var(--card-border);}
+.social-row-lg .icon-btn:hover{color:var(--accent-text);border-color:rgba(74,166,255,.4);}
+@media (max-width:960px){.contact-wrap{grid-template-columns:1fr;}}
+
+/* =========================================================
+   FOOTER — identical to home page
+   ========================================================= */
+footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:var(--bg-secondary);transition:background .4s var(--ease);}
+.footer-grid{
+  display:grid;
+  grid-template-columns:1.4fr 1fr 1fr 1.2fr;
+  gap:36px;
+  max-width:1280px;
+  width:100%;
+  margin:0 auto;
+  padding-bottom:40px;
+  box-sizing:border-box;
+}
+
+.footer-grid > * {
+  min-width:0;
+}
+
+.footer-map{
+  width:100%;
+  max-width:100%;
+}
+.footer-brand{display:flex;align-items:center;gap:10px;font-weight:700;margin-bottom:14px;}
+.footer-brand img{width:34px;height:34px;border-radius:50%;}
+.footer-col h4{font-size:.92rem;margin-bottom:16px;font-weight:600;}
+.footer-col ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;}
+.footer-col a{font-size:.86rem;color:var(--gray);transition:color .3s var(--ease);}
+.footer-col a:hover{color:var(--accent-text);}
+.footer-map{
+    width:100%;
+    margin-top:15px;
+    border-radius:16px;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow:0 8px 24px rgba(0,0,0,.25);
+}
+.footer-map iframe{
+    display:block;
+    width:100%;
+    height:220px;
+    border:0;
+}
+.newsletter-form{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;}
+.newsletter-form input{flex:1;min-width:180px;padding:10px 12px;border-radius:10px;border:1px solid var(--card-border);background:rgba(120,140,160,.08);color:var(--white);font-family:var(--font-body);}
+.newsletter-form button{flex-shrink:0;}
+.social-row{display:flex;gap:10px;margin-top:16px;}
+.social-row .icon-btn{color:var(--gray);}
+.social-row .icon-btn:hover{color:var(--accent-text);}
+.footer-address{display:flex;align-items:flex-start;gap:8px;font-size:.86rem;}
+.footer-address i{color:var(--accent-text);margin-top:3px;}
+.footer-bottom{max-width:1280px;margin:0 auto;padding-top:24px;border-top:1px solid var(--card-border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:.78rem;color:var(--gray);}
+@media (max-width:768px){
+.footer-map iframe{height:180px;}
+}
+@media (max-width:860px){.footer-grid{grid-template-columns:1fr 1fr;}}
+@media (max-width:480px){.footer-grid{grid-template-columns:1fr;gap:28px;} footer{padding:50px 6vw 24px;}.newsletter-form{flex-direction:column;}
+.newsletter-form input, .newsletter-form button{width:100%;}}
+
+/* Fade-up reveal on scroll */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease), transform .8s var(--ease);}
+.reveal.in-view{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- =========================================================
+     NAVBAR
+     ========================================================= -->
+<nav class="navbar" id="navbar">
+  <a href="../index.html" class="nav-logo">
+    <img src="../assets/images/logo-icon.png" alt="Innovative Explorer Club logo">
+    <span class="logo-text">Innovative Explorer Club</span>
+  </a>
+
+  <ul class="nav-menu" id="navMenu">
+    <li><a href="../index.html">Home</a></li>
+    <li><a href="programs.html">Programs</a></li>
+    <li><a href="membership.html">Membership</a></li>
+    <li><a href="events.html">Events</a></li>
+    <li><a href="gallery.html">Gallery</a></li>
+    <li><a href="projects.html">Projects</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="faq.html">FAQ</a></li>
+    <li><a href="contact.html" class="active" aria-current="page">Contact</a></li>
+  </ul>
+
+  <div class="nav-right">
+    <div class="search-wrap" id="searchWrap">
+      <input type="text" class="search-input" placeholder="Search...">
+      <button class="icon-btn" id="searchToggle" aria-label="Toggle search"><i class="fi-magnifying-glass"></i></button>
+    </div>
+    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="fi-contrast"></i></button>
+    <a href="register.html" class="btn btn-lime nav-join"><span class="full">Join Community</span></a>
+    <button class="icon-btn hamburger" id="hamburger" aria-label="Toggle menu"><i class="fi-list-thumbnails"></i></button>
+  </div>
+</nav>
+
+<!-- =========================================================
+     PAGE HERO
+     ========================================================= -->
+<header class="hero page-hero" id="hero">
+  <canvas id="circuitCanvas"></canvas>
+  <div class="hero-glow" id="heroGlow"></div>
+
+  <div class="breadcrumb">
+    <a href="../index.html">Home</a>
+    <i class="fi-arrow-down" style="transform:rotate(-90deg);"></i>
+    <span class="current">Contact</span>
+  </div>
+
+  <div class="hero-content">
+    <span class="eyebrow">Let's talk</span>
+    <h1>Contact Us</h1>
+    <p class="subtitle">Questions, partnerships, press, or just curious — we'd love to hear from you.</p>
+  </div>
+</header>
+
+<!-- =========================================================
+     CONTACT SECTION
+     ========================================================= -->
+<section class="section">
+  <div class="container reveal">
+    <div class="reason-row" id="reasonRow">
+      <button type="button" class="reason-chip active" data-reason="General Inquiry">General Inquiry</button>
+      <button type="button" class="reason-chip" data-reason="Membership">Membership</button>
+      <button type="button" class="reason-chip" data-reason="Partnership">Partnership</button>
+      <button type="button" class="reason-chip" data-reason="Press">Press</button>
+      <button type="button" class="reason-chip" data-reason="Volunteer / Mentor">Volunteer / Mentor</button>
+    </div>
+
+    <div class="contact-wrap">
+
+      <!-- FORM -->
+      <div class="form-card glass">
+        <form id="contactForm" novalidate>
+          <div class="form-row">
+            <div class="form-group" id="group-name">
+              <label for="cName">Full Name</label>
+              <input type="text" id="cName" name="name" placeholder="Your full name">
+              <span class="form-error-msg"><i class="fi-alert"></i> Please enter your name</span>
+            </div>
+            <div class="form-group" id="group-email">
+              <label for="cEmail">Email Address</label>
+              <input type="email" id="cEmail" name="email" placeholder="you@email.com">
+              <span class="form-error-msg"><i class="fi-alert"></i> Enter a valid email address</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group" id="group-phone">
+              <label for="cPhone">Phone Number <span style="color:var(--gray);font-weight:400;">(optional)</span></label>
+              <input type="tel" id="cPhone" name="phone" placeholder="+234...">
+            </div>
+            <div class="form-group" id="group-subject">
+              <label for="cSubject">Reason</label>
+              <select id="cSubject" name="subject">
+                <option>General Inquiry</option>
+                <option>Membership</option>
+                <option>Partnership</option>
+                <option>Press</option>
+                <option>Volunteer / Mentor</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" id="group-message">
+            <label for="cMessage">Message</label>
+            <textarea id="cMessage" name="message" placeholder="Tell us a bit about what you need..."></textarea>
+            <span class="form-error-msg"><i class="fi-alert"></i> Please enter a message</span>
+          </div>
+
+          <button type="submit" class="btn btn-lime form-submit" id="submitBtn">
+            <span class="spinner"></span>
+            <span class="btn-label">Send Message</span>
+          </button>
+        </form>
+
+        <div class="form-success" id="formSuccess">
+          <div class="check"><i class="fi-check"></i></div>
+          <h3>Message sent</h3>
+          <p>Thanks for reaching out — a member of the team will get back to you shortly.</p>
+          <button type="button" class="btn btn-outline" id="sendAnother">Send Another Message</button>
+        </div>
+      </div>
+
+      <!-- INFO COLUMN -->
+      <div class="info-stack">
+        <div class="info-card glass">
+          <div class="info-row">
+            <div class="info-icon"><i class="fi-map"></i></div>
+            <div>
+              <div class="label">Address</div>
+              <div class="value">Coderina EdTech Foundation, DSTI<br>No. 4 Ngozi Okonjo-Iweala Way, Utako District, Abuja 900103, FCT, Nigeria</div>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon"><i class="fi-telephone"></i></div>
+            <div>
+              <div class="label">Phone</div>
+              <a class="value" href="tel:+2340000000000">+234 000 000 0000</a>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon"><i class="fi-mail"></i></div>
+            <div>
+              <div class="label">Email</div>
+              <a class="value" href="mailto:hello@innovativeexplorerclub.org">hello@tiec.org</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="social-card glass">
+          <h4>Follow Us</h4>
+          <div class="social-row-lg">
+            <a href="#" class="icon-btn" aria-label="Instagram"><i class="fi-social-instagram"></i></a>
+            <a href="#" class="icon-btn" aria-label="Facebook"><i class="fi-social-facebook"></i></a>
+            <a href="#" class="icon-btn" aria-label="WhatsApp"><i class="fi-telephone"></i></a>
+          </div>
+        </div>
+
+        <div class="social-card glass">
+          <h4>Office Hours</h4>
+          <div class="info-row">
+            <div class="info-icon"><i class="fi-clock"></i></div>
+            <div>
+              <div class="label">Mon – Fri</div>
+              <div class="value">9:00 AM – 5:00 PM</div>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon"><i class="fi-calendar"></i></div>
+            <div>
+              <div class="label">Saturday</div>
+              <div class="value">10:00 AM – 2:00 PM (open sessions)</div>
+            </div>
+          </div>
+          <p style="font-size:.82rem;margin-top:6px;">Find us on the map in the footer below — we're inside the Coderina EdTech Foundation building.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     FOOTER
+     ========================================================= -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">
+        <img src="../assets/images/logo-icon.png" alt="Innovative Explorer Club logo">
+        Innovative Explorer Club
+      </div>
+      <p style="font-size:.86rem;">Empowering young minds through technology and innovation.</p>
+      <div class="social-row">
+        <a href="#" class="icon-btn glass" aria-label="Instagram"><i class="fi-social-instagram"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="Facebook"><i class="fi-social-facebook"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="WhatsApp"><i class="fi-telephone"></i></a>
+        <a href="https://maps.app.goo.gl/qfNDcXp3cec9hd2RA" class="icon-btn glass" aria-label="Map"><i class="fi-map"></i></a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="about.html">About</a></li>
+        <li><a href="programs.html">Programs</a></li>
+        <li><a href="events.html">Events</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Address</h4>
+      <div class="footer-address"><i class="fi-map"></i><span>Coderina EdTech Foundation, Department of Science, Technology and Innovation (DSTI)<br>No. 4 Ngozi Okonjo-Iweala Way, Utako District, Abuja 900103, Federal Capital Territory (FCT), Nigeria.</span></div>
+    </div>
+    <div class="footer-map">
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3939.9483490731654!2d7.4445455775889355!3d9.068470288364598!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x104ddf81cc7ccb07%3A0xc50e6cfe01a43fac!2sCoderina%20Education%20and%20Technology%20Foundation!5e0!3m2!1sen!2sng!4v1785316511093!5m2!1sen!2sng" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </div>
+    <div class="footer-col">
+      <h4>Newsletter</h4>
+      <p style="font-size:.84rem;margin-bottom:8px;">Get updates on events and programs.</p>
+      <div class="newsletter-form">
+        <input type="email" placeholder="you@email.com">
+        <button class="btn btn-lime" style="padding:10px 16px;font-size:.78rem;">Join</button>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; <span id="year"></span> Innovative Explorer Club. All rights reserved.</span>
+    <span>Learn. Build. Innovate. Explore.</span>
+  </div>
+</footer>
+
+<script>
+/* =========================================================
+   NAVBAR: scroll blur + mobile menu + search expand
+   ========================================================= */
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 40);
+});
+
+const hamburger = document.getElementById('hamburger');
+const navMenu = document.getElementById('navMenu');
+hamburger.addEventListener('click', () => navMenu.classList.toggle('open'));
+
+const searchWrap = document.getElementById('searchWrap');
+document.getElementById('searchToggle').addEventListener('click', () => {
+  searchWrap.classList.toggle('open');
+  if (searchWrap.classList.contains('open')) searchWrap.querySelector('input').focus();
+});
+
+/* Dark / light toggle */
+const themeToggle = document.getElementById('themeToggle');
+themeToggle.addEventListener('click', () => {
+  document.documentElement.classList.toggle('light-mode');
+  const light = document.documentElement.classList.contains('light-mode');
+  themeToggle.innerHTML = light ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+});
+
+/* =========================================================
+   HERO: mouse-follow glow
+   ========================================================= */
+const hero = document.getElementById('hero');
+const heroGlow = document.getElementById('heroGlow');
+hero.addEventListener('pointermove', (e) => {
+  const rect = hero.getBoundingClientRect();
+  const x = ((e.clientX - rect.left) / rect.width) * 100;
+  const y = ((e.clientY - rect.top) / rect.height) * 100;
+  heroGlow.style.setProperty('--mx', x + '%');
+  heroGlow.style.setProperty('--my', y + '%');
+});
+
+/* =========================================================
+   HERO: animated circuit background (theme-aware)
+   ========================================================= */
+(function circuitBackground(){
+  const canvas = document.getElementById('circuitCanvas');
+  const ctx = canvas.getContext('2d');
+  let w, h, nodes = [];
+  let mouse = { x: -9999, y: -9999 };
+
+  function isLight(){ return document.documentElement.classList.contains('light-mode'); }
+
+  function resize(){
+    w = canvas.width = hero.offsetWidth;
+    h = canvas.height = hero.offsetHeight;
+    const count = Math.floor((w * h) / 24000);
+    nodes = Array.from({ length: count }, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      vx: (Math.random() - 0.5) * 0.15,
+      vy: (Math.random() - 0.5) * 0.15
+    }));
+  }
+
+  hero.addEventListener('pointermove', (e) => {
+    const rect = hero.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+  });
+  hero.addEventListener('pointerleave', () => { mouse.x = -9999; mouse.y = -9999; });
+
+  function step(){
+    ctx.clearRect(0, 0, w, h);
+    const light = isLight();
+    const lineRGB = light ? '21,123,255' : '74,166,255';
+    const nodeRGB = light ? '91,138,0' : '154,230,0';
+    const alphaBoost = light ? 1.5 : 1;
+
+    for (const n of nodes){
+      n.x += n.vx; n.y += n.vy;
+      if (n.x < 0 || n.x > w) n.vx *= -1;
+      if (n.y < 0 || n.y > h) n.vy *= -1;
+    }
+    for (let i = 0; i < nodes.length; i++){
+      for (let j = i + 1; j < nodes.length; j++){
+        const a = nodes[i], b = nodes[j];
+        const dx = a.x - b.x, dy = a.y - b.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120){
+          const distToMouse = Math.min(
+            Math.hypot(a.x - mouse.x, a.y - mouse.y),
+            Math.hypot(b.x - mouse.x, b.y - mouse.y)
+          );
+          const boost = Math.max(0, 1 - distToMouse / 220);
+          ctx.strokeStyle = `rgba(${lineRGB},${(0.06 + boost * 0.35) * (1 - dist / 120) * alphaBoost})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
+      }
+    }
+    for (const n of nodes){
+      const distToMouse = Math.hypot(n.x - mouse.x, n.y - mouse.y);
+      const boost = Math.max(0, 1 - distToMouse / 200);
+      ctx.fillStyle = `rgba(${nodeRGB},${(0.28 + boost * 0.6) * alphaBoost})`;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, 1.6 + boost * 1.8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    requestAnimationFrame(step);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  step();
+})();
+
+/* =========================================================
+   REVEAL ON SCROLL
+   ========================================================= */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('in-view');
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+/* =========================================================
+   QUICK REASON CHIPS — sync with subject dropdown
+   ========================================================= */
+const reasonRow = document.getElementById('reasonRow');
+const subjectSelect = document.getElementById('cSubject');
+reasonRow.querySelectorAll('.reason-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    reasonRow.querySelectorAll('.reason-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    subjectSelect.value = chip.dataset.reason;
+  });
+});
+subjectSelect.addEventListener('change', () => {
+  reasonRow.querySelectorAll('.reason-chip').forEach(c => {
+    c.classList.toggle('active', c.dataset.reason === subjectSelect.value);
+  });
+});
+
+/* =========================================================
+   CONTACT FORM: validation + simulated submit
+   (Wire this up to Firebase later — replace the setTimeout
+   block in handleSubmit with a real write/call.)
+   ========================================================= */
+const contactForm = document.getElementById('contactForm');
+const submitBtn = document.getElementById('submitBtn');
+const formSuccess = document.getElementById('formSuccess');
+const sendAnother = document.getElementById('sendAnother');
+
+function setError(groupId, show){
+  const group = document.getElementById(groupId);
+  group.classList.toggle('error', show);
+  if (show){
+    group.classList.remove('shake');
+    void group.offsetWidth; /* restart animation */
+    group.classList.add('shake');
+  }
+}
+
+function isValidEmail(value){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+contactForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const name = document.getElementById('cName').value.trim();
+  const email = document.getElementById('cEmail').value.trim();
+  const message = document.getElementById('cMessage').value.trim();
+
+  const nameValid = name.length > 1;
+  const emailValid = isValidEmail(email);
+  const messageValid = message.length > 4;
+
+  setError('group-name', !nameValid);
+  setError('group-email', !emailValid);
+  setError('group-message', !messageValid);
+
+  if (!nameValid || !emailValid || !messageValid) return;
+
+  submitBtn.classList.add('loading');
+  submitBtn.disabled = true;
+
+  /* Simulated submit — swap for a Firebase write when storage is connected */
+  setTimeout(() => {
+    submitBtn.classList.remove('loading');
+    submitBtn.disabled = false;
+    contactForm.classList.add('hide');
+    formSuccess.classList.add('show');
+  }, 1100);
+});
+
+sendAnother.addEventListener('click', () => {
+  contactForm.reset();
+  ['group-name','group-email','group-phone','group-subject','group-message'].forEach(id => setError(id, false));
+  reasonRow.querySelectorAll('.reason-chip').forEach((c, i) => c.classList.toggle('active', i === 0));
+  formSuccess.classList.remove('show');
+  contactForm.classList.remove('hide');
+});
+
+document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

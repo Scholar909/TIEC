@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — Innovative Explorer Club</title>
+<meta name="description" content="The story, vision, mission, leadership team and membership structure behind the Innovative Explorer Club — raising Africa's next generation of innovators.">
+
+<!-- Default typeface: Poppins, all weights used across headings and body -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Icon set: Foundation Icons (used everywhere instead of emoji) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css">
+
+<style>
+/* =========================================================
+   DESIGN TOKENS — identical to home page
+   ========================================================= */
+:root{
+  --bg-primary:#071420;
+  --bg-secondary:#101B2D;
+  --card-bg:rgba(255,255,255,.08);
+  --card-border:rgba(255,255,255,.10);
+  --blue:#157BFF;
+  --blue-2:#4AA6FF;
+  --lime:#9AE600;
+  --white:#FFFFFF;
+  --gray:#C7CFD9;
+  --danger:#FF4B55;
+  --success:#2BD67B;
+
+  --accent-text:var(--blue-2);
+  --accent-lime-text:var(--lime);
+  --hero-fade:#0d2338;
+  --hero-h1-grad:linear-gradient(180deg,#ffffff 0%, #cfe4ff 55%, var(--blue-2) 100%);
+  --placeholder-grad:linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
+
+  --radius:16px;
+  --nav-h:76px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --font-body:'Poppins',sans-serif;
+}
+
+html.light-mode{
+  --bg-primary:#EEF3F8;
+  --bg-secondary:#FFFFFF;
+  --card-bg:rgba(7,20,32,.045);
+  --card-border:rgba(7,20,32,.09);
+  --white:#0B1B29;
+  --gray:#4B5C6B;
+
+  --accent-text:#0F62D6;
+  --accent-lime-text:#5B8A00;
+  --hero-fade:#dbe9f9;
+  --hero-h1-grad:linear-gradient(180deg,#0B1B29 0%, #163a5c 55%, var(--blue) 100%);
+  --placeholder-grad:linear-gradient(135deg, #dde7f2, #cddbea);
+}
+
+*,*::before,*::after{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg-primary);
+  color:var(--white);
+  font-family:var(--font-body);
+  font-weight:400;
+  line-height:1.6;
+  overflow-x:hidden;
+  transition:background .4s var(--ease), color .4s var(--ease);
+}
+h1,h2,h3,h4{
+  font-family:var(--font-body);
+  font-weight:700;
+  margin:0;
+  line-height:1.15;
+  letter-spacing:-.01em;
+}
+p{margin:0;color:var(--gray);}
+a{color:inherit;text-decoration:none;}
+img{max-width:100%;display:block;}
+button{font-family:inherit;cursor:pointer;}
+i[class^="fi-"]{line-height:1;}
+.eyebrow{
+  font-size:.72rem;
+  font-weight:600;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--accent-text);
+}
+.section{padding:120px 8vw;position:relative;}
+.section-head{max-width:640px;margin:0 auto 56px;text-align:center;}
+.section-head h2{font-size:clamp(1.7rem,3.4vw,2.6rem);margin-top:10px;}
+.section-head p{margin-top:14px;font-size:1.05rem;}
+.container{max-width:1280px;margin:0 auto;}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important;}
+}
+
+/* Glass card */
+.glass{
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:var(--radius);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+
+/* Buttons */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:14px 28px;
+  border-radius:12px;
+  font-weight:600;
+  font-size:.92rem;
+  border:1px solid transparent;
+  transition:transform .35s var(--ease), box-shadow .35s var(--ease), background .35s var(--ease), border-color .35s var(--ease);
+  white-space:nowrap;
+}
+.btn:focus-visible{outline:2px solid var(--blue-2);outline-offset:3px;}
+.btn-lime{background:var(--lime);color:#08130A;}
+.btn-lime:hover{box-shadow:0 0 28px rgba(154,230,0,.55);transform:translateY(-2px);}
+.btn-outline{background:transparent;border-color:var(--blue);color:var(--accent-text);}
+.btn-outline:hover{box-shadow:0 0 22px rgba(21,123,255,.4);border-color:var(--blue-2);transform:translateY(-2px);}
+.btn-ghost{background:transparent;color:var(--white);border-color:var(--card-border);}
+.btn-ghost:hover{background:rgba(120,140,160,.08);}
+
+/* =========================================================
+   NAVBAR — identical to home page
+   ========================================================= */
+.navbar{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  height:var(--nav-h);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 5vw;gap:12px;
+  background:transparent;
+  transition:background .4s var(--ease), backdrop-filter .4s var(--ease), border-color .4s var(--ease);
+  border-bottom:1px solid transparent;
+}
+.navbar.scrolled{
+  background:rgba(7,20,32,.65);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--card-border);
+}
+html.light-mode .navbar.scrolled{background:rgba(238,243,248,.75);}
+.nav-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.02rem;min-width:0;}
+.nav-logo img{width:40px;height:40px;border-radius:50%;flex-shrink:0;}
+.nav-logo .logo-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nav-menu{display:flex;gap:32px;list-style:none;margin:0;padding:0;}
+.nav-menu a{
+  font-size:.9rem;font-weight:500;color:var(--gray);
+  position:relative;padding:4px 0;
+  transition:color .3s var(--ease);
+}
+.nav-menu a::after{
+  content:'';position:absolute;left:0;bottom:-2px;width:0;height:1px;
+  background:var(--blue-2);transition:width .3s var(--ease);
+}
+.nav-menu a:hover{color:var(--white);}
+.nav-menu a:hover::after{width:100%;}
+.nav-menu a.active{color:var(--white);}
+.nav-menu a.active::after{width:100%;}
+.nav-right{display:flex;align-items:center;gap:14px;flex-shrink:0;}
+.icon-btn{
+  background:none;border:none;color:var(--gray);
+  width:38px;height:38px;border-radius:10px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:1rem;
+  transition:background .3s var(--ease), color .3s var(--ease);
+}
+.icon-btn:hover{background:rgba(120,140,160,.12);color:var(--white);}
+.search-wrap{display:flex;align-items:center;}
+.search-input{
+  width:0;opacity:0;padding:0;border:none;background:rgba(120,140,160,.12);
+  border-radius:10px;color:var(--white);font-family:var(--font-body);
+  transition:width .4s var(--ease), opacity .3s var(--ease), padding .4s var(--ease);
+}
+.search-wrap.open .search-input{width:160px;opacity:1;padding:8px 12px;margin-right:6px;}
+.nav-join{padding:10px 20px;font-size:.82rem;}
+.hamburger{display:none;}
+
+@media (max-width:960px){
+  .nav-menu{
+    position:fixed;top:var(--nav-h);left:0;right:0;
+    flex-direction:column;gap:0;
+    background:rgba(7,20,32,.97);backdrop-filter:blur(20px);
+    max-height:0;overflow:hidden;
+    transition:max-height .45s var(--ease);
+  }
+  html.light-mode .nav-menu{background:rgba(238,243,248,.98);}
+  .nav-menu.open{max-height:520px;border-bottom:1px solid var(--card-border);}
+  .nav-menu li{border-top:1px solid var(--card-border);}
+  .nav-menu a{display:block;padding:16px 6vw;}
+  .hamburger{display:flex;}
+  .nav-right{gap:6px;}
+  .nav-join{padding:9px 16px;font-size:.75rem;}
+}
+@media (max-width:420px){
+  .nav-logo .logo-text{display:none;}
+  .search-wrap.open .search-input{width:110px;}
+  .nav-join span.full{display:none;}
+}
+
+/* =========================================================
+   PAGE HERO — shorter variant of the home hero, same visual language
+   ========================================================= */
+.hero{
+  position:relative;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+  padding:calc(var(--nav-h) + 40px) 6vw 60px;
+  overflow:hidden;
+  background:radial-gradient(ellipse at 50% -10%, var(--hero-fade) 0%, var(--bg-primary) 60%);
+  transition:background .4s var(--ease);
+}
+.hero.page-hero{min-height:48vh;padding:calc(var(--nav-h) + 56px) 6vw 64px;}
+.hero canvas{position:absolute;inset:0;z-index:0;}
+.hero-glow{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(320px 320px at var(--mx,50%) var(--my,50%), rgba(21,123,255,.16), transparent 70%);
+}
+.hero-content{position:relative;z-index:2;max-width:820px;width:100%;}
+.breadcrumb{
+  position:relative;z-index:2;display:flex;align-items:center;justify-content:center;gap:8px;
+  font-size:.82rem;color:var(--gray);margin-bottom:22px;
+}
+.breadcrumb a{color:var(--gray);transition:color .3s var(--ease);}
+.breadcrumb a:hover{color:var(--accent-text);}
+.breadcrumb i{font-size:.6rem;}
+.breadcrumb .current{color:var(--accent-text);font-weight:500;}
+.hero .eyebrow{display:inline-block;margin-bottom:18px;}
+.hero h1{
+  font-size:clamp(2.1rem,6.2vw,4.6rem);
+  font-weight:800;
+  background:var(--hero-h1-grad);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero .subtitle{margin:22px auto 0;max-width:600px;font-size:1.1rem;color:var(--gray);}
+.hero-actions{display:flex;gap:16px;justify-content:center;margin-top:36px;flex-wrap:wrap;}
+@media (max-width:420px){
+  .hero.page-hero{padding-top:calc(var(--nav-h) + 30px);}
+  .hero-actions{flex-direction:column;align-items:stretch;}
+}
+
+/* =========================================================
+   SUB-NAV — sticky jump links
+   ========================================================= */
+.subnav-wrap{
+  position:sticky;top:var(--nav-h);z-index:900;
+  padding:14px 6vw;
+  background:var(--bg-primary);
+  border-bottom:1px solid var(--card-border);
+  transition:background .4s var(--ease), border-color .4s var(--ease);
+}
+.subnav{
+  max-width:1280px;margin:0 auto;
+  display:flex;gap:10px;overflow-x:auto;
+  scrollbar-width:none;
+}
+.subnav::-webkit-scrollbar{display:none;}
+.subnav a{
+  flex-shrink:0;padding:9px 18px;border-radius:999px;
+  font-size:.82rem;font-weight:500;color:var(--gray);
+  border:1px solid var(--card-border);
+  background:var(--card-bg);
+  transition:color .3s var(--ease), border-color .3s var(--ease), background .3s var(--ease);
+  white-space:nowrap;
+}
+.subnav a:hover{color:var(--white);border-color:rgba(74,166,255,.4);}
+.subnav a.active{color:#08130A;background:var(--lime);border-color:var(--lime);}
+
+/* =========================================================
+   OUR STORY
+   ========================================================= */
+.story-wrap{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;}
+.story-visual{
+  aspect-ratio:1/1;border-radius:20px;background:var(--placeholder-grad);
+  border:1px solid var(--card-border);position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.story-visual i{font-size:3.4rem;color:rgba(255,255,255,.18);}
+html.light-mode .story-visual i{color:rgba(11,27,41,.14);}
+.story-visual .tag-pill{
+  position:absolute;bottom:20px;left:20px;padding:8px 16px;border-radius:999px;
+  font-size:.78rem;font-weight:600;background:rgba(7,20,32,.55);color:var(--white);backdrop-filter:blur(6px);
+}
+.story-text p{font-size:1rem;margin-bottom:16px;}
+.story-text .tagline{
+  margin-top:24px;padding:20px 24px;border-left:3px solid var(--lime);
+  font-size:1.05rem;font-weight:600;color:var(--white);font-style:italic;
+}
+@media (max-width:860px){.story-wrap{grid-template-columns:1fr;gap:32px;} .story-visual{aspect-ratio:16/9;}}
+
+/* =========================================================
+   VISION & MISSION
+   ========================================================= */
+.vm-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+.vm-card{padding:40px 36px;position:relative;}
+.vm-card i.quote-mark{font-size:1.6rem;color:var(--accent-lime-text);display:block;margin-bottom:16px;}
+.vm-card h3{font-size:1.1rem;margin-bottom:14px;}
+.vm-card p{font-size:1rem;color:var(--white);line-height:1.7;}
+@media (max-width:860px){.vm-grid{grid-template-columns:1fr;}}
+@media (max-width:480px){.vm-card{padding:30px 24px;}}
+
+/* =========================================================
+   LEADERSHIP TEAM
+   ========================================================= */
+.team-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;}
+.team-card{padding:28px 20px;text-align:center;transition:transform .4s var(--ease), border-color .4s var(--ease);}
+.team-card:hover{transform:translateY(-6px);border-color:rgba(74,166,255,.35);}
+.team-avatar{
+  width:72px;height:72px;border-radius:50%;margin:0 auto 16px;
+  background:var(--placeholder-grad);display:flex;align-items:center;justify-content:center;
+  color:var(--accent-text);font-size:1.4rem;font-weight:700;border:1px solid var(--card-border);
+}
+.team-card h4{font-size:.94rem;font-weight:600;}
+.team-card .role{font-size:.76rem;color:var(--accent-lime-text);margin-top:4px;display:block;}
+.team-socials{display:flex;justify-content:center;gap:8px;margin-top:14px;}
+.team-socials .icon-btn{width:32px;height:32px;font-size:.82rem;}
+@media (max-width:960px){.team-grid{grid-template-columns:repeat(3,1fr);}}
+@media (max-width:560px){.team-grid{grid-template-columns:repeat(2,1fr);}}
+
+/* =========================================================
+   MEMBERSHIP STRUCTURE TABLE
+   ========================================================= */
+.table-wrap{overflow-x:auto;border-radius:var(--radius);}
+.membership-table{width:100%;border-collapse:collapse;min-width:520px;}
+.membership-table thead th{
+  text-align:left;font-size:.76rem;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--accent-text);padding:18px 26px;border-bottom:1px solid var(--card-border);
+}
+.membership-table tbody td{padding:20px 26px;font-size:.94rem;border-bottom:1px solid var(--card-border);}
+.membership-table tbody tr:last-child td{border-bottom:none;}
+.membership-table tbody tr{transition:background .3s var(--ease);}
+.membership-table tbody tr:hover{background:rgba(120,140,160,.06);}
+.membership-table td.level{font-weight:600;color:var(--white);display:flex;align-items:center;gap:10px;}
+.membership-table td.level i{color:var(--accent-lime-text);font-size:1rem;}
+.membership-table td.age{color:var(--gray);}
+
+/* =========================================================
+   MEMBERSHIP BENEFITS
+   ========================================================= */
+.benefits-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;}
+.benefit-chip{padding:26px 16px;text-align:center;transition:transform .4s var(--ease), border-color .4s var(--ease);}
+.benefit-chip i{font-size:1.6rem;color:var(--accent-lime-text);display:block;margin-bottom:10px;}
+.benefit-chip span{font-size:.84rem;font-weight:500;}
+.benefit-chip:hover{transform:translateY(-6px);border-color:rgba(154,230,0,.4);}
+@media (max-width:860px){.benefits-grid{grid-template-columns:repeat(3,1fr);}}
+@media (max-width:480px){.benefits-grid{grid-template-columns:repeat(2,1fr);gap:12px;} .benefit-chip{padding:20px 10px;}}
+
+/* =========================================================
+   LONG-TERM VISION — roadmap
+   ========================================================= */
+.roadmap{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;position:relative;}
+.roadmap-card{padding:32px 26px;position:relative;}
+.roadmap-card .phase{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-lime-text);}
+.roadmap-card h4{font-size:1.15rem;margin:10px 0 12px;}
+.roadmap-card p{font-size:.9rem;}
+.roadmap-card .roadmap-num{
+  position:absolute;top:-14px;left:26px;width:30px;height:30px;border-radius:50%;
+  background:var(--lime);color:#08130A;font-weight:700;font-size:.86rem;
+  display:flex;align-items:center;justify-content:center;
+}
+@media (max-width:860px){.roadmap{grid-template-columns:1fr;}}
+
+/* =========================================================
+   PARTNERS — auto-scrolling strip
+   ========================================================= */
+.partners-track-wrap{overflow:hidden;position:relative;-webkit-mask-image:linear-gradient(to right, transparent, #000 8%, #000 92%, transparent); mask-image:linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);}
+.partners-track{display:flex;gap:20px;width:max-content;animation:partners-scroll 28s linear infinite;}
+.partners-track-wrap:hover .partners-track{animation-play-state:paused;}
+@keyframes partners-scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+.partner-chip{
+  flex-shrink:0;padding:20px 32px;display:flex;align-items:center;gap:12px;
+  font-size:.92rem;font-weight:600;color:var(--gray);white-space:nowrap;
+}
+.partner-chip i{color:var(--accent-text);font-size:1.2rem;}
+.partner-cta{text-align:center;margin-top:32px;}
+
+/* =========================================================
+   CTA — same pattern as home page
+   ========================================================= */
+.cta-section{text-align:center;position:relative;padding:100px 6vw;}
+.cta-box{max-width:720px;margin:0 auto;padding:60px 40px;background:radial-gradient(circle at 50% 0%, rgba(21,123,255,.16), var(--card-bg) 70%);}
+.cta-box h2{font-size:clamp(1.7rem,3.2vw,2.3rem);margin-bottom:14px;}
+.cta-box p{margin-bottom:34px;font-size:1.05rem;}
+.cta-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+@media (max-width:480px){.cta-box{padding:44px 22px;} .cta-actions{flex-direction:column;align-items:stretch;}}
+
+/* =========================================================
+   FOOTER — identical to home page
+   ========================================================= */
+footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:var(--bg-secondary);transition:background .4s var(--ease);}
+.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.2fr;gap:36px;max-width:1280px;margin:0 auto;padding-bottom:40px;}
+.footer-brand{display:flex;align-items:center;gap:10px;font-weight:700;margin-bottom:14px;}
+.footer-brand img{width:34px;height:34px;border-radius:50%;}
+.footer-col h4{font-size:.92rem;margin-bottom:16px;font-weight:600;}
+.footer-col ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;}
+.footer-col a{font-size:.86rem;color:var(--gray);transition:color .3s var(--ease);}
+.footer-col a:hover{color:var(--accent-text);}
+.footer-map{
+    width:100%;
+    margin-top:15px;
+    border-radius:16px;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow:0 8px 24px rgba(0,0,0,.25);
+}
+.footer-map iframe{
+    display:block;
+    width:100%;
+    height:220px;
+    border:0;
+}
+.newsletter-form{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;}
+.newsletter-form input{flex:1;min-width:180px;padding:10px 12px;border-radius:10px;border:1px solid var(--card-border);background:rgba(120,140,160,.08);color:var(--white);font-family:var(--font-body);}
+.newsletter-form button{flex-shrink:0;}
+.social-row{display:flex;gap:10px;margin-top:16px;}
+.social-row .icon-btn{color:var(--gray);}
+.social-row .icon-btn:hover{color:var(--accent-text);}
+.footer-address{display:flex;align-items:flex-start;gap:8px;font-size:.86rem;}
+.footer-address i{color:var(--accent-text);margin-top:3px;}
+.footer-bottom{max-width:1280px;margin:0 auto;padding-top:24px;border-top:1px solid var(--card-border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:.78rem;color:var(--gray);}
+@media (max-width:768px){
+.footer-map iframe{height:180px;}
+}
+@media (max-width:860px){.footer-grid{grid-template-columns:1fr 1fr;}}
+@media (max-width:480px){.footer-grid{grid-template-columns:1fr;gap:28px;} footer{padding:50px 6vw 24px;}.newsletter-form{flex-direction:column;}
+.newsletter-form input, .newsletter-form button{width:100%;}}
+
+/* Fade-up reveal on scroll */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease), transform .8s var(--ease);}
+.reveal.in-view{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- =========================================================
+     NAVBAR
+     ========================================================= -->
+<nav class="navbar" id="navbar">
+  <a href="../index.html" class="nav-logo">
+    <img src="../assets/images/logo-icon.png" alt="Innovative Explorer Club logo">
+    <span class="logo-text">Innovative Explorer Club</span>
+  </a>
+
+  <ul class="nav-menu" id="navMenu">
+    <li><a href="../index.html">Home</a></li>
+    <li><a href="programs.html">Programs</a></li>
+    <li><a href="membership.html">Membership</a></li>
+    <li><a href="events.html">Events</a></li>
+    <li><a href="gallery.html">Gallery</a></li>
+    <li><a href="projects.html">Projects</a></li>
+    <li><a href="about.html" class="active" aria-current="page">About</a></li>
+    <li><a href="faq.html">FAQ</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+
+  <div class="nav-right">
+    <div class="search-wrap" id="searchWrap">
+      <input type="text" class="search-input" placeholder="Search...">
+      <button class="icon-btn" id="searchToggle" aria-label="Toggle search"><i class="fi-magnifying-glass"></i></button>
+    </div>
+    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="fi-contrast"></i></button>
+    <a href="register.html" class="btn btn-lime nav-join"><span class="full">Join Community</span></a>
+    <button class="icon-btn hamburger" id="hamburger" aria-label="Toggle menu"><i class="fi-list-thumbnails"></i></button>
+  </div>
+</nav>
+
+<!-- =========================================================
+     PAGE HERO
+     ========================================================= -->
+<header class="hero page-hero" id="hero">
+  <canvas id="circuitCanvas"></canvas>
+  <div class="hero-glow" id="heroGlow"></div>
+
+  <div class="breadcrumb">
+    <a href="../index.html">Home</a>
+    <i class="fi-arrow-down" style="transform:rotate(-90deg);"></i>
+    <span class="current">About</span>
+  </div>
+
+  <div class="hero-content">
+    <span class="eyebrow">The heart of the club</span>
+    <h1>About Innovative Explorer Club</h1>
+    <p class="subtitle">Who we are, why we exist, and where we're headed.</p>
+    <div class="hero-actions">
+      <a href="register.html" class="btn btn-lime">Join the Club</a>
+      <a href="#leadership" class="btn btn-outline">Meet the Team</a>
+    </div>
+  </div>
+</header>
+
+<!-- =========================================================
+     SUB-NAV
+     ========================================================= -->
+<div class="subnav-wrap">
+  <div class="subnav" id="subnav">
+    <a href="#story">Our Story</a>
+    <a href="#vision-mission">Vision &amp; Mission</a>
+    <a href="#leadership">Leadership</a>
+    <a href="#structure">Membership Structure</a>
+    <a href="#benefits">Benefits</a>
+    <a href="#roadmap">Long-Term Vision</a>
+    <a href="#partners">Partners</a>
+  </div>
+</div>
+
+<!-- =========================================================
+     OUR STORY
+     ========================================================= -->
+<section class="section" id="story">
+  <div class="story-wrap container reveal">
+    <div class="story-visual">
+      <i class="fi-lightbulb"></i>
+      <span class="tag-pill">Est. Abuja, Nigeria</span>
+    </div>
+    <div class="story-text">
+      <span class="eyebrow">Our Story</span>
+      <h2 style="margin-top:10px;margin-bottom:20px;font-size:clamp(1.6rem,3vw,2.2rem);">From a small workshop to a growing movement</h2>
+      <p>The Innovative Explorer Club started as a handful of curious students meeting after school to take things apart and put them back together differently. What began with a shared soldering iron and a secondhand robotics kit has grown into a full learning ecosystem spanning nine academies.</p>
+      <p>Today, TIEC brings together Robotics, Programming, 3D Printing, CAD, Drone Technology, Graphics Design, AI, and Hardware under one roof — mentor-led, hands-on, and built around real problems worth solving.</p>
+      <div class="tagline">"Learn. Build. Innovate. Explore."</div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     VISION & MISSION
+     ========================================================= -->
+<section class="section" id="vision-mission" style="background:var(--bg-secondary);">
+  <div class="section-head reveal">
+    <span class="eyebrow">What drives us</span>
+    <h2>Vision &amp; Mission</h2>
+  </div>
+  <div class="vm-grid container reveal">
+    <div class="vm-card glass">
+      <i class="fi-quote quote-mark"></i>
+      <h3>Vision</h3>
+      <p>To raise Africa's next generation of innovators, creators, entrepreneurs, engineers, and technology leaders.</p>
+    </div>
+    <div class="vm-card glass">
+      <i class="fi-quote quote-mark"></i>
+      <h3>Mission</h3>
+      <p>To provide lifelong, hands-on STEM and innovation education that empowers learners to explore, create, invent, collaborate, solve real-world problems, and grow into industry-ready professionals and entrepreneurs through practical learning, mentorship, competitions, and community.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     LEADERSHIP TEAM
+     ========================================================= -->
+<section class="section" id="leadership">
+  <div class="section-head reveal">
+    <span class="eyebrow">Who runs the club</span>
+    <h2>Leadership Team</h2>
+    <p>The mentors and organizers behind every academy.</p>
+  </div>
+  <div class="team-grid container reveal">
+    <div class="team-card glass">
+      <div class="team-avatar">NA</div>
+      <h4>Ngozi A.</h4>
+      <span class="role">Founder &amp; Executive Director</span>
+      <div class="team-socials">
+        <a href="#" class="icon-btn" aria-label="LinkedIn"><i class="fi-torso-business"></i></a>
+        <a href="#" class="icon-btn" aria-label="Email"><i class="fi-mail"></i></a>
+      </div>
+    </div>
+    <div class="team-card glass">
+      <div class="team-avatar">EU</div>
+      <h4>Emeka U.</h4>
+      <span class="role">Head of Programs</span>
+      <div class="team-socials">
+        <a href="#" class="icon-btn" aria-label="LinkedIn"><i class="fi-torso-business"></i></a>
+        <a href="#" class="icon-btn" aria-label="Email"><i class="fi-mail"></i></a>
+      </div>
+    </div>
+    <div class="team-card glass">
+      <div class="team-avatar">BI</div>
+      <h4>Blessing I.</h4>
+      <span class="role">Robotics &amp; AI Lead</span>
+      <div class="team-socials">
+        <a href="#" class="icon-btn" aria-label="LinkedIn"><i class="fi-torso-business"></i></a>
+        <a href="#" class="icon-btn" aria-label="Email"><i class="fi-mail"></i></a>
+      </div>
+    </div>
+    <div class="team-card glass">
+      <div class="team-avatar">YM</div>
+      <h4>Yusuf M.</h4>
+      <span class="role">Partnerships &amp; Outreach</span>
+      <div class="team-socials">
+        <a href="#" class="icon-btn" aria-label="LinkedIn"><i class="fi-torso-business"></i></a>
+        <a href="#" class="icon-btn" aria-label="Email"><i class="fi-mail"></i></a>
+      </div>
+    </div>
+    <div class="team-card glass">
+      <div class="team-avatar">AB</div>
+      <h4>Aisha B.</h4>
+      <span class="role">Volunteer &amp; Mentor Coordinator</span>
+      <div class="team-socials">
+        <a href="#" class="icon-btn" aria-label="LinkedIn"><i class="fi-torso-business"></i></a>
+        <a href="#" class="icon-btn" aria-label="Email"><i class="fi-mail"></i></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     MEMBERSHIP STRUCTURE
+     ========================================================= -->
+<section class="section" id="structure" style="background:var(--bg-secondary);">
+  <div class="section-head reveal">
+    <span class="eyebrow">Every age, a track</span>
+    <h2>Membership Structure</h2>
+    <p>Explorers grow through the club as they grow up — here's the ladder.</p>
+  </div>
+  <div class="table-wrap glass container reveal">
+    <table class="membership-table">
+      <thead>
+        <tr><th>Level</th><th>Age</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="level"><i class="fi-compass"></i> Young Explorers</td><td class="age">6 – 9</td></tr>
+        <tr><td class="level"><i class="fi-widget"></i> Junior Innovators</td><td class="age">10 – 13</td></tr>
+        <tr><td class="level"><i class="fi-wrench"></i> Teen Innovators</td><td class="age">14 – 18</td></tr>
+        <tr><td class="level"><i class="fi-book"></i> University Fellows</td><td class="age">18 – 25</td></tr>
+        <tr><td class="level"><i class="fi-address-book"></i> Professional Innovators</td><td class="age">25+</td></tr>
+        <tr><td class="level"><i class="fi-torso-business"></i> Mentor Circle</td><td class="age">Industry Experts</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- =========================================================
+     MEMBERSHIP BENEFITS
+     ========================================================= -->
+<section class="section" id="benefits">
+  <div class="section-head reveal">
+    <span class="eyebrow">What you get</span>
+    <h2>Membership Benefits</h2>
+    <p>Every level unlocks more of the ecosystem.</p>
+  </div>
+  <div class="benefits-grid container reveal">
+    <div class="benefit-chip glass"><i class="fi-calendar"></i><span>Weekly Classes</span></div>
+    <div class="benefit-chip glass"><i class="fi-page"></i><span>Certificates</span></div>
+    <div class="benefit-chip glass"><i class="fi-map"></i><span>Innovation Passport</span></div>
+    <div class="benefit-chip glass"><i class="fi-torsos"></i><span>Networking</span></div>
+    <div class="benefit-chip glass"><i class="fi-dollar"></i><span>Scholarships</span></div>
+    <div class="benefit-chip glass"><i class="fi-torso-business"></i><span>Career Mentoring</span></div>
+    <div class="benefit-chip glass"><i class="fi-briefcase"></i><span>Industry Visits</span></div>
+    <div class="benefit-chip glass"><i class="fi-lightbulb"></i><span>Startup Incubation</span></div>
+    <div class="benefit-chip glass"><i class="fi-compass"></i><span>International Exchange</span></div>
+    <div class="benefit-chip glass"><i class="fi-podium"></i><span>Annual Summit</span></div>
+  </div>
+</section>
+
+<!-- =========================================================
+     LONG-TERM VISION
+     ========================================================= -->
+<section class="section" id="roadmap" style="background:var(--bg-secondary);">
+  <div class="section-head reveal">
+    <span class="eyebrow">Where we're headed</span>
+    <h2>Long-Term Vision</h2>
+    <p>TIEC today is one chapter of a much bigger plan.</p>
+  </div>
+  <div class="roadmap container reveal">
+    <div class="roadmap-card glass"><span class="roadmap-num">1</span><span class="phase">Now</span><h4>Deepen One Chapter</h4><p>Grow every academy in Abuja to full capacity, with a mentor-to-member ratio that keeps learning hands-on.</p></div>
+    <div class="roadmap-card glass"><span class="roadmap-num">2</span><span class="phase">Next</span><h4>Open New Chapters</h4><p>Bring the same eight-academy model to more cities, each shaped by its local talent and industry.</p></div>
+    <div class="roadmap-card glass"><span class="roadmap-num">3</span><span class="phase">Later</span><h4>A Pan-African Network</h4><p>Connect chapters across the continent into one exchange, mentorship, and competition network.</p></div>
+  </div>
+</section>
+
+<!-- =========================================================
+     PARTNERS & SPONSORS
+     ========================================================= -->
+<section class="section" id="partners" style="padding-bottom:100px;">
+  <div class="section-head reveal">
+    <span class="eyebrow">Who backs us</span>
+    <h2>Partners &amp; Sponsors</h2>
+    <p>Organizations that make our programs possible.</p>
+  </div>
+  <div class="partners-track-wrap reveal">
+    <div class="partners-track" id="partnersTrack">
+      <div class="partner-chip glass"><i class="fi-foundation"></i> Coderina EdTech Foundation</div>
+      <div class="partner-chip glass"><i class="fi-book"></i> DSTI</div>
+      <div class="partner-chip glass"><i class="fi-widget"></i> Partner Slot</div>
+      <div class="partner-chip glass"><i class="fi-lightbulb"></i> Partner Slot</div>
+      <div class="partner-chip glass"><i class="fi-briefcase"></i> Partner Slot</div>
+      <div class="partner-chip glass"><i class="fi-graph-trend"></i> Partner Slot</div>
+    </div>
+  </div>
+  <div class="partner-cta reveal">
+    <a href="contact.html" class="btn btn-outline">Become a Partner</a>
+  </div>
+</section>
+
+<!-- =========================================================
+     CALL TO ACTION
+     ========================================================= -->
+<section class="section cta-section container reveal">
+  <div class="cta-box glass">
+    <span class="eyebrow">Be part of the story</span>
+    <h2>Ready to become an Explorer?</h2>
+    <p>Whatever your age or experience, there's a track built for you.</p>
+    <div class="cta-actions">
+      <a href="register.html" class="btn btn-lime">Join the Club</a>
+      <a href="membership.html" class="btn btn-outline">See Membership Levels</a>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     FOOTER
+     ========================================================= -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">
+        <img src="../assets/images/logo-icon.png" alt="Innovative Explorer Club logo">
+        Innovative Explorer Club
+      </div>
+      <p style="font-size:.86rem;">Empowering young minds through technology and innovation.</p>
+      <div class="social-row">
+        <a href="#" class="icon-btn glass" aria-label="Instagram"><i class="fi-social-instagram"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="Facebook"><i class="fi-social-facebook"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="WhatsApp"><i class="fi-telephone"></i></a>
+        <a href="https://maps.app.goo.gl/qfNDcXp3cec9hd2RA" class="icon-btn glass" aria-label="Map"><i class="fi-map"></i></a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="about.html">About</a></li>
+        <li><a href="programs.html">Programs</a></li>
+        <li><a href="events.html">Events</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Address</h4>
+      <div class="footer-address"><i class="fi-map"></i><span>Coderina EdTech Foundation, Department of Science, Technology and Innovation (DSTI)<br>No. 4 Ngozi Okonjo-Iweala Way, Utako District, Abuja 900103, Federal Capital Territory (FCT), Nigeria.</span></div>
+    </div>
+    <div class="footer-map">
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3939.9483490731654!2d7.4445455775889355!3d9.068470288364598!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x104ddf81cc7ccb07%3A0xc50e6cfe01a43fac!2sCoderina%20Education%20and%20Technology%20Foundation!5e0!3m2!1sen!2sng!4v1785316511093!5m2!1sen!2sng" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </div>
+    <div class="footer-col">
+      <h4>Newsletter</h4>
+      <p style="font-size:.84rem;margin-bottom:8px;">Get updates on events and programs.</p>
+      <div class="newsletter-form">
+        <input type="email" placeholder="you@email.com">
+        <button class="btn btn-lime" style="padding:10px 16px;font-size:.78rem;">Join</button>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; <span id="year"></span> Innovative Explorer Club. All rights reserved.</span>
+    <span>Learn. Build. Innovate. Explore.</span>
+  </div>
+</footer>
+
+<script>
+/* =========================================================
+   NAVBAR: scroll blur + mobile menu + search expand
+   ========================================================= */
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 40);
+});
+
+const hamburger = document.getElementById('hamburger');
+const navMenu = document.getElementById('navMenu');
+hamburger.addEventListener('click', () => navMenu.classList.toggle('open'));
+
+const searchWrap = document.getElementById('searchWrap');
+document.getElementById('searchToggle').addEventListener('click', () => {
+  searchWrap.classList.toggle('open');
+  if (searchWrap.classList.contains('open')) searchWrap.querySelector('input').focus();
+});
+
+/* Dark / light toggle */
+const themeToggle = document.getElementById('themeToggle');
+themeToggle.addEventListener('click', () => {
+  document.documentElement.classList.toggle('light-mode');
+  const light = document.documentElement.classList.contains('light-mode');
+  themeToggle.innerHTML = light ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+});
+
+/* =========================================================
+   HERO: mouse-follow glow
+   ========================================================= */
+const hero = document.getElementById('hero');
+const heroGlow = document.getElementById('heroGlow');
+hero.addEventListener('pointermove', (e) => {
+  const rect = hero.getBoundingClientRect();
+  const x = ((e.clientX - rect.left) / rect.width) * 100;
+  const y = ((e.clientY - rect.top) / rect.height) * 100;
+  heroGlow.style.setProperty('--mx', x + '%');
+  heroGlow.style.setProperty('--my', y + '%');
+});
+
+/* =========================================================
+   HERO: animated circuit background (theme-aware)
+   ========================================================= */
+(function circuitBackground(){
+  const canvas = document.getElementById('circuitCanvas');
+  const ctx = canvas.getContext('2d');
+  let w, h, nodes = [];
+  let mouse = { x: -9999, y: -9999 };
+
+  function isLight(){ return document.documentElement.classList.contains('light-mode'); }
+
+  function resize(){
+    w = canvas.width = hero.offsetWidth;
+    h = canvas.height = hero.offsetHeight;
+    const count = Math.floor((w * h) / 24000);
+    nodes = Array.from({ length: count }, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      vx: (Math.random() - 0.5) * 0.15,
+      vy: (Math.random() - 0.5) * 0.15
+    }));
+  }
+
+  hero.addEventListener('pointermove', (e) => {
+    const rect = hero.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+  });
+  hero.addEventListener('pointerleave', () => { mouse.x = -9999; mouse.y = -9999; });
+
+  function step(){
+    ctx.clearRect(0, 0, w, h);
+    const light = isLight();
+    const lineRGB = light ? '21,123,255' : '74,166,255';
+    const nodeRGB = light ? '91,138,0' : '154,230,0';
+    const alphaBoost = light ? 1.5 : 1;
+
+    for (const n of nodes){
+      n.x += n.vx; n.y += n.vy;
+      if (n.x < 0 || n.x > w) n.vx *= -1;
+      if (n.y < 0 || n.y > h) n.vy *= -1;
+    }
+    for (let i = 0; i < nodes.length; i++){
+      for (let j = i + 1; j < nodes.length; j++){
+        const a = nodes[i], b = nodes[j];
+        const dx = a.x - b.x, dy = a.y - b.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120){
+          const distToMouse = Math.min(
+            Math.hypot(a.x - mouse.x, a.y - mouse.y),
+            Math.hypot(b.x - mouse.x, b.y - mouse.y)
+          );
+          const boost = Math.max(0, 1 - distToMouse / 220);
+          ctx.strokeStyle = `rgba(${lineRGB},${(0.06 + boost * 0.35) * (1 - dist / 120) * alphaBoost})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
+      }
+    }
+    for (const n of nodes){
+      const distToMouse = Math.hypot(n.x - mouse.x, n.y - mouse.y);
+      const boost = Math.max(0, 1 - distToMouse / 200);
+      ctx.fillStyle = `rgba(${nodeRGB},${(0.28 + boost * 0.6) * alphaBoost})`;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, 1.6 + boost * 1.8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    requestAnimationFrame(step);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  step();
+})();
+
+/* =========================================================
+   REVEAL ON SCROLL
+   ========================================================= */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('in-view');
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+/* =========================================================
+   SUB-NAV: scrollspy
+   ========================================================= */
+(function subnavScrollspy(){
+  const links = Array.from(document.querySelectorAll('#subnav a'));
+  const sections = links
+    .map(a => document.querySelector(a.getAttribute('href')))
+    .filter(Boolean);
+
+  const spyObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const id = '#' + entry.target.id;
+      const link = links.find(a => a.getAttribute('href') === id);
+      if (!link) return;
+      if (entry.isIntersecting) {
+        links.forEach(a => a.classList.remove('active'));
+        link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-40% 0px -50% 0px', threshold: 0 });
+
+  sections.forEach(sec => spyObserver.observe(sec));
+})();
+
+/* =========================================================
+   PARTNERS STRIP: duplicate track for seamless infinite scroll
+   ========================================================= */
+(function partnersLoop(){
+  const track = document.getElementById('partnersTrack');
+  track.innerHTML += track.innerHTML;
+})();
+
+document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programs — Innovative Explorer Club</title>
+<meta name="description" content="Explore the Innovative Explorer Club's learning ecosystem — Robotics, Coding, AI, Maker Space, Entrepreneurship, Creative Media, Green Innovation, and Future Skills academies.">
+
+<!-- Default typeface: Poppins, all weights used across headings and body -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Icon set: Foundation Icons (used everywhere instead of emoji) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css">
+
+<style>
+/* =========================================================
+   DESIGN TOKENS — identical to home page
+   ========================================================= */
+:root{
+  --bg-primary:#071420;
+  --bg-secondary:#101B2D;
+  --card-bg:rgba(255,255,255,.08);
+  --card-border:rgba(255,255,255,.10);
+  --blue:#157BFF;
+  --blue-2:#4AA6FF;
+  --lime:#9AE600;
+  --white:#FFFFFF;
+  --gray:#C7CFD9;
+  --danger:#FF4B55;
+  --success:#2BD67B;
+
+  --accent-text:var(--blue-2);
+  --accent-lime-text:var(--lime);
+  --hero-fade:#0d2338;
+  --hero-h1-grad:linear-gradient(180deg,#ffffff 0%, #cfe4ff 55%, var(--blue-2) 100%);
+  --placeholder-grad:linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
+
+  --radius:16px;
+  --nav-h:76px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --font-body:'Poppins',sans-serif;
+}
+
+html.light-mode{
+  --bg-primary:#EEF3F8;
+  --bg-secondary:#FFFFFF;
+  --card-bg:rgba(7,20,32,.045);
+  --card-border:rgba(7,20,32,.09);
+  --white:#0B1B29;
+  --gray:#4B5C6B;
+
+  --accent-text:#0F62D6;
+  --accent-lime-text:#5B8A00;
+  --hero-fade:#dbe9f9;
+  --hero-h1-grad:linear-gradient(180deg,#0B1B29 0%, #163a5c 55%, var(--blue) 100%);
+  --placeholder-grad:linear-gradient(135deg, #dde7f2, #cddbea);
+}
+
+*,*::before,*::after{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg-primary);
+  color:var(--white);
+  font-family:var(--font-body);
+  font-weight:400;
+  line-height:1.6;
+  overflow-x:hidden;
+  transition:background .4s var(--ease), color .4s var(--ease);
+}
+h1,h2,h3,h4{
+  font-family:var(--font-body);
+  font-weight:700;
+  margin:0;
+  line-height:1.15;
+  letter-spacing:-.01em;
+}
+p{margin:0;color:var(--gray);}
+a{color:inherit;text-decoration:none;}
+img{max-width:100%;display:block;}
+button{font-family:inherit;cursor:pointer;}
+i[class^="fi-"]{line-height:1;}
+.eyebrow{
+  font-size:.72rem;
+  font-weight:600;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--accent-text);
+}
+.section{padding:120px 8vw;position:relative;}
+.section-head{max-width:640px;margin:0 auto 56px;text-align:center;}
+.section-head h2{font-size:clamp(1.7rem,3.4vw,2.6rem);margin-top:10px;}
+.section-head p{margin-top:14px;font-size:1.05rem;}
+.container{max-width:1280px;margin:0 auto;}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important;}
+}
+
+/* Glass card */
+.glass{
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:var(--radius);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+
+/* Buttons */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:14px 28px;
+  border-radius:12px;
+  font-weight:600;
+  font-size:.92rem;
+  border:1px solid transparent;
+  transition:transform .35s var(--ease), box-shadow .35s var(--ease), background .35s var(--ease), border-color .35s var(--ease);
+  white-space:nowrap;
+}
+.btn:focus-visible{outline:2px solid var(--blue-2);outline-offset:3px;}
+.btn-lime{background:var(--lime);color:#08130A;}
+.btn-lime:hover{box-shadow:0 0 28px rgba(154,230,0,.55);transform:translateY(-2px);}
+.btn-outline{background:transparent;border-color:var(--blue);color:var(--accent-text);}
+.btn-outline:hover{box-shadow:0 0 22px rgba(21,123,255,.4);border-color:var(--blue-2);transform:translateY(-2px);}
+.btn-ghost{background:transparent;color:var(--white);border-color:var(--card-border);}
+.btn-ghost:hover{background:rgba(120,140,160,.08);}
+
+/* =========================================================
+   NAVBAR — identical to home page
+   ========================================================= */
+.navbar{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  height:var(--nav-h);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 5vw;gap:12px;
+  background:transparent;
+  transition:background .4s var(--ease), backdrop-filter .4s var(--ease), border-color .4s var(--ease);
+  border-bottom:1px solid transparent;
+}
+.navbar.scrolled{
+  background:rgba(7,20,32,.65);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--card-border);
+}
+html.light-mode .navbar.scrolled{background:rgba(238,243,248,.75);}
+.nav-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.02rem;min-width:0;}
+.nav-logo img{width:40px;height:40px;border-radius:50%;flex-shrink:0;}
+.nav-logo .logo-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nav-menu{display:flex;gap:32px;list-style:none;margin:0;padding:0;}
+.nav-menu a{
+  font-size:.9rem;font-weight:500;color:var(--gray);
+  position:relative;padding:4px 0;
+  transition:color .3s var(--ease);
+}
+.nav-menu a::after{
+  content:'';position:absolute;left:0;bottom:-2px;width:0;height:1px;
+  background:var(--blue-2);transition:width .3s var(--ease);
+}
+.nav-menu a:hover{color:var(--white);}
+.nav-menu a:hover::after{width:100%;}
+.nav-menu a.active{color:var(--white);}
+.nav-menu a.active::after{width:100%;}
+.nav-right{display:flex;align-items:center;gap:14px;flex-shrink:0;}
+.icon-btn{
+  background:none;border:none;color:var(--gray);
+  width:38px;height:38px;border-radius:10px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:1rem;
+  transition:background .3s var(--ease), color .3s var(--ease);
+}
+.icon-btn:hover{background:rgba(120,140,160,.12);color:var(--white);}
+.search-wrap{display:flex;align-items:center;}
+.search-input{
+  width:0;opacity:0;padding:0;border:none;background:rgba(120,140,160,.12);
+  border-radius:10px;color:var(--white);font-family:var(--font-body);
+  transition:width .4s var(--ease), opacity .3s var(--ease), padding .4s var(--ease);
+}
+.search-wrap.open .search-input{width:160px;opacity:1;padding:8px 12px;margin-right:6px;}
+.nav-join{padding:10px 20px;font-size:.82rem;}
+.hamburger{display:none;}
+
+@media (max-width:960px){
+  .nav-menu{
+    position:fixed;top:var(--nav-h);left:0;right:0;
+    flex-direction:column;gap:0;
+    background:rgba(7,20,32,.97);backdrop-filter:blur(20px);
+    max-height:0;overflow:hidden;
+    transition:max-height .45s var(--ease);
+  }
+  html.light-mode .nav-menu{background:rgba(238,243,248,.98);}
+  .nav-menu.open{max-height:520px;border-bottom:1px solid var(--card-border);}
+  .nav-menu li{border-top:1px solid var(--card-border);}
+  .nav-menu a{display:block;padding:16px 6vw;}
+  .hamburger{display:flex;}
+  .nav-right{gap:6px;}
+  .nav-join{padding:9px 16px;font-size:.75rem;}
+}
+@media (max-width:420px){
+  .nav-logo .logo-text{display:none;}
+  .search-wrap.open .search-input{width:110px;}
+  .nav-join span.full{display:none;}
+}
+
+/* =========================================================
+   PAGE HERO — shorter variant of the home hero, same visual language
+   ========================================================= */
+.hero{
+  position:relative;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+  padding:calc(var(--nav-h) + 40px) 6vw 60px;
+  overflow:hidden;
+  background:radial-gradient(ellipse at 50% -10%, var(--hero-fade) 0%, var(--bg-primary) 60%);
+  transition:background .4s var(--ease);
+}
+.hero.page-hero{min-height:52vh;padding:calc(var(--nav-h) + 56px) 6vw 64px;}
+.hero canvas{position:absolute;inset:0;z-index:0;}
+.hero-glow{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(320px 320px at var(--mx,50%) var(--my,50%), rgba(21,123,255,.16), transparent 70%);
+}
+.hero-content{position:relative;z-index:2;max-width:820px;width:100%;}
+.breadcrumb{
+  position:relative;z-index:2;display:flex;align-items:center;justify-content:center;gap:8px;
+  font-size:.82rem;color:var(--gray);margin-bottom:22px;
+}
+.breadcrumb a{color:var(--gray);transition:color .3s var(--ease);}
+.breadcrumb a:hover{color:var(--accent-text);}
+.breadcrumb i{font-size:.6rem;}
+.breadcrumb .current{color:var(--accent-text);font-weight:500;}
+.hero .eyebrow{display:inline-block;margin-bottom:18px;}
+.hero h1{
+  font-size:clamp(2.1rem,6.2vw,4.6rem);
+  font-weight:800;
+  background:var(--hero-h1-grad);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero .subtitle{margin:22px auto 0;max-width:600px;font-size:1.1rem;color:var(--gray);}
+.hero-actions{display:flex;gap:16px;justify-content:center;margin-top:36px;flex-wrap:wrap;}
+@media (max-width:420px){
+  .hero.page-hero{padding-top:calc(var(--nav-h) + 30px);}
+  .hero-actions{flex-direction:column;align-items:stretch;}
+}
+
+/* =========================================================
+   SUB-NAV — sticky jump links to each academy
+   ========================================================= */
+.subnav-wrap{
+  position:sticky;top:var(--nav-h);z-index:900;
+  padding:14px 6vw;
+  background:var(--bg-primary);
+  border-bottom:1px solid var(--card-border);
+  transition:background .4s var(--ease), border-color .4s var(--ease);
+}
+.subnav{
+  max-width:1280px;margin:0 auto;
+  display:flex;gap:10px;overflow-x:auto;
+  scrollbar-width:none;
+}
+.subnav::-webkit-scrollbar{display:none;}
+.subnav a{
+  flex-shrink:0;padding:9px 18px;border-radius:999px;
+  font-size:.82rem;font-weight:500;color:var(--gray);
+  border:1px solid var(--card-border);
+  background:var(--card-bg);
+  transition:color .3s var(--ease), border-color .3s var(--ease), background .3s var(--ease);
+  white-space:nowrap;
+}
+.subnav a:hover{color:var(--white);border-color:rgba(74,166,255,.4);}
+.subnav a.active{color:#08130A;background:var(--lime);border-color:var(--lime);}
+
+/* =========================================================
+   ECOSYSTEM STRIP
+   ========================================================= */
+.ecosystem-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.eco-chip{padding:26px 16px;text-align:center;transition:transform .4s var(--ease), border-color .4s var(--ease);}
+.eco-chip i{font-size:1.6rem;color:var(--accent-lime-text);display:block;margin-bottom:10px;}
+.eco-chip span{font-size:.86rem;font-weight:500;}
+.eco-chip:hover{transform:translateY(-6px);border-color:rgba(154,230,0,.4);}
+@media (max-width:860px){.ecosystem-grid{grid-template-columns:repeat(3,1fr);}}
+@media (max-width:480px){.ecosystem-grid{grid-template-columns:repeat(2,1fr);gap:12px;} .eco-chip{padding:20px 10px;}}
+
+/* =========================================================
+   ACADEMIES — accordion cards
+   ========================================================= */
+.academy-list{display:flex;flex-direction:column;gap:18px;}
+.academy-card{overflow:hidden;scroll-margin-top:calc(var(--nav-h) + 60px);}
+.academy-header{
+  display:flex;align-items:center;gap:20px;
+  padding:28px 30px;cursor:pointer;
+  transition:background .3s var(--ease);
+}
+.academy-header:hover{background:rgba(120,140,160,.05);}
+.academy-icon{
+  flex-shrink:0;width:54px;height:54px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(21,123,255,.12);color:var(--accent-text);font-size:1.4rem;
+}
+.academy-title{flex:1;min-width:0;}
+.academy-title h3{font-size:1.15rem;font-weight:600;}
+.academy-title p{font-size:.88rem;margin-top:4px;}
+.academy-count{
+  flex-shrink:0;font-size:.76rem;color:var(--gray);
+  padding:5px 12px;border-radius:999px;border:1px solid var(--card-border);
+}
+.academy-chevron{
+  flex-shrink:0;width:34px;height:34px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;color:var(--gray);
+  transition:transform .4s var(--ease), background .3s var(--ease);
+}
+.academy-card.active .academy-chevron{transform:rotate(45deg);background:rgba(154,230,0,.12);color:var(--accent-lime-text);}
+.academy-body{max-height:0;overflow:hidden;transition:max-height .5s var(--ease);}
+.academy-body-inner{padding:0 30px 30px;}
+.chip-list{display:flex;flex-wrap:wrap;gap:10px;padding-top:6px;border-top:1px solid var(--card-border);margin-top:2px;}
+.chip-list li{
+  list-style:none;font-size:.84rem;color:var(--gray);
+  padding:8px 16px 8px 28px;border-radius:999px;
+  background:rgba(120,140,160,.08);position:relative;
+}
+.chip-list li::before{
+  content:'';position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  width:6px;height:6px;border-radius:50%;background:var(--accent-lime-text);
+}
+@media (max-width:640px){
+  .academy-header{padding:22px 20px;gap:14px;}
+  .academy-icon{width:44px;height:44px;font-size:1.15rem;border-radius:12px;}
+  .academy-title h3{font-size:1rem;}
+  .academy-count{display:none;}
+  .academy-body-inner{padding:0 20px 24px;}
+}
+
+/* =========================================================
+   CTA — same pattern as home page
+   ========================================================= */
+.cta-section{text-align:center;position:relative;padding:100px 6vw;}
+.cta-box{max-width:720px;margin:0 auto;padding:60px 40px;background:radial-gradient(circle at 50% 0%, rgba(21,123,255,.16), var(--card-bg) 70%);}
+.cta-box h2{font-size:clamp(1.7rem,3.2vw,2.3rem);margin-bottom:14px;}
+.cta-box p{margin-bottom:34px;font-size:1.05rem;}
+.cta-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+@media (max-width:480px){.cta-box{padding:44px 22px;} .cta-actions{flex-direction:column;align-items:stretch;}}
+
+/* =========================================================
+   FOOTER — identical to home page
+   ========================================================= */
+footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:var(--bg-secondary);transition:background .4s var(--ease);}
+.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.2fr;gap:36px;max-width:1280px;margin:0 auto;padding-bottom:40px;}
+.footer-brand{display:flex;align-items:center;gap:10px;font-weight:700;margin-bottom:14px;}
+.footer-brand img{width:34px;height:34px;border-radius:50%;}
+.footer-col h4{font-size:.92rem;margin-bottom:16px;font-weight:600;}
+.footer-col ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;}
+.footer-col a{font-size:.86rem;color:var(--gray);transition:color .3s var(--ease);}
+.footer-col a:hover{color:var(--accent-text);}
+.footer-map{
+    width:100%;
+    margin-top:15px;
+    border-radius:16px;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow:0 8px 24px rgba(0,0,0,.25);
+}
+.footer-map iframe{
+    display:block;
+    width:100%;
+    height:220px;
+    border:0;
+}
+.newsletter-form{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;}
+.newsletter-form input{flex:1;min-width:180px;padding:10px 12px;border-radius:10px;border:1px solid var(--card-border);background:rgba(120,140,160,.08);color:var(--white);font-family:var(--font-body);}
+.newsletter-form button{flex-shrink:0;}
+.social-row{display:flex;gap:10px;margin-top:16px;}
+.social-row .icon-btn{color:var(--gray);}
+.social-row .icon-btn:hover{color:var(--accent-text);}
+.footer-address{display:flex;align-items:flex-start;gap:8px;font-size:.86rem;}
+.footer-address i{color:var(--accent-text);margin-top:3px;}
+.footer-bottom{max-width:1280px;margin:0 auto;padding-top:24px;border-top:1px solid var(--card-border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:.78rem;color:var(--gray);}
+@media (max-width:768px){
+.footer-map iframe{height:180px;}
+}
+@media (max-width:860px){.footer-grid{grid-template-columns:1fr 1fr;}}
+@media (max-width:480px){.footer-grid{grid-template-columns:1fr;gap:28px;} footer{padding:50px 6vw 24px;}.newsletter-form{flex-direction:column;}
+.newsletter-form input, .newsletter-form button{width:100%;}}
+
+/* Fade-up reveal on scroll */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease), transform .8s var(--ease);}
+.reveal.in-view{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- =========================================================
+     NAVBAR
+     ========================================================= -->
+<nav class="navbar" id="navbar">
+  <a href="../index.html" class="nav-logo">
+    <img src="../assets/images/logo-icon.png" alt="Innovative Explorer Club logo">
+    <span class="logo-text">Innovative Explorer Club</span>
+  </a>
+
+  <ul class="nav-menu" id="navMenu">
+    <li><a href="../index.html">Home</a></li>
+    <li><a href="programs.html" class="active" aria-current="page">Programs</a></li>
+    <li><a href="membership.html">Membership</a></li>
+    <li><a href="events.html">Events</a></li>
+    <li><a href="gallery.html">Gallery</a></li>
+    <li><a href="projects.html">Projects</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="faq.html">FAQ</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+
+  <div class="nav-right">
+    <div class="search-wrap" id="searchWrap">
+      <input type="text" class="search-input" placeholder="Search...">
+      <button class="icon-btn" id="searchToggle" aria-label="Toggle search"><i class="fi-magnifying-glass"></i></button>
+    </div>
+    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="fi-contrast"></i></button>
+    <a href="register.html" class="btn btn-lime nav-join"><span class="full">Join Community</span></a>
+    <button class="icon-btn hamburger" id="hamburger" aria-label="Toggle menu"><i class="fi-list-thumbnails"></i></button>
+  </div>
+</nav>
+
+<!-- =========================================================
+     PAGE HERO
+     ========================================================= -->
+<header class="hero page-hero" id="hero">
+  <canvas id="circuitCanvas"></canvas>
+  <div class="hero-glow" id="heroGlow"></div>
+
+  <div class="breadcrumb">
+    <a href="../index.html">Home</a>
+    <i class="fi-arrow-down" style="transform:rotate(-90deg);"></i>
+    <span class="current">Programs</span>
+  </div>
+
+  <div class="hero-content">
+    <span class="eyebrow">Our Learning Ecosystem</span>
+    <h1>Nine Academies. Endless Possibilities.</h1>
+    <p class="subtitle">From first solder joint to shipped prototype — every track is hands-on, mentor-guided, and built around things you actually make.</p>
+    <div class="hero-actions">
+      <a href="register.html" class="btn btn-lime">Join a Program</a>
+      <a href="#ecosystem" class="btn btn-outline">See What's Inside</a>
+    </div>
+  </div>
+</header>
+
+<!-- =========================================================
+     SUB-NAV
+     ========================================================= -->
+<div class="subnav-wrap">
+  <div class="subnav" id="subnav">
+    <a href="#ecosystem">Ecosystem</a>
+    <a href="#robotics">Robotics</a>
+    <a href="#coding">Coding</a>
+    <a href="#aerospace">Aerospace</a>
+    <a href="#ai">AI</a>
+    <a href="#makerspace">Maker Space</a>
+    <a href="#entrepreneurship">Entrepreneurship</a>
+    <a href="#creative-media">Creative Media</a>
+    <a href="#green-innovation">Green Innovation</a>
+    <a href="#future-skills">Future Skills</a>
+  </div>
+</div>
+
+<!-- =========================================================
+     ECOSYSTEM OVERVIEW
+     ========================================================= -->
+<section class="section" id="ecosystem">
+  <div class="section-head reveal">
+    <span class="eyebrow">The big picture</span>
+    <h2>What members are building right now</h2>
+    <p>A snapshot of the kinds of things that come out of our labs every term.</p>
+  </div>
+  <div class="ecosystem-grid container reveal">
+    <div class="eco-chip glass"><i class="fi-wrench"></i><span>Robots</span></div>
+    <div class="eco-chip glass"><i class="fi-mobile-signal"></i><span>Smart Devices</span></div>
+    <div class="eco-chip glass"><i class="fi-widget"></i><span>Drones</span></div>
+    <div class="eco-chip glass"><i class="fi-record"></i><span>Rockets</span></div>
+    <div class="eco-chip glass"><i class="fi-sound"></i><span>Satellites</span></div>
+    <div class="eco-chip glass"><i class="fi-rss"></i><span>IoT</span></div>
+    <div class="eco-chip glass"><i class="fi-lightbulb"></i><span>AI Projects</span></div>
+    <div class="eco-chip glass"><i class="fi-mobile"></i><span>Mobile Apps</span></div>
+    <div class="eco-chip glass"><i class="fi-web"></i><span>Websites</span></div>
+    <div class="eco-chip glass"><i class="fi-play"></i><span>Games</span></div>
+  </div>
+</section>
+
+<!-- =========================================================
+     ACADEMIES
+     ========================================================= -->
+<section class="section" style="background:var(--bg-secondary);padding-top:80px;">
+  <div class="section-head reveal">
+    <span class="eyebrow">Pick your track</span>
+    <h2>The Academies</h2>
+    <p>Tap any academy to see what you'll actually work on.</p>
+  </div>
+
+  <div class="academy-list container reveal">
+
+    <div class="academy-card glass" id="robotics">
+      <div class="academy-header">
+        <div class="academy-icon"><i class="fi-wrench"></i></div>
+        <div class="academy-title">
+          <h3>Robotics Academy</h3>
+          <p>Design, wire, and program robots — from first build to competition floor.</p>
+        </div>
+        <span class="academy-count">7 tracks</span>
+        <div class="academy-chevron"><i class="fi-plus"></i></div>
+      </div>
+      <div class="academy-body">
+        <div class="academy-body-inner">
+          <ul class="chip-list">
+            <li>FLL</li><li>FTC</li><li>WRO</li><li>RoboCup</li><li>Sumo Robots</li><li>Autonomous Robots</li><li>RC Cars</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="academy-card glass" id="coding">
+      <div class="academy-header">
+        <div class="academy-icon"><i class="fi-html5"></i></div>
+        <div class="academy-title">
+          <h3>Coding Academy</h3>
+          <p>Learn to think in code, from your first script to full applications.</p>
+        </div>
+        <span class="academy-count">7 tracks</span>
+        <div class="academy-chevron"><i class="fi-plus"></i></div>
+      </div>
+      <div class="academy-body">
+        <div class="academy-body-inner">
+          <ul class="chip-list">
+            <li>Scratch</li><li>Python</li><li>JavaScript</li><li>Web Development</li><li>Mobile Apps</li><li>AI Programming</li><li>Robotics Programming</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+<div class="academy-card glass" id="aerospace">
+    <div class="academy-header">
+        <div class="academy-icon">
+            <i class="fi-target-two"></i>
+        </div>
+
+        <div class="academy-title">
+            <h3>Aerospace Engineering Academy</h3>
+            <p>Design, build, and explore the science of flight, space technology, and autonomous aerial systems.</p>
+        </div>
+
+        <span class="academy-count">8 tracks</span>
+
+        <div class="academy-chevron">
+            <i class="fi-plus"></i>
+        </div>
+    </div>
+
+    <div class="academy-body">
+        <div class="academy-body-inner">
+            <ul class="chip-list">
+                <li>Drone Engineering</li>
+                <li>Aerodynamics</li>
+                <li>Rocket Engineering</li>
+                <li>Flight Control Systems</li>
+                <li>Satellite Technology</li>
+                <li>UAV Programming</li>
+                <li>Mission Planning</li>
+                <li>Space Exploration</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+    <div class="academy-card glass" id="ai">
+      <div class="academy-header">
+        <div class="academy-icon"><i class="fi-lightbulb"></i></div>
+        <div class="academy-title">
+          <h3>AI Academy</h3>
+          <p>Explore the systems shaping tomorrow — and learn to build them responsibly.</p>
+        </div>
+        <span class="academy-count">7 tracks</span>
+        <div class="academy-chevron"><i class="fi-plus"></i></div>
+      </div>
+      <div class="academy-body">
+        <div class="academy-body-inner">
+          <ul class="chip-list">
+            <li>Artificial Intelligence</li><li>Machine Learning</li><li>Computer Vision</li><li>Prompt Engineering</li><li>AI Ethics</li><li>AI for Education</li><li>AI for Healthcare</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="academy-card glass" id="makerspace">
+      <div class="academy-header">
+        <div class="academy-icon"><i class="fi-widget"></i></div>
+        <div class="academy-title">
+          <h3>Maker Space</h3>
+          <p>Hands-on fabrication — where ideas become physical prototypes.</p>
+        </div>
+        <span class="academy-count">8 tracks</span>
+        <div class="academy-chevron"><i class="fi-plus"></i></div>
+      </div>
+      <div class="academy-body">
+        <div class="academy-body-inner">
+          <ul class="chip-list">
+            <li>3D Printing</li><li>CAD</li><li>Electronics</li><li>PCB</li><li>Arduino</li><li>Raspberry Pi</li><li>Laser Cutting</li><li>Prototyping</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="academy-card glass" id="entrepreneurship">
+      <div class="academy-header">
+        <div class="academy-icon"><i class="fi-graph-trend"></i></div>
+        <div class="academy-title">
+          <h3>Entrepreneurship Hub</h3>
+          <p>Turn projects into products, and products into ventures.</p>
+        </div>
+        <span class="academy-count">8 tracks</span>
+        <div class="academy-chevron"><i class="fi-plus"></i></div>
+      </div>
+      <div class="academy-body">
+        <div class="academy-body-inner">
+          <ul class="chip-list">
+            <li>Design Thinking</li><li>Business Model Canvas</li><li>Pitching</li><li>Branding</li><li>Startup Funding</li><li>Marketing</li><li>Product Development</li><li>Intellectual Property</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="academy-card glass" id="creative-media">
+      <div class="academy-header">
+        <div class="academy-icon"><i class="fi-photo"></i></div>
+        <div class="academy-title">
+          <h3>Creative Media Lab</h3>
+          <p>Tell the story of what you build.</p>
+        </div>
+        <span class="academy-count">7 tracks</span>
+        <div class="academy-chevron"><i class="fi-plus"></i></div>
+      </div>
+      <div class="academy-body">
+        <div class="academy-body-inner">
+          <ul class="chip-list">
+            <li>Graphic Design</li><li>Video Editing</li><li>Photography</li><li>Animation</li><li>Motion Graphics</li><li>Podcasting</li><li>Content Creation</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="academy-card glass" id="green-innovation">
+      <div class="academy-header">
+        <div class="academy-icon"><i class="fi-trees"></i></div>
+        <div class="academy-title">
+          <h3>Green Innovation</h3>
+          <p>Technology in service of a sustainable future.</p>
+        </div>
+        <span class="academy-count">5 tracks</span>
+        <div class="academy-chevron"><i class="fi-plus"></i></div>
+      </div>
+      <div class="academy-body">
+        <div class="academy-body-inner">
+          <ul class="chip-list">
+            <li>Solar Energy</li><li>Smart Farming</li><li>Recycling</li><li>Climate Innovation</li><li>Environmental Technology</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="academy-card glass" id="future-skills">
+      <div class="academy-header">
+        <div class="academy-icon"><i class="fi-torso-business"></i></div>
+        <div class="academy-title">
+          <h3>Future Skills Academy</h3>
+          <p>The human skills every innovator needs, regardless of track.</p>
+        </div>
+        <span class="academy-count">6 tracks</span>
+        <div class="academy-chevron"><i class="fi-plus"></i></div>
+      </div>
+      <div class="academy-body">
+        <div class="academy-body-inner">
+          <ul class="chip-list">
+            <li>Leadership</li><li>Communication</li><li>Teamwork</li><li>Public Speaking</li><li>Critical Thinking</li><li>Problem Solving</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- =========================================================
+     CALL TO ACTION
+     ========================================================= -->
+<section class="section cta-section container reveal">
+  <div class="cta-box glass">
+    <span class="eyebrow">Ready when you are</span>
+    <h2>Found a track you want to try?</h2>
+    <p>Membership gives you access to every academy — not just one.</p>
+    <div class="cta-actions">
+      <a href="#" class="btn btn-lime"><i class="fi-telephone"></i> Join WhatsApp</a>
+      <a href="register.html" class="btn btn-outline">Register Interest</a>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     FOOTER
+     ========================================================= -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">
+        <img src="../assets/images/logo-icon.png" alt="Innovative Explorer Club logo">
+        Innovative Explorer Club
+      </div>
+      <p style="font-size:.86rem;">Empowering young minds through technology and innovation.</p>
+      <div class="social-row">
+        <a href="#" class="icon-btn glass" aria-label="Instagram"><i class="fi-social-instagram"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="Facebook"><i class="fi-social-facebook"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="WhatsApp"><i class="fi-telephone"></i></a>
+        <a href="https://maps.app.goo.gl/qfNDcXp3cec9hd2RA" class="icon-btn glass" aria-label="Map"><i class="fi-map"></i></a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="about.html">About</a></li>
+        <li><a href="programs.html">Programs</a></li>
+        <li><a href="events.html">Events</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Address</h4>
+      <div class="footer-address"><i class="fi-map"></i><span>Coderina EdTech Foundation, Department of Science, Technology and Innovation (DSTI)<br>No. 4 Ngozi Okonjo-Iweala Way, Utako District, Abuja 900103, Federal Capital Territory (FCT), Nigeria.</span></div>
+    </div>
+    <div class="footer-map">
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3939.9483490731654!2d7.4445455775889355!3d9.068470288364598!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x104ddf81cc7ccb07%3A0xc50e6cfe01a43fac!2sCoderina%20Education%20and%20Technology%20Foundation!5e0!3m2!1sen!2sng!4v1785316511093!5m2!1sen!2sng" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </div>
+    <div class="footer-col">
+      <h4>Newsletter</h4>
+      <p style="font-size:.84rem;margin-bottom:8px;">Get updates on events and programs.</p>
+      <div class="newsletter-form">
+        <input type="email" placeholder="you@email.com">
+        <button class="btn btn-lime" style="padding:10px 16px;font-size:.78rem;">Join</button>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; <span id="year"></span> Innovative Explorer Club. All rights reserved.</span>
+    <span>Learn. Build. Innovate. Explore.</span>
+  </div>
+</footer>
+
+<script>
+/* =========================================================
+   NAVBAR: scroll blur + mobile menu + search expand
+   ========================================================= */
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 40);
+});
+
+const hamburger = document.getElementById('hamburger');
+const navMenu = document.getElementById('navMenu');
+hamburger.addEventListener('click', () => navMenu.classList.toggle('open'));
+
+const searchWrap = document.getElementById('searchWrap');
+document.getElementById('searchToggle').addEventListener('click', () => {
+  searchWrap.classList.toggle('open');
+  if (searchWrap.classList.contains('open')) searchWrap.querySelector('input').focus();
+});
+
+/* Dark / light toggle */
+const themeToggle = document.getElementById('themeToggle');
+themeToggle.addEventListener('click', () => {
+  document.documentElement.classList.toggle('light-mode');
+  const light = document.documentElement.classList.contains('light-mode');
+  themeToggle.innerHTML = light ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+});
+
+/* =========================================================
+   HERO: mouse-follow glow
+   ========================================================= */
+const hero = document.getElementById('hero');
+const heroGlow = document.getElementById('heroGlow');
+hero.addEventListener('pointermove', (e) => {
+  const rect = hero.getBoundingClientRect();
+  const x = ((e.clientX - rect.left) / rect.width) * 100;
+  const y = ((e.clientY - rect.top) / rect.height) * 100;
+  heroGlow.style.setProperty('--mx', x + '%');
+  heroGlow.style.setProperty('--my', y + '%');
+});
+
+/* =========================================================
+   HERO: animated circuit background (theme-aware)
+   ========================================================= */
+(function circuitBackground(){
+  const canvas = document.getElementById('circuitCanvas');
+  const ctx = canvas.getContext('2d');
+  let w, h, nodes = [];
+  let mouse = { x: -9999, y: -9999 };
+
+  function isLight(){ return document.documentElement.classList.contains('light-mode'); }
+
+  function resize(){
+    w = canvas.width = hero.offsetWidth;
+    h = canvas.height = hero.offsetHeight;
+    const count = Math.floor((w * h) / 24000);
+    nodes = Array.from({ length: count }, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      vx: (Math.random() - 0.5) * 0.15,
+      vy: (Math.random() - 0.5) * 0.15
+    }));
+  }
+
+  hero.addEventListener('pointermove', (e) => {
+    const rect = hero.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+  });
+  hero.addEventListener('pointerleave', () => { mouse.x = -9999; mouse.y = -9999; });
+
+  function step(){
+    ctx.clearRect(0, 0, w, h);
+    const light = isLight();
+    const lineRGB = light ? '21,123,255' : '74,166,255';
+    const nodeRGB = light ? '91,138,0' : '154,230,0';
+    const alphaBoost = light ? 1.5 : 1;
+
+    for (const n of nodes){
+      n.x += n.vx; n.y += n.vy;
+      if (n.x < 0 || n.x > w) n.vx *= -1;
+      if (n.y < 0 || n.y > h) n.vy *= -1;
+    }
+    for (let i = 0; i < nodes.length; i++){
+      for (let j = i + 1; j < nodes.length; j++){
+        const a = nodes[i], b = nodes[j];
+        const dx = a.x - b.x, dy = a.y - b.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120){
+          const distToMouse = Math.min(
+            Math.hypot(a.x - mouse.x, a.y - mouse.y),
+            Math.hypot(b.x - mouse.x, b.y - mouse.y)
+          );
+          const boost = Math.max(0, 1 - distToMouse / 220);
+          ctx.strokeStyle = `rgba(${lineRGB},${(0.06 + boost * 0.35) * (1 - dist / 120) * alphaBoost})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
+      }
+    }
+    for (const n of nodes){
+      const distToMouse = Math.hypot(n.x - mouse.x, n.y - mouse.y);
+      const boost = Math.max(0, 1 - distToMouse / 200);
+      ctx.fillStyle = `rgba(${nodeRGB},${(0.28 + boost * 0.6) * alphaBoost})`;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, 1.6 + boost * 1.8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    requestAnimationFrame(step);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  step();
+})();
+
+/* =========================================================
+   REVEAL ON SCROLL
+   ========================================================= */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('in-view');
+  });
+}, { threshold: 0.15 });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+/* =========================================================
+   ACADEMY ACCORDION
+   ========================================================= */
+document.querySelectorAll('.academy-card').forEach(card => {
+  const header = card.querySelector('.academy-header');
+  const body = card.querySelector('.academy-body');
+  header.addEventListener('click', () => {
+    const opening = !card.classList.contains('active');
+    card.classList.toggle('active');
+    body.style.maxHeight = opening ? body.scrollHeight + 'px' : null;
+  });
+});
+window.addEventListener('resize', () => {
+  document.querySelectorAll('.academy-card.active .academy-body').forEach(body => {
+    body.style.maxHeight = body.scrollHeight + 'px';
+  });
+});
+
+/* =========================================================
+   SUB-NAV: scrollspy
+   ========================================================= */
+(function subnavScrollspy(){
+  const links = Array.from(document.querySelectorAll('#subnav a'));
+  const sections = links
+    .map(a => document.querySelector(a.getAttribute('href')))
+    .filter(Boolean);
+
+  const spyObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const id = '#' + entry.target.id;
+      const link = links.find(a => a.getAttribute('href') === id);
+      if (!link) return;
+      if (entry.isIntersecting) {
+        links.forEach(a => a.classList.remove('active'));
+        link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-40% 0px -50% 0px', threshold: 0 });
+
+  sections.forEach(sec => spyObserver.observe(sec));
+
+  links.forEach(a => {
+    a.addEventListener('click', (e) => {
+      links.forEach(l => l.classList.remove('active'));
+      a.classList.add('active');
+    });
+  });
+})();
+
+document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
