@@ -615,30 +615,6 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       <button type="button" class="btn btn-outline btn-sm select-level">Select This Level</button>
     </div>
 
-    <div class="level-card glass" data-level="University Fellows">
-      <div class="level-icon"><i class="fi-book"></i></div>
-      <h4>University Fellows</h4>
-      <span class="age-range">19 – 25 years</span>
-      <p>Deeper specialization, research projects, and mentorship toward internships and careers.</p>
-      <button type="button" class="btn btn-outline btn-sm select-level">Select This Level</button>
-    </div>
-
-    <div class="level-card glass" data-level="Professional Innovators">
-      <div class="level-icon"><i class="fi-briefcase"></i></div>
-      <h4>Professional Innovators</h4>
-      <span class="age-range">25+ years</span>
-      <p>Build alongside younger Explorers, lead workshops, or pursue your own advanced projects.</p>
-      <button type="button" class="btn btn-outline btn-sm select-level">Select This Level</button>
-    </div>
-
-    <div class="level-card glass" data-level="Mentor Circle">
-      <div class="level-icon"><i class="fi-torso-business"></i></div>
-      <h4>Mentor Circle</h4>
-      <span class="age-range">Industry Experts</span>
-      <p>Guide academies, judge competitions, and shape curriculum as an industry mentor.</p>
-      <button type="button" class="btn btn-outline btn-sm select-level">Select This Level</button>
-    </div>
-
   </div>
 </section>
 
@@ -748,6 +724,11 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
             <input type="text" id="studentName" name="studentName" placeholder="Student's full name">
             <span class="form-error-msg"><i class="fi-alert"></i> Please enter the student's name</span>
           </div>
+          <div class="form-group" id="group-studentEmail">
+            <label for="studentEmail">Student Email</label>
+            <input type="email" id="studentEmail" name="studentEmail" placeholder="you@email.com">
+            <span class="form-error-msg"><i class="fi-alert"></i> Enter a valid email address</span>
+          </div>
           <div class="form-group" id="group-dob">
             <label for="studentDob">Date of Birth</label>
             <input type="date" id="studentDob" name="studentDob">
@@ -778,9 +759,6 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
               <option>Young Explorers</option>
               <option>Junior Innovators</option>
               <option>Teen Innovators</option>
-              <option>University Fellows</option>
-              <option>Professional Innovators</option>
-              <option>Mentor Circle</option>
             </select>
           </div>
         </div>
@@ -800,7 +778,6 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
         </div>
 
         <div class="form-subhead"><i class="fi-torsos-all"></i><h3>Parent / Guardian Information</h3></div>
-        <p style="font-size:.82rem;margin:-10px 0 20px;">Required for members under 18.</p>
 
         <div class="form-row">
           <div class="form-group" id="group-parentName">
@@ -816,7 +793,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
         </div>
 
         <div class="form-group">
-          <label for="parentPhone">Parent / Guardian Phone</label>
+          <label for="parentPhone">Parent / Guardian Phone (WhatsApp)</label>
           <input type="tel" id="parentPhone" name="parentPhone" placeholder="+234...">
         </div>
 
@@ -1150,23 +1127,26 @@ joinForm.addEventListener('submit', (e) => {
   e.preventDefault();
 
   const studentName = document.getElementById('studentName').value.trim();
+  const studentEmail = document.getElementById('studentEmail').value.trim();
   const dob = document.getElementById('studentDob').value;
   const parentName = document.getElementById('parentName').value.trim();
   const parentEmail = document.getElementById('parentEmail').value.trim();
 
   const studentNameValid = studentName.length > 1;
+  const studentEmailValid = isValidEmail(studentEmail);
   const dobValid = dob.length > 0;
   const parentNameValid = parentName.length > 1;
   const parentEmailValid = isValidEmail(parentEmail);
   const consentValid = consentBox.checked;
 
   setError('group-studentName', !studentNameValid);
+  setError('group-studentEmail', !studentEmailValid);
   setError('group-dob', !dobValid);
   setError('group-parentName', !parentNameValid);
   setError('group-parentEmail', !parentEmailValid);
   consentError.style.display = consentValid ? 'none' : 'flex';
 
-  if (!studentNameValid || !dobValid || !parentNameValid || !parentEmailValid || !consentValid) return;
+  if (!studentNameValid || !studentEmailValid || !dobValid || !parentNameValid || !parentEmailValid || !consentValid) return;
 
   submitBtn.classList.add('loading');
   submitBtn.disabled = true;
@@ -1182,7 +1162,7 @@ joinForm.addEventListener('submit', (e) => {
 
 sendAnother.addEventListener('click', () => {
   joinForm.reset();
-  ['group-studentName','group-dob','group-parentName','group-parentEmail'].forEach(id => setError(id, false));
+  ['group-studentName', 'group-studentEmail', 'group-dob','group-parentName','group-parentEmail'].forEach(id => setError(id, false));
   consentError.style.display = 'none';
   document.querySelectorAll('.level-card').forEach(c => c.classList.remove('selected'));
   formSuccess.classList.remove('show');
