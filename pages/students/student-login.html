@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){try{if(localStorage.getItem('iec-theme')==='light'){document.documentElement.classList.add('light-mode');}}catch(e){}})();</script>
+<title>Student Login &amp; Sign Up — Innovative Explorer Club</title>
+<meta name="description" content="Log in to your Innovative Explorer Club student portal, or create your account after your membership is approved.">
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css">
+
+<style>
+:root{
+  --bg-primary:#071420;
+  --bg-secondary:#101B2D;
+  --card-bg:rgba(255,255,255,.08);
+  --card-border:rgba(255,255,255,.10);
+  --blue:#157BFF;
+  --blue-2:#4AA6FF;
+  --lime:#9AE600;
+  --white:#FFFFFF;
+  --gray:#C7CFD9;
+  --danger:#FF4B55;
+  --success:#2BD67B;
+
+  --accent-text:var(--blue-2);
+  --accent-lime-text:var(--lime);
+  --hero-fade:#0d2338;
+  --hero-h1-grad:linear-gradient(180deg,#ffffff 0%, #cfe4ff 55%, var(--blue-2) 100%);
+
+  --radius:16px;
+  --nav-h:76px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --font-body:'Poppins',sans-serif;
+}
+html.light-mode{
+  --bg-primary:#EEF3F8;
+  --bg-secondary:#FFFFFF;
+  --card-bg:rgba(7,20,32,.045);
+  --card-border:rgba(7,20,32,.09);
+  --white:#0B1B29;
+  --gray:#4B5C6B;
+  --accent-text:#0F62D6;
+  --accent-lime-text:#5B8A00;
+  --hero-fade:#dbe9f9;
+  --hero-h1-grad:linear-gradient(180deg,#0B1B29 0%, #163a5c 55%, var(--blue) 100%);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;min-height:100vh;
+  background:var(--bg-primary);
+  color:var(--white);
+  font-family:var(--font-body);
+  font-weight:400;line-height:1.6;
+  overflow-x:hidden;
+  transition:background .4s var(--ease), color .4s var(--ease);
+}
+h1,h2,h3,h4{font-family:var(--font-body);font-weight:700;margin:0;line-height:1.15;letter-spacing:-.01em;}
+p{margin:0;color:var(--gray);}
+a{color:inherit;text-decoration:none;}
+img{max-width:100%;display:block;}
+button{font-family:inherit;cursor:pointer;}
+i[class^="fi-"]{line-height:1;}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important;}
+}
+
+.glass{background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 28px;border-radius:12px;font-weight:600;font-size:.92rem;border:1px solid transparent;transition:transform .35s var(--ease), box-shadow .35s var(--ease), background .35s var(--ease), border-color .35s var(--ease);white-space:nowrap;}
+.btn:focus-visible{outline:2px solid var(--blue-2);outline-offset:3px;}
+.btn-lime{background:var(--lime);color:#08130A;}
+.btn-lime:hover{box-shadow:0 0 28px rgba(154,230,0,.55);transform:translateY(-2px);}
+.btn-lime[disabled]{opacity:.6;cursor:default;transform:none !important;box-shadow:none !important;}
+.btn-block{width:100%;}
+
+/* ===== minimal top bar ===== */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:1000;height:var(--nav-h);
+  display:flex;align-items:center;justify-content:space-between;padding:0 5vw;
+  background:transparent;border-bottom:1px solid transparent;
+  transition:background .4s var(--ease), border-color .4s var(--ease);
+}
+.topbar.scrolled{background:rgba(7,20,32,.65);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--card-border);}
+html.light-mode .topbar.scrolled{background:rgba(238,243,248,.75);}
+.nav-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.02rem;min-width:0;}
+.nav-logo img{width:40px;height:40px;border-radius:50%;flex-shrink:0;}
+.nav-logo .logo-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.icon-btn{background:none;border:none;color:var(--gray);width:38px;height:38px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:background .3s var(--ease), color .3s var(--ease);}
+.icon-btn:hover{background:rgba(120,140,160,.12);color:var(--white);}
+.back-link{display:flex;align-items:center;gap:6px;font-size:.84rem;font-weight:500;color:var(--gray);transition:color .3s var(--ease);}
+.back-link:hover{color:var(--accent-text);}
+@media (max-width:560px){ .back-link span{display:none;} }
+
+/* ===== auth shell ===== */
+.auth-shell{
+  position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:calc(var(--nav-h) + 40px) 6vw 60px;
+  background:radial-gradient(ellipse at 50% -10%, var(--hero-fade) 0%, var(--bg-primary) 60%);
+  transition:background .4s var(--ease);
+}
+.auth-card{width:100%;max-width:480px;padding:16px 40px 40px;position:relative;overflow:hidden;}
+@media (max-width:560px){ .auth-card{padding:14px 22px 30px;} }
+
+.auth-head{text-align:center;margin:24px 0 26px;}
+.auth-head .icon-badge{
+  width:52px;height:52px;border-radius:14px;margin:0 auto 16px;
+  display:flex;align-items:center;justify-content:center;font-size:1.4rem;
+  background:linear-gradient(135deg, var(--lime), #6fa600);color:#08130A;
+}
+.auth-head h1{font-size:1.4rem;}
+.auth-head p{margin-top:8px;font-size:.88rem;}
+
+/* ===== tabs ===== */
+.auth-tabs{
+  display:flex;position:relative;background:rgba(120,140,160,.1);
+  border-radius:12px;padding:4px;margin-top:20px;
+}
+.auth-tab{
+  flex:1;position:relative;z-index:2;border:none;background:transparent;
+  padding:11px 0;font-size:.86rem;font-weight:600;color:var(--gray);
+  border-radius:9px;transition:color .35s var(--ease);
+}
+.auth-tab.active{color:#08130A;}
+.tab-slider{
+  position:absolute;top:4px;left:4px;bottom:4px;width:calc(50% - 4px);
+  background:var(--lime);border-radius:9px;
+  transition:transform .4s var(--ease);z-index:1;
+}
+.auth-tab[data-tab="signup"].active ~ .tab-slider,
+.auth-tabs.signup-active .tab-slider{transform:translateX(100%);}
+
+/* ===== panels ===== */
+.panels{position:relative;margin-top:24px;}
+.panel{
+  transition:opacity .35s var(--ease), transform .35s var(--ease);
+}
+.panel.leave-left{position:absolute;top:0;left:0;right:0;opacity:0;transform:translateX(-16px);pointer-events:none;}
+.panel.leave-right{position:absolute;top:0;left:0;right:0;opacity:0;transform:translateX(16px);pointer-events:none;}
+.panel.enter{opacity:0;transform:translateX(16px);}
+.panel.hidden{display:none;}
+
+.form-group{margin-bottom:18px;position:relative;min-width:0;}
+.form-group label{display:block;font-size:.8rem;font-weight:600;margin-bottom:7px;color:var(--white);}
+.form-group input{
+  width:100%;padding:12px 14px;border-radius:10px;font-size:.92rem;font-family:var(--font-body);
+  background:rgba(120,140,160,.08);border:1px solid var(--card-border);color:var(--white);
+  transition:border-color .3s var(--ease), box-shadow .3s var(--ease);
+}
+.form-group input::placeholder{color:var(--gray);}
+.form-group input:focus{outline:none;border-color:var(--blue-2);box-shadow:0 0 0 3px rgba(74,166,255,.15);}
+.form-group input[readonly]{opacity:.65;cursor:not-allowed;}
+.form-group.error input{border-color:var(--danger);}
+.form-error-msg{display:none;align-items:center;gap:6px;font-size:.76rem;color:var(--danger);margin-top:6px;}
+.form-group.error .form-error-msg{display:flex;}
+.pw-wrap{position:relative;}
+.pw-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--gray);font-size:.92rem;padding:4px;}
+.pw-toggle:hover{color:var(--white);}
+.field-hint{font-size:.74rem;margin-top:6px;}
+.forgot-row{display:flex;justify-content:flex-end;margin:-8px 0 18px;}
+.forgot-row a{font-size:.78rem;font-weight:600;color:var(--accent-text);}
+.forgot-row a:hover{text-decoration:underline;}
+
+.alert{display:none;align-items:flex-start;gap:10px;padding:13px 15px;border-radius:10px;font-size:.83rem;margin-bottom:20px;}
+.alert.show{display:flex;}
+.alert-error{background:rgba(255,75,85,.1);border:1px solid rgba(255,75,85,.3);color:#ffb0b5;}
+html.light-mode .alert-error{color:#a3131f;}
+.alert-success{background:rgba(43,214,123,.1);border:1px solid rgba(43,214,123,.3);color:#8de8b6;}
+html.light-mode .alert-success{color:#1c7a4a;}
+.alert-info{background:rgba(74,166,255,.1);border:1px solid rgba(74,166,255,.3);color:#bcdcff;}
+html.light-mode .alert-info{color:#0f62d6;}
+.alert i{margin-top:2px;flex-shrink:0;}
+
+.submit-btn .spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(8,19,10,.3);border-top-color:#08130A;animation:spin .7s linear infinite;display:none;}
+.submit-btn.loading .spinner{display:inline-block;}
+.submit-btn.loading .btn-label{opacity:.7;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.auth-foot{text-align:center;margin-top:22px;font-size:.8rem;}
+.auth-foot a{color:var(--accent-text);font-weight:600;}
+.auth-foot a:hover{text-decoration:underline;}
+
+.gate-card{text-align:center;padding:10px 4px 4px;}
+.gate-card .icon-badge{width:48px;height:48px;border-radius:12px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;background:rgba(74,166,255,.14);color:var(--accent-text);}
+.gate-card h3{font-size:1.02rem;margin-bottom:10px;}
+.gate-card p{font-size:.86rem;margin-bottom:22px;}
+</style>
+</head>
+<body>
+
+<header class="topbar" id="topbar">
+  <a href="../../index.html" class="nav-logo">
+    <img src="../../assets/images/logo-icon.png" alt="Innovative Explorer Club logo">
+    <span class="logo-text">Innovative Explorer Club</span>
+  </a>
+  <div class="topbar-right">
+    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="fi-contrast"></i></button>
+    <a href="../../index.html" class="back-link"><i class="fi-arrow-left"></i><span>Back to site</span></a>
+  </div>
+</header>
+
+<main class="auth-shell">
+  <div class="auth-card glass">
+    <div class="auth-head">
+      <div class="icon-badge"><i class="fi-torso"></i></div>
+      <h1 id="authTitle">Student Portal</h1>
+      <p id="authSubtitle">Log in to track your attendance, resources and progress.</p>
+    </div>
+
+    <div class="auth-tabs" id="authTabs">
+      <button class="auth-tab active" data-tab="login" id="tabLogin">Log In</button>
+      <button class="auth-tab" data-tab="signup" id="tabSignup">Sign Up</button>
+      <span class="tab-slider"></span>
+    </div>
+
+    <div class="alert alert-error" id="alertBox"><i class="fi-alert"></i><span id="alertText"></span></div>
+
+    <div class="panels">
+      <!-- ============ LOGIN PANEL ============ -->
+      <div class="panel" id="panelLogin">
+        <form id="loginForm" novalidate>
+          <div class="form-group" id="group-loginId">
+            <label for="loginId">Username or Email</label>
+            <input type="text" id="loginId" name="loginId" placeholder="you@email.com" autocomplete="username">
+            <span class="form-error-msg"><i class="fi-alert"></i> Enter your username or email</span>
+          </div>
+          <div class="form-group" id="group-loginPassword">
+            <label for="loginPassword">Password</label>
+            <div class="pw-wrap">
+              <input type="password" id="loginPassword" name="loginPassword" placeholder="••••••••" autocomplete="current-password">
+              <button type="button" class="pw-toggle" data-target="loginPassword" aria-label="Show password"><i class="fi-eye"></i></button>
+            </div>
+            <span class="form-error-msg"><i class="fi-alert"></i> Enter your password</span>
+          </div>
+          <div class="forgot-row"><a href="#" id="forgotLink">Forgot password?</a></div>
+          <button type="submit" class="btn btn-lime btn-block submit-btn" id="loginBtn">
+            <span class="spinner"></span><span class="btn-label">Log In</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- ============ SIGN UP PANEL ============ -->
+      <div class="panel hidden" id="panelSignup">
+
+        <!-- shown only when opened from a valid approved-membership link -->
+        <form id="signupForm" novalidate style="display:none;">
+          <div class="form-group">
+            <label for="suFullName">Full Name</label>
+            <input type="text" id="suFullName" readonly>
+          </div>
+          <div class="form-group">
+            <label for="suEmail">Email</label>
+            <input type="email" id="suEmail" readonly>
+          </div>
+          <div class="form-group" id="group-suUsername">
+            <label for="suUsername">Choose a Username</label>
+            <input type="text" id="suUsername" name="suUsername" placeholder="e.g. jane.doe" autocomplete="off">
+            <span class="form-error-msg"><i class="fi-alert"></i> Choose a username</span>
+          </div>
+          <div class="form-group" id="group-suPassword">
+            <label for="suPassword">Create a Password</label>
+            <div class="pw-wrap">
+              <input type="password" id="suPassword" name="suPassword" placeholder="At least 8 characters" autocomplete="new-password">
+              <button type="button" class="pw-toggle" data-target="suPassword" aria-label="Show password"><i class="fi-eye"></i></button>
+            </div>
+            <span class="form-error-msg"><i class="fi-alert"></i> Password must be at least 8 characters</span>
+          </div>
+          <div class="form-group" id="group-suConfirm">
+            <label for="suConfirm">Confirm Password</label>
+            <div class="pw-wrap">
+              <input type="password" id="suConfirm" name="suConfirm" placeholder="Re-enter password" autocomplete="new-password">
+              <button type="button" class="pw-toggle" data-target="suConfirm" aria-label="Show password"><i class="fi-eye"></i></button>
+            </div>
+            <span class="form-error-msg"><i class="fi-alert"></i> Passwords don't match</span>
+          </div>
+          <button type="submit" class="btn btn-lime btn-block submit-btn" id="signupBtn">
+            <span class="spinner"></span><span class="btn-label">Create Account</span>
+          </button>
+        </form>
+
+        <!-- shown when there is no valid approval link in the URL -->
+        <div class="gate-card" id="signupGate">
+          <div class="icon-badge"><i class="fi-lock"></i></div>
+          <h3>Sign-up needs an approved membership</h3>
+          <p>Accounts are created from the personal link sent after your membership application is approved. If you haven't applied yet, start there.</p>
+          <a href="../membership.html" class="btn btn-lime btn-block"><span>Apply for Membership</span></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-foot" id="authFoot">
+      <p>Staff member? <a href="../admin/admin-login.html">Go to Admin &amp; Teacher login</a></p>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+import {
+  getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  sendPasswordResetEmail, updateProfile
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+import {
+  getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDBRvD87vNdWMS1wvufAd_RNZhuCf2CN4g",
+  authDomain: "the-innovative-explorer-club.firebaseapp.com",
+  projectId: "the-innovative-explorer-club",
+  storageBucket: "the-innovative-explorer-club.firebasestorage.app",
+  messagingSenderId: "421600505981",
+  appId: "1:421600505981:web:6a633ef8b98b4a6f990114"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* ---------- topbar scroll ---------- */
+const topbar = document.getElementById('topbar');
+window.addEventListener('scroll', () => topbar.classList.toggle('scrolled', window.scrollY > 20));
+
+/* ---------- theme (persisted) ---------- */
+const themeToggle = document.getElementById('themeToggle');
+themeToggle.innerHTML = document.documentElement.classList.contains('light-mode') ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+themeToggle.addEventListener('click', () => {
+  document.documentElement.classList.toggle('light-mode');
+  const light = document.documentElement.classList.contains('light-mode');
+  themeToggle.innerHTML = light ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+  try{ localStorage.setItem('iec-theme', light ? 'light' : 'dark'); }catch(e){}
+});
+
+/* ---------- password show/hide ---------- */
+document.querySelectorAll('.pw-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const input = document.getElementById(btn.dataset.target);
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    btn.innerHTML = show ? '<i class="fi-eye-blocked"></i>' : '<i class="fi-eye"></i>';
+  });
+});
+
+/* ================= TAB TRANSITION ================= */
+const tabs = document.getElementById('authTabs');
+const tabLogin = document.getElementById('tabLogin');
+const tabSignup = document.getElementById('tabSignup');
+const panelLogin = document.getElementById('panelLogin');
+const panelSignup = document.getElementById('panelSignup');
+const authTitle = document.getElementById('authTitle');
+const authSubtitle = document.getElementById('authSubtitle');
+const authFoot = document.getElementById('authFoot');
+
+const copy = {
+  login: { title: 'Student Portal', subtitle: "Log in to track your attendance, resources and progress." },
+  signup: { title: 'Create Your Account', subtitle: 'Finish setting up the account for your approved membership.' }
+};
+
+function switchTab(target){
+  if (target === 'signup' && tabSignup.classList.contains('active')) return;
+  if (target === 'login' && tabLogin.classList.contains('active')) return;
+
+  hideAlert();
+  const toSignup = target === 'signup';
+  tabs.classList.toggle('signup-active', toSignup);
+  tabLogin.classList.toggle('active', !toSignup);
+  tabSignup.classList.toggle('active', toSignup);
+
+  const leaving = toSignup ? panelLogin : panelSignup;
+  const entering = toSignup ? panelSignup : panelLogin;
+
+  leaving.classList.add(toSignup ? 'leave-left' : 'leave-right');
+  entering.classList.remove('hidden');
+  entering.classList.add('enter');
+  // force reflow so the transition runs
+  void entering.offsetWidth;
+  requestAnimationFrame(() => {
+    entering.classList.remove('enter');
+    setTimeout(() => {
+      leaving.classList.add('hidden');
+      leaving.classList.remove('leave-left','leave-right');
+    }, 360);
+  });
+
+  authTitle.textContent = copy[target].title;
+  authSubtitle.textContent = copy[target].subtitle;
+  authFoot.style.display = toSignup ? 'none' : 'block';
+}
+tabLogin.addEventListener('click', () => switchTab('login'));
+tabSignup.addEventListener('click', () => switchTab('signup'));
+
+/* ================= helpers ================= */
+function setFieldError(id, show){
+  const group = document.getElementById('group-' + id);
+  if (group) group.classList.toggle('error', show);
+}
+function showAlert(msg, type = 'error'){
+  const box = document.getElementById('alertBox');
+  box.className = 'alert alert-' + type + ' show';
+  document.getElementById('alertText').textContent = msg;
+}
+function hideAlert(){
+  document.getElementById('alertBox').classList.remove('show');
+}
+function setLoading(btnId, isLoading, label){
+  const btn = document.getElementById(btnId);
+  btn.classList.toggle('loading', isLoading);
+  btn.disabled = isLoading;
+  btn.querySelector('.btn-label').textContent = isLoading ? label + '…' : label;
+}
+
+/* ================= LOGIN ================= */
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  hideAlert();
+  setFieldError('loginId', false);
+  setFieldError('loginPassword', false);
+
+  const idValue = document.getElementById('loginId').value.trim();
+  const password = document.getElementById('loginPassword').value;
+
+  let valid = true;
+  if (!idValue){ setFieldError('loginId', true); valid = false; }
+  if (!password){ setFieldError('loginPassword', true); valid = false; }
+  if (!valid) return;
+
+  setLoading('loginBtn', true, 'Log In');
+  try{
+    let email = idValue;
+    if (!idValue.includes('@')){
+      const mapSnap = await getDoc(doc(db, 'usernames', idValue.toLowerCase()));
+      if (!mapSnap.exists()){
+        showAlert('No account found for that username.');
+        setLoading('loginBtn', false, 'Log In');
+        return;
+      }
+      email = mapSnap.data().email;
+    }
+    await signInWithEmailAndPassword(auth, email, password);
+    window.location.href = 'dashboard.html';
+  }catch(err){
+    console.error(err);
+    let msg = 'Something went wrong. Please try again.';
+    if (['auth/invalid-credential','auth/wrong-password','auth/user-not-found'].includes(err.code)){
+      msg = 'Your username/email or password is incorrect.';
+    } else if (err.code === 'auth/too-many-requests'){
+      msg = 'Too many attempts. Please wait a moment and try again.';
+    }
+    showAlert(msg);
+    setLoading('loginBtn', false, 'Log In');
+  }
+});
+
+document.getElementById('forgotLink').addEventListener('click', async (e) => {
+  e.preventDefault();
+  const idValue = document.getElementById('loginId').value.trim();
+  if (!idValue || !idValue.includes('@')){
+    showAlert('Enter your account email above first, then tap "Forgot password?" again.', 'info');
+    return;
+  }
+  try{
+    await sendPasswordResetEmail(auth, idValue);
+    showAlert('Password reset email sent — check your inbox.', 'success');
+  }catch(err){
+    showAlert("We couldn't send a reset email to that address.");
+  }
+});
+
+/* ================= SIGN UP (approved-application gated) ================= */
+const params = new URLSearchParams(window.location.search);
+const appId = params.get('ref');
+let pendingApplication = null;
+
+async function checkApplicationLink(){
+  if (!appId) return;
+  try{
+    const appSnap = await getDoc(doc(db, 'applications', appId));
+    if (!appSnap.exists()) return;
+    const data = appSnap.data();
+    if (data.status !== 'approved' || data.claimed) return;
+
+    pendingApplication = { id: appId, ...data };
+    document.getElementById('suFullName').value = data.studentName || '';
+    document.getElementById('suEmail').value = data.parentEmail || data.email || '';
+    document.getElementById('signupGate').style.display = 'none';
+    document.getElementById('signupForm').style.display = 'block';
+  }catch(err){
+    console.error(err);
+  }
+}
+checkApplicationLink();
+
+// if arriving with a valid ref, default straight to the sign-up tab
+if (appId) switchTab('signup');
+
+document.getElementById('signupForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  hideAlert();
+  ['suUsername','suPassword','suConfirm'].forEach(id => setFieldError(id, false));
+
+  const username = document.getElementById('suUsername').value.trim().toLowerCase();
+  const password = document.getElementById('suPassword').value;
+  const confirm = document.getElementById('suConfirm').value;
+  const fullName = document.getElementById('suFullName').value;
+  const email = document.getElementById('suEmail').value;
+
+  let valid = true;
+  if (!username){ setFieldError('suUsername', true); valid = false; }
+  if (!password || password.length < 8){ setFieldError('suPassword', true); valid = false; }
+  if (confirm !== password){ setFieldError('suConfirm', true); valid = false; }
+  if (!valid || !pendingApplication) return;
+
+  setLoading('signupBtn', true, 'Create Account');
+  try{
+    const takenSnap = await getDoc(doc(db, 'usernames', username));
+    if (takenSnap.exists()){
+      showAlert('That username is already taken — try another.');
+      setFieldError('suUsername', true);
+      setLoading('signupBtn', false, 'Create Account');
+      return;
+    }
+
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(cred.user, { displayName: fullName });
+
+    await setDoc(doc(db, 'students', cred.user.uid), {
+      fullName,
+      username,
+      email,
+      phone: pendingApplication.parentPhone || pendingApplication.phone || '',
+      membershipLevel: pendingApplication.level || pendingApplication.membershipLevel || '',
+      applicationId: pendingApplication.id,
+      dateJoined: serverTimestamp()
+    });
+
+    await setDoc(doc(db, 'usernames', username), { email, uid: cred.user.uid });
+    await updateDoc(doc(db, 'applications', pendingApplication.id), { claimed: true, uid: cred.user.uid });
+
+    window.location.href = 'dashboard.html';
+  }catch(err){
+    console.error(err);
+    let msg = 'Something went wrong creating your account.';
+    if (err.code === 'auth/email-already-in-use'){
+      msg = 'An account already exists for this email — try logging in instead.';
+    }
+    showAlert(msg);
+    setLoading('signupBtn', false, 'Create Account');
+  }
+});
+</script>
+</body>
+</html>
