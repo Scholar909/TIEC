@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){try{if(localStorage.getItem('iec-theme')==='light'){document.documentElement.classList.add('light-mode');}}catch(e){}})();</script>
+<title>Dashboard — TIEC Admin</title>
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css">
+<link rel="stylesheet" href="../../css/admin/dashboard.css">
+</head>
+<body>
+
+<!-- ============ SIDEBAR ============ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-top">
+    <a href="dashboard.html" class="sb-logo">
+      <img src="../../assets/images/logo-icon.png" alt="Innovative Explorer Club logo">
+      <span>TIEC Admin</span>
+    </a>
+    <button class="icon-btn sb-close" id="sbClose" aria-label="Close menu"><i class="fi-x"></i></button>
+  </div>
+
+  <nav class="sb-nav">
+    <a href="dashboard.html" class="sb-link active"><i class="fi-home"></i><span>Dashboard</span></a>
+    <a href="membership-applications.html" class="sb-link"><i class="fi-clipboard-notes"></i><span>Membership Applications</span><span class="sb-badge" id="badgeApplications"></span></a>
+    <a href="students.html" class="sb-link"><i class="fi-torsos-all"></i><span>Students</span></a>
+    <a href="attendance.html" class="sb-link"><i class="fi-check"></i><span>Attendance</span></a>
+    <a href="achievements.html" class="sb-link"><i class="fi-trophy"></i><span>Achievements</span></a>
+    <a href="resources.html" class="sb-link"><i class="fi-page-multiple"></i><span>Resources</span></a>
+    <a href="lms.html" class="sb-link"><i class="fi-book-bookmark"></i><span>LMS</span></a>
+    <a href="calendar-events.html" class="sb-link"><i class="fi-calendar"></i><span>Calendar &amp; Events</span></a>
+    <a href="announcements.html" class="sb-link"><i class="fi-megaphone"></i><span>Announcements</span></a>
+    <a href="messages.html" class="sb-link"><i class="fi-mail"></i><span>Messages</span></a>
+    <a href="notifications.html" class="sb-link"><i class="fi-alert"></i><span>Notifications</span><span class="sb-badge" id="badgeNotifications"></span></a>
+    <a href="settings.html" class="sb-link"><i class="fi-widget"></i><span>Settings</span></a>
+  </nav>
+
+  <div class="sb-operator">
+    <div class="op-avatar" id="opAvatar">--</div>
+    <div class="op-info">
+      <span class="op-name" id="opName">Loading…</span>
+      <span class="op-role" id="opRole">—</span>
+    </div>
+    <button class="icon-btn" id="signOutBtn" aria-label="Sign out"><i class="fi-power"></i></button>
+  </div>
+</aside>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ============ MAIN ============ -->
+<div class="main-wrap">
+  <header class="topbar">
+    <button class="icon-btn sb-open" id="sbOpen" aria-label="Open menu"><i class="fi-list-thumbnails"></i></button>
+    <div class="topbar-title">
+      <h1>Dashboard</h1>
+      <p id="todayDate">—</p>
+    </div>
+    <div class="topbar-actions">
+      <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="fi-contrast"></i></button>
+      <a href="notifications.html" class="icon-btn bell-btn" aria-label="Notifications">
+        <i class="fi-alert"></i><span class="bell-dot" id="bellDot" hidden></span>
+      </a>
+    </div>
+  </header>
+
+  <main class="content">
+    <section class="welcome-banner glass">
+      <div>
+        <p class="eyebrow">Welcome back</p>
+        <h2 id="welcomeName">—</h2>
+        <p id="welcomeSub">Here's what's happening at the club today.</p>
+      </div>
+      <div class="quick-actions">
+        <a href="membership-applications.html" class="btn btn-outline btn-sm"><i class="fi-clipboard-notes"></i><span>Review Applications</span></a>
+        <a href="calendar-events.html" class="btn btn-outline btn-sm"><i class="fi-plus"></i><span>Add Event</span></a>
+        <a href="announcements.html" class="btn btn-lime btn-sm"><i class="fi-megaphone"></i><span>Post Announcement</span></a>
+      </div>
+    </section>
+
+    <section class="stats-grid">
+      <a href="students.html" class="stat-card glass">
+        <div class="stat-icon icon-blue"><i class="fi-torsos-all"></i></div>
+        <div class="stat-body">
+          <span class="stat-value" id="statStudents">—</span>
+          <span class="stat-label">Total Students</span>
+        </div>
+      </a>
+      <a href="membership-applications.html" class="stat-card glass">
+        <div class="stat-icon icon-lime"><i class="fi-clipboard-notes"></i></div>
+        <div class="stat-body">
+          <span class="stat-value" id="statApplications">—</span>
+          <span class="stat-label">Pending Applications</span>
+        </div>
+      </a>
+      <a href="attendance.html" class="stat-card glass">
+        <div class="stat-icon icon-blue"><i class="fi-check"></i></div>
+        <div class="stat-body">
+          <span class="stat-value" id="statAttendance">—</span>
+          <span class="stat-label">Attendance Today</span>
+        </div>
+      </a>
+      <a href="calendar-events.html" class="stat-card glass">
+        <div class="stat-icon icon-lime"><i class="fi-calendar"></i></div>
+        <div class="stat-body">
+          <span class="stat-value" id="statEvents">—</span>
+          <span class="stat-label">Upcoming Events</span>
+        </div>
+        <span class="stat-sub" id="statEventsSub">—</span>
+      </a>
+    </section>
+
+    <section class="panel-grid">
+      <div class="panel-card glass">
+        <div class="panel-head">
+          <h3>Recent Notifications</h3>
+          <a href="notifications.html" class="panel-link">View all <i class="fi-arrow-right"></i></a>
+        </div>
+        <ul class="notif-list" id="notifList">
+          <li class="notif-empty">Loading notifications…</li>
+        </ul>
+      </div>
+
+      <div class="panel-card glass">
+        <div class="panel-head">
+          <h3>Next Up</h3>
+          <a href="calendar-events.html" class="panel-link">Calendar <i class="fi-arrow-right"></i></a>
+        </div>
+        <ul class="event-list" id="eventList">
+          <li class="notif-empty">Loading events…</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="modal-overlay" id="signOutModal">
+  <div class="modal-card glass">
+    <div class="icon-badge"><i class="fi-power"></i></div>
+    <h3>Sign out?</h3>
+    <p>You'll need to sign back in with the club admin credentials and your own login to make changes again.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="cancelSignOut">Cancel</button>
+      <button class="btn btn-lime" id="confirmSignOut">Sign Out</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="../../js/admin/dashboard.js"></script>
+</body>
+</html>

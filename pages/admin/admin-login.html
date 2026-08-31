@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){try{if(localStorage.getItem('iec-theme')==='light'){document.documentElement.classList.add('light-mode');}}catch(e){}})();</script>
+<title>Admin &amp; Teacher Login — Innovative Explorer Club</title>
+<meta name="description" content="Shared staff login for Innovative Explorer Club administrators and teachers.">
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css">
+
+<style>
+:root{
+  --bg-primary:#071420;
+  --bg-secondary:#101B2D;
+  --card-bg:rgba(255,255,255,.08);
+  --card-border:rgba(255,255,255,.10);
+  --blue:#157BFF;
+  --blue-2:#4AA6FF;
+  --lime:#9AE600;
+  --white:#FFFFFF;
+  --gray:#C7CFD9;
+  --danger:#FF4B55;
+  --success:#2BD67B;
+
+  --accent-text:var(--blue-2);
+  --accent-lime-text:var(--lime);
+  --hero-fade:#0d2338;
+  --hero-h1-grad:linear-gradient(180deg,#ffffff 0%, #cfe4ff 55%, var(--blue-2) 100%);
+
+  --radius:16px;
+  --nav-h:76px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+  --font-body:'Poppins',sans-serif;
+}
+html.light-mode{
+  --bg-primary:#EEF3F8;
+  --bg-secondary:#FFFFFF;
+  --card-bg:rgba(7,20,32,.045);
+  --card-border:rgba(7,20,32,.09);
+  --white:#0B1B29;
+  --gray:#4B5C6B;
+  --accent-text:#0F62D6;
+  --accent-lime-text:#5B8A00;
+  --hero-fade:#dbe9f9;
+  --hero-h1-grad:linear-gradient(180deg,#0B1B29 0%, #163a5c 55%, var(--blue) 100%);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;min-height:100vh;
+  background:var(--bg-primary);
+  color:var(--white);
+  font-family:var(--font-body);
+  font-weight:400;line-height:1.6;
+  overflow-x:hidden;
+  transition:background .4s var(--ease), color .4s var(--ease);
+}
+h1,h2,h3,h4{font-family:var(--font-body);font-weight:700;margin:0;line-height:1.15;letter-spacing:-.01em;}
+p{margin:0;color:var(--gray);}
+a{color:inherit;text-decoration:none;}
+img{max-width:100%;display:block;}
+button{font-family:inherit;cursor:pointer;}
+i[class^="fi-"]{line-height:1;}
+.eyebrow{font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-text);}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important;}
+}
+
+.glass{background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 28px;border-radius:12px;font-weight:600;font-size:.92rem;border:1px solid transparent;transition:transform .35s var(--ease), box-shadow .35s var(--ease), background .35s var(--ease), border-color .35s var(--ease);white-space:nowrap;}
+.btn:focus-visible{outline:2px solid var(--blue-2);outline-offset:3px;}
+.btn-lime{background:var(--lime);color:#08130A;}
+.btn-lime:hover{box-shadow:0 0 28px rgba(154,230,0,.55);transform:translateY(-2px);}
+.btn-lime[disabled]{opacity:.6;cursor:default;transform:none !important;box-shadow:none !important;}
+.btn-ghost{background:transparent;color:var(--white);border-color:var(--card-border);}
+.btn-ghost:hover{background:rgba(120,140,160,.08);}
+.btn-block{width:100%;}
+
+/* ===== minimal top bar ===== */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:1000;height:var(--nav-h);
+  display:flex;align-items:center;justify-content:space-between;padding:0 5vw;
+  background:transparent;border-bottom:1px solid transparent;
+  transition:background .4s var(--ease), border-color .4s var(--ease);
+}
+.topbar.scrolled{background:rgba(7,20,32,.65);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--card-border);}
+html.light-mode .topbar.scrolled{background:rgba(238,243,248,.75);}
+.nav-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.02rem;min-width:0;}
+.nav-logo img{width:40px;height:40px;border-radius:50%;flex-shrink:0;}
+.nav-logo .logo-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.icon-btn{background:none;border:none;color:var(--gray);width:38px;height:38px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:background .3s var(--ease), color .3s var(--ease);}
+.icon-btn:hover{background:rgba(120,140,160,.12);color:var(--white);}
+.back-link{display:flex;align-items:center;gap:6px;font-size:.84rem;font-weight:500;color:var(--gray);transition:color .3s var(--ease);}
+.back-link:hover{color:var(--accent-text);}
+@media (max-width:560px){ .back-link span{display:none;} }
+
+/* ===== auth shell ===== */
+.auth-shell{
+  position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:calc(var(--nav-h) + 40px) 6vw 60px;
+  background:radial-gradient(ellipse at 50% -10%, var(--hero-fade) 0%, var(--bg-primary) 60%);
+  transition:background .4s var(--ease);
+}
+.auth-card{width:100%;max-width:520px;padding:44px 40px 40px;position:relative;}
+@media (max-width:560px){ .auth-card{padding:34px 24px 30px;} }
+
+.auth-head{text-align:center;margin-bottom:30px;}
+.auth-head .icon-badge{
+  width:52px;height:52px;border-radius:14px;margin:0 auto 18px;
+  display:flex;align-items:center;justify-content:center;font-size:1.4rem;
+  background:linear-gradient(135deg, var(--blue), var(--blue-2));color:#fff;
+}
+.auth-head h1{font-size:1.5rem;}
+.auth-head p{margin-top:8px;font-size:.9rem;}
+
+.cred-group{margin-bottom:8px;}
+.cred-label-row{display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+.cred-label-row .num{
+  width:22px;height:22px;border-radius:50%;flex-shrink:0;
+  background:rgba(74,166,255,.15);color:var(--accent-text);
+  display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;
+}
+.cred-label-row h3{font-size:.86rem;font-weight:600;color:var(--white);}
+.cred-label-row .hint{font-size:.74rem;color:var(--gray);margin-left:auto;}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media (max-width:480px){ .form-row{grid-template-columns:1fr;} }
+.form-group{margin-bottom:18px;position:relative;min-width:0;}
+.form-group label{display:block;font-size:.8rem;font-weight:600;margin-bottom:7px;color:var(--white);}
+.form-group input{
+  width:100%;padding:12px 14px;border-radius:10px;font-size:.92rem;font-family:var(--font-body);
+  background:rgba(120,140,160,.08);border:1px solid var(--card-border);color:var(--white);
+  transition:border-color .3s var(--ease), box-shadow .3s var(--ease);
+}
+.form-group input::placeholder{color:var(--gray);}
+.form-group input:focus{outline:none;border-color:var(--blue-2);box-shadow:0 0 0 3px rgba(74,166,255,.15);}
+.form-group.error input{border-color:var(--danger);}
+.form-error-msg{display:none;align-items:center;gap:6px;font-size:.76rem;color:var(--danger);margin-top:6px;}
+.form-group.error .form-error-msg{display:flex;}
+.pw-wrap{position:relative;}
+.pw-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--gray);font-size:.92rem;padding:4px;}
+.pw-toggle:hover{color:var(--white);}
+
+.section-divider{height:1px;background:var(--card-border);margin:22px 0 22px;}
+
+.alert{display:none;align-items:flex-start;gap:10px;padding:13px 15px;border-radius:10px;font-size:.83rem;margin-bottom:20px;}
+.alert.show{display:flex;}
+.alert-error{background:rgba(255,75,85,.1);border:1px solid rgba(255,75,85,.3);color:#ffb0b5;}
+html.light-mode .alert-error{color:#a3131f;}
+.alert i{margin-top:2px;flex-shrink:0;}
+
+.submit-btn{margin-top:6px;}
+.submit-btn .spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(8,19,10,.3);border-top-color:#08130A;animation:spin .7s linear infinite;display:none;}
+.submit-btn.loading .spinner{display:inline-block;}
+.submit-btn.loading .btn-label{opacity:.7;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.auth-foot{text-align:center;margin-top:26px;font-size:.8rem;}
+.auth-foot a{color:var(--accent-text);font-weight:600;}
+.auth-foot a:hover{text-decoration:underline;}
+
+/* confirm modal */
+.modal-overlay{
+  position:fixed;inset:0;z-index:2000;display:none;align-items:center;justify-content:center;
+  padding:24px;background:rgba(2,8,14,.6);backdrop-filter:blur(4px);
+}
+.modal-overlay.show{display:flex;}
+.modal-card{width:100%;max-width:400px;padding:30px 28px;text-align:center;}
+.modal-card .icon-badge{width:48px;height:48px;border-radius:12px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;background:rgba(255,75,85,.14);color:var(--danger);}
+.modal-card h3{font-size:1.05rem;margin-bottom:10px;}
+.modal-card p{font-size:.86rem;}
+.modal-card p strong{color:var(--white);}
+.modal-actions{display:flex;gap:12px;margin-top:24px;}
+.modal-actions .btn{flex:1;}
+</style>
+</head>
+<body>
+
+<header class="topbar" id="topbar">
+  <a href="../../index.html" class="nav-logo">
+    <img src="../../assets/images/logo-icon.png" alt="Innovative Explorer Club logo">
+    <span class="logo-text">Innovative Explorer Club</span>
+  </a>
+  <div class="topbar-right">
+    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="fi-contrast"></i></button>
+    <a href="../../index.html" class="back-link"><i class="fi-arrow-left"></i><span>Back to site</span></a>
+  </div>
+</header>
+
+<main class="auth-shell">
+  <div class="auth-card glass">
+    <div class="auth-head">
+      <div class="icon-badge"><i class="fi-torso-business"></i></div>
+      <h1>Admin &amp; Teacher Access</h1>
+      <p>This is a shared staff platform. Enter the club's admin credentials plus your own personal login to continue — changes you make are recorded under your name.</p>
+    </div>
+
+    <div class="alert alert-error" id="loginAlert"><i class="fi-alert"></i><span id="loginAlertText"></span></div>
+
+    <form id="adminLoginForm" novalidate>
+      <div class="cred-group">
+        <div class="cred-label-row">
+          <span class="num">1</span>
+          <h3>Club Admin Credentials</h3>
+          <span class="hint">Shared</span>
+        </div>
+        <div class="form-group" id="group-adminEmail">
+          <label for="adminEmail">Admin Email</label>
+          <input type="email" id="adminEmail" name="adminEmail" placeholder="admin@innovativeexplorerclub.org" autocomplete="username">
+          <span class="form-error-msg"><i class="fi-alert"></i> Enter the club admin email</span>
+        </div>
+        <div class="form-group" id="group-adminPassword">
+          <label for="adminPassword">Admin Password</label>
+          <div class="pw-wrap">
+            <input type="password" id="adminPassword" name="adminPassword" placeholder="••••••••" autocomplete="current-password">
+            <button type="button" class="pw-toggle" data-target="adminPassword" aria-label="Show password"><i class="fi-eye"></i></button>
+          </div>
+          <span class="form-error-msg"><i class="fi-alert"></i> Enter the club admin password</span>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="cred-group">
+        <div class="cred-label-row">
+          <span class="num">2</span>
+          <h3>Your Personal Login</h3>
+          <span class="hint">Identifies you</span>
+        </div>
+        <div class="form-group" id="group-username">
+          <label for="username">Your Username</label>
+          <input type="text" id="username" name="username" placeholder="e.g. jane.doe" autocomplete="off">
+          <span class="form-error-msg"><i class="fi-alert"></i> Enter your username</span>
+        </div>
+        <div class="form-group" id="group-userPassword">
+          <label for="userPassword">Your Password</label>
+          <div class="pw-wrap">
+            <input type="password" id="userPassword" name="userPassword" placeholder="••••••••" autocomplete="off">
+            <button type="button" class="pw-toggle" data-target="userPassword" aria-label="Show password"><i class="fi-eye"></i></button>
+          </div>
+          <span class="form-error-msg"><i class="fi-alert"></i> Enter your password</span>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-lime btn-block submit-btn" id="submitBtn">
+        <span class="spinner"></span><span class="btn-label">Sign In</span>
+      </button>
+    </form>
+
+    <div class="auth-foot">
+      <p>Need staff access? Ask the club admin to add your username in Settings.</p>
+    </div>
+  </div>
+</main>
+
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-card glass">
+    <div class="icon-badge"><i class="fi-alert"></i></div>
+    <h3>Someone else is signed in</h3>
+    <p><strong id="modalCurrentUser">—</strong> is currently active on this shared platform. Signing in will log them out.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="modalCancel">Cancel</button>
+      <button class="btn btn-lime" id="modalConfirm">Log them out &amp; continue</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+import {
+  getAuth, signInWithEmailAndPassword, signOut
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+import {
+  getFirestore, doc, getDoc, setDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDBRvD87vNdWMS1wvufAd_RNZhuCf2CN4g",
+  authDomain: "the-innovative-explorer-club.firebaseapp.com",
+  projectId: "the-innovative-explorer-club",
+  storageBucket: "the-innovative-explorer-club.firebasestorage.app",
+  messagingSenderId: "421600505981",
+  appId: "1:421600505981:web:6a633ef8b98b4a6f990114"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* ---------- topbar scroll ---------- */
+const topbar = document.getElementById('topbar');
+window.addEventListener('scroll', () => topbar.classList.toggle('scrolled', window.scrollY > 20));
+
+/* ---------- theme (persisted) ---------- */
+const themeToggle = document.getElementById('themeToggle');
+themeToggle.innerHTML = document.documentElement.classList.contains('light-mode') ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+themeToggle.addEventListener('click', () => {
+  document.documentElement.classList.toggle('light-mode');
+  const light = document.documentElement.classList.contains('light-mode');
+  themeToggle.innerHTML = light ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+  try{ localStorage.setItem('iec-theme', light ? 'light' : 'dark'); }catch(e){}
+});
+
+/* ---------- password show/hide ---------- */
+document.querySelectorAll('.pw-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const input = document.getElementById(btn.dataset.target);
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    btn.innerHTML = show ? '<i class="fi-eye-blocked"></i>' : '<i class="fi-eye"></i>';
+  });
+});
+
+/* ---------- helpers ---------- */
+function setFieldError(id, show){
+  const group = document.getElementById('group-' + id);
+  if (group) group.classList.toggle('error', show);
+}
+function clearAllErrors(){
+  ['adminEmail','adminPassword','username','userPassword'].forEach(id => setFieldError(id, false));
+}
+function showAlert(msg){
+  const alertEl = document.getElementById('loginAlert');
+  document.getElementById('loginAlertText').textContent = msg;
+  alertEl.classList.add('show');
+}
+function hideAlert(){
+  document.getElementById('loginAlert').classList.remove('show');
+}
+function setLoading(isLoading){
+  const btn = document.getElementById('submitBtn');
+  btn.classList.toggle('loading', isLoading);
+  btn.disabled = isLoading;
+  btn.querySelector('.btn-label').textContent = isLoading ? 'Signing In…' : 'Sign In';
+}
+
+/* ---------- confirm-logout modal ---------- */
+const confirmModal = document.getElementById('confirmModal');
+function askToTakeOverSession(currentFullName){
+  return new Promise(resolve => {
+    document.getElementById('modalCurrentUser').textContent = currentFullName;
+    confirmModal.classList.add('show');
+    const confirmBtn = document.getElementById('modalConfirm');
+    const cancelBtn = document.getElementById('modalCancel');
+    function cleanup(result){
+      confirmModal.classList.remove('show');
+      confirmBtn.removeEventListener('click', onConfirm);
+      cancelBtn.removeEventListener('click', onCancel);
+      resolve(result);
+    }
+    function onConfirm(){ cleanup(true); }
+    function onCancel(){ cleanup(false); }
+    confirmBtn.addEventListener('click', onConfirm);
+    cancelBtn.addEventListener('click', onCancel);
+  });
+}
+
+/* ---------- login flow ---------- */
+const form = document.getElementById('adminLoginForm');
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  hideAlert();
+  clearAllErrors();
+
+  const adminEmail = document.getElementById('adminEmail').value.trim();
+  const adminPassword = document.getElementById('adminPassword').value;
+  const username = document.getElementById('username').value.trim().toLowerCase();
+  const userPassword = document.getElementById('userPassword').value;
+
+  let valid = true;
+  if (!adminEmail){ setFieldError('adminEmail', true); valid = false; }
+  if (!adminPassword){ setFieldError('adminPassword', true); valid = false; }
+  if (!username){ setFieldError('username', true); valid = false; }
+  if (!userPassword){ setFieldError('userPassword', true); valid = false; }
+  if (!valid) return;
+
+  setLoading(true);
+  try{
+    // Step 1: shared admin credential unlocks a Firestore-authorized session
+    await signInWithEmailAndPassword(auth, adminEmail, adminPassword);
+
+    // Step 2: look up the person's own operator record
+    const opSnap = await getDoc(doc(db, 'operators', username));
+    if (!opSnap.exists()){
+      await signOut(auth);
+      showAlert("We couldn't find that username. Check with the club admin if you don't have one yet.");
+      setLoading(false);
+      return;
+    }
+    const operator = opSnap.data();
+    if (operator.password !== userPassword){
+      await signOut(auth);
+      showAlert('Your username or password is incorrect.');
+      setLoading(false);
+      return;
+    }
+
+    // Step 3: check if someone else is currently the active operator
+    const sessionRef = doc(db, 'system', 'activeSession');
+    const sessionSnap = await getDoc(sessionRef);
+    if (sessionSnap.exists() && sessionSnap.data().username && sessionSnap.data().username !== username){
+      const proceed = await askToTakeOverSession(sessionSnap.data().fullName || sessionSnap.data().username);
+      if (!proceed){
+        await signOut(auth);
+        setLoading(false);
+        return;
+      }
+    }
+
+    // Step 4: take over the shared session
+    await setDoc(sessionRef, {
+      username,
+      fullName: operator.fullName || username,
+      role: operator.role || 'teacher',
+      loginAt: serverTimestamp()
+    });
+
+    sessionStorage.setItem('iec_operator', JSON.stringify({
+      username, fullName: operator.fullName || username, role: operator.role || 'teacher'
+    }));
+
+    window.location.href = 'dashboard.html';
+  }catch(err){
+    console.error(err);
+    let msg = 'Something went wrong. Please try again.';
+    if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found'){
+      msg = 'The admin email or password is incorrect.';
+    } else if (err.code === 'auth/too-many-requests'){
+      msg = 'Too many attempts. Please wait a moment and try again.';
+    }
+    showAlert(msg);
+    setLoading(false);
+  }
+});
+</script>
+</body>
+</html>
