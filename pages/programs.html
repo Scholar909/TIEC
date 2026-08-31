@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){try{if(localStorage.getItem('iec-theme')==='light'){document.documentElement.classList.add('light-mode');}}catch(e){}})();</script>
+
 <title>Programs — Innovative Explorer Club</title>
 <meta name="description" content="Explore the Innovative Explorer Club's learning ecosystem — Robotics, Coding, Aerospace Engineering, AI, Maker Space, Entrepreneurship, Creative Media, Green Innovation, Reverse Engineering, and Future Skills academies.">
 
@@ -789,12 +791,14 @@ document.getElementById('searchToggle').addEventListener('click', () => {
   if (searchWrap.classList.contains('open')) searchWrap.querySelector('input').focus();
 });
 
-/* Dark / light toggle */
+/* Dark / light toggle (persisted) */
 const themeToggle = document.getElementById('themeToggle');
+themeToggle.innerHTML = document.documentElement.classList.contains('light-mode') ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
 themeToggle.addEventListener('click', () => {
   document.documentElement.classList.toggle('light-mode');
   const light = document.documentElement.classList.contains('light-mode');
   themeToggle.innerHTML = light ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+  try{ localStorage.setItem('iec-theme', light ? 'light' : 'dark'); }catch(e){}
 });
 
 /* =========================================================
