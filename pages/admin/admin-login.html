@@ -20,7 +20,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css">
+<!-- Boxicons Free -->
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<!-- Basic Icons -->
+<link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
+<!-- Filled Icons -->
+<link href="https://cdn.boxicons.com/3.0.8/fonts/filled/boxicons-filled.min.css" rel="stylesheet">
+<!-- Brand Icons -->
+<link href="https://cdn.boxicons.com/3.0.8/fonts/brands/boxicons-brands.min.css" rel="stylesheet">
 
 <style>
 :root{
@@ -74,7 +81,7 @@ p{margin:0;color:var(--gray);}
 a{color:inherit;text-decoration:none;}
 img{max-width:100%;display:block;}
 button{font-family:inherit;cursor:pointer;}
-i[class^="fi-"]{line-height:1;}
+i[class^="bx-"]{line-height:1;}
 .eyebrow{font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-text);}
 
 @media (prefers-reduced-motion: reduce){
@@ -199,20 +206,20 @@ html.light-mode .alert-error{color:#a3131f;}
     <span class="logo-text">Innovative Explorer Club</span>
   </a>
   <div class="topbar-right">
-    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="fi-contrast"></i></button>
-    <a href="../../index.html" class="back-link"><i class="fi-arrow-left"></i><span>Back to site</span></a>
+    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class='bx bx-moon'></i></button>
+    <a href="../../index.html" class="back-link"><i class='bx bx-arrow-back'></i><span>Back to site</span></a>
   </div>
 </header>
 
 <main class="auth-shell">
   <div class="auth-card glass">
     <div class="auth-head">
-      <div class="icon-badge"><i class="fi-torso-business"></i></div>
+      <div class="icon-badge"><i class='bx bx-user'></i></div>
       <h1>Admin &amp; Teacher Access</h1>
       <p>This is a shared staff platform. Enter the club's admin credentials plus your own personal login to continue — changes you make are recorded under your name.</p>
     </div>
 
-    <div class="alert alert-error" id="loginAlert"><i class="fi-alert"></i><span id="loginAlertText"></span></div>
+    <div class="alert alert-error" id="loginAlert"><i class='bx bx-error-circle'></i><span id="loginAlertText"></span></div>
 
     <form id="adminLoginForm" novalidate>
       <div class="cred-group">
@@ -224,15 +231,15 @@ html.light-mode .alert-error{color:#a3131f;}
         <div class="form-group" id="group-adminEmail">
           <label for="adminEmail">Admin Email</label>
           <input type="email" id="adminEmail" name="adminEmail" placeholder="admin@innovativeexplorerclub.org" autocomplete="username">
-          <span class="form-error-msg"><i class="fi-alert"></i> Enter the club admin email</span>
+          <span class="form-error-msg"><i class='bx bx-error-circle'></i> Enter the club admin email</span>
         </div>
         <div class="form-group" id="group-adminPassword">
           <label for="adminPassword">Admin Password</label>
           <div class="pw-wrap">
             <input type="password" id="adminPassword" name="adminPassword" placeholder="••••••••" autocomplete="current-password">
-            <button type="button" class="pw-toggle" data-target="adminPassword" aria-label="Show password"><i class="fi-eye"></i></button>
+            <button type="button" class="pw-toggle" data-target="adminPassword" aria-label="Show password"><i class='bx bx-show'></i></button>
           </div>
-          <span class="form-error-msg"><i class="fi-alert"></i> Enter the club admin password</span>
+          <span class="form-error-msg"><i class='bx bx-error-circle'></i> Enter the club admin password</span>
         </div>
       </div>
 
@@ -247,15 +254,15 @@ html.light-mode .alert-error{color:#a3131f;}
         <div class="form-group" id="group-username">
           <label for="username">Your Username</label>
           <input type="text" id="username" name="username" placeholder="e.g. jane.doe" autocomplete="off">
-          <span class="form-error-msg"><i class="fi-alert"></i> Enter your username</span>
+          <span class="form-error-msg"><i class='bx bx-error-circle'></i> Enter your username</span>
         </div>
         <div class="form-group" id="group-userPassword">
           <label for="userPassword">Your Password</label>
           <div class="pw-wrap">
             <input type="password" id="userPassword" name="userPassword" placeholder="••••••••" autocomplete="off">
-            <button type="button" class="pw-toggle" data-target="userPassword" aria-label="Show password"><i class="fi-eye"></i></button>
+            <button type="button" class="pw-toggle" data-target="userPassword" aria-label="Show password"><i class='bx bx-show'></i></button>
           </div>
-          <span class="form-error-msg"><i class="fi-alert"></i> Enter your password</span>
+          <span class="form-error-msg"><i class=class='bx bx-error-circle'></i> Enter your password</span>
         </div>
       </div>
 
@@ -272,7 +279,7 @@ html.light-mode .alert-error{color:#a3131f;}
 
 <div class="modal-overlay" id="confirmModal">
   <div class="modal-card glass">
-    <div class="icon-badge"><i class="fi-alert"></i></div>
+    <div class="icon-badge"><i class='bx bx-error-circle'></i></div>
     <h3>Someone else is signed in</h3>
     <p><strong id="modalCurrentUser">—</strong> is currently active on this shared platform. Signing in will log them out.</p>
     <div class="modal-actions">
@@ -309,11 +316,11 @@ window.addEventListener('scroll', () => topbar.classList.toggle('scrolled', wind
 
 /* ---------- theme (persisted) ---------- */
 const themeToggle = document.getElementById('themeToggle');
-themeToggle.innerHTML = document.documentElement.classList.contains('light-mode') ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+themeToggle.innerHTML = document.documentElement.classList.contains('light-mode') ? "<i class='bx bx-sun'></i>" : "<i class='bx bx-moon'></i>";
 themeToggle.addEventListener('click', () => {
   document.documentElement.classList.toggle('light-mode');
   const light = document.documentElement.classList.contains('light-mode');
-  themeToggle.innerHTML = light ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+  themeToggle.innerHTML = light ? "<i class='bx bx-sun'></i>" : "<i class='bx bx-moon'></i>";
   try{ localStorage.setItem('iec-theme', light ? 'light' : 'dark'); }catch(e){}
 });
 
@@ -323,7 +330,7 @@ document.querySelectorAll('.pw-toggle').forEach(btn => {
     const input = document.getElementById(btn.dataset.target);
     const show = input.type === 'password';
     input.type = show ? 'text' : 'password';
-    btn.innerHTML = show ? '<i class="fi-eye-blocked"></i>' : '<i class="fi-eye"></i>';
+    btn.innerHTML = show ? "<i class='bx bx-hide'></i>" : "<i class='bx bx-show'></i>";
   });
 });
 
