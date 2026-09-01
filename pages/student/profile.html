@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){try{if(localStorage.getItem('iec-theme')==='light'){document.documentElement.classList.add('light-mode');}}catch(e){}})();</script>
+<title>Profile — Student Portal — Innovative Explorer Club</title>
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Boxicons Free -->
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<!-- Basic Icons -->
+<link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
+<!-- Filled Icons -->
+<link href="https://cdn.boxicons.com/3.0.8/fonts/filled/boxicons-filled.min.css" rel="stylesheet">
+<!-- Brand Icons -->
+<link href="https://cdn.boxicons.com/3.0.8/fonts/brands/boxicons-brands.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="../../css/student/profile.css">
+</head>
+<body>
+
+<!-- ============ MOBILE SIDEBAR BACKDROP ============ -->
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<!-- ============ SIDEBAR ============ -->
+<aside class="sidebar" id="sidebar">
+  <a href="../../index.html" class="side-logo">
+    <img src="../../assets/images/logo-icon.png" alt="Innovative Explorer Club logo">
+    <span>Innovative Explorer Club</span>
+  </a>
+
+  <nav class="side-nav">
+    <a href="dashboard.html" class="side-link" data-page="dashboard"><i class="bx bxs-dashboard"></i><span>Dashboard</span></a>
+    <a href="attendance.html" class="side-link" data-page="attendance"><i class="bx bx-calendar-check"></i><span>Attendance &amp; Progress</span></a>
+    <a href="resources.html" class="side-link" data-page="resources"><i class="bx bx-folder-open"></i><span>Resources</span></a>
+    <a href="lms.html" class="side-link" data-page="lms"><i class="bx bx-edit-alt"></i><span>LMS</span></a>
+    <a href="calendar.html" class="side-link" data-page="calendar"><i class="bx bx-calendar"></i><span>Calendar</span></a>
+    <a href="notifications.html" class="side-link" data-page="notifications"><i class="bx bx-bell"></i><span>Notifications</span></a>
+    <a href="profile.html" class="side-link active" data-page="profile"><i class="bx bx-user"></i><span>Profile</span></a>
+    <a href="contact-admin.html" class="side-link" data-page="contact-admin"><i class="bx bx-envelope"></i><span>Contact Admin</span></a>
+  </nav>
+
+  <button class="side-logout" id="logoutBtnSide"><i class="bx bx-log-out"></i><span>Log Out</span></button>
+</aside>
+
+<!-- ============ TOPBAR ============ -->
+<header class="topbar" id="topbar">
+  <div class="topbar-left">
+    <button class="icon-btn" id="hamburger" aria-label="Toggle menu"><i class="bx bx-menu"></i></button>
+    <span class="topbar-title">Profile</span>
+  </div>
+
+  <div class="topbar-right">
+    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="bx bx-moon"></i></button>
+
+    <div class="dropdown-wrap">
+      <button class="icon-btn" id="bellBtn" aria-label="Notifications">
+        <i class="bx bx-bell"></i>
+        <span class="badge-dot" id="bellBadge" hidden></span>
+      </button>
+      <div class="dropdown-panel" id="bellDropdown">
+        <div class="dropdown-head"><span>Notifications</span><a href="notifications.html">View all</a></div>
+        <div class="dropdown-list" id="bellList"><p class="dropdown-empty">No notifications yet.</p></div>
+      </div>
+    </div>
+
+    <div class="dropdown-wrap">
+      <button class="avatar-btn" id="avatarBtn" aria-label="Account menu">
+        <span class="avatar-circle" id="topAvatar">--</span>
+      </button>
+      <div class="dropdown-panel dropdown-panel-right" id="avatarDropdown">
+        <div class="dropdown-profile">
+          <span class="avatar-circle" id="ddAvatar">--</span>
+          <div>
+            <div class="dd-name" id="ddName">Loading…</div>
+            <div class="dd-level" id="ddLevel">—</div>
+          </div>
+        </div>
+        <a href="profile.html" class="dropdown-item"><i class="bx bx-user"></i> View Profile</a>
+        <a href="contact-admin.html" class="dropdown-item"><i class="bx bx-envelope"></i> Contact Admin</a>
+        <button class="dropdown-item dropdown-item-danger" id="logoutBtnTop"><i class="bx bx-log-out"></i> Log Out</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ MAIN CONTENT ============ -->
+<main class="dash-main">
+
+  <!-- PROFILE HEADER -->
+  <section class="profile-header glass">
+    <div class="photo-wrap">
+      <div class="photo-circle" id="photoCircle">
+        <span id="photoInitials">--</span>
+        <img id="photoImg" alt="Profile photo" hidden>
+      </div>
+      <button class="photo-edit-btn" id="photoEditBtn" aria-label="Change profile photo"><i class="bx bx-camera"></i></button>
+    </div>
+    <div class="profile-header-info">
+      <h1 id="headerName">Loading…</h1>
+      <div class="header-badges">
+        <span class="level-badge" id="headerLevel">—</span>
+        <span class="age-badge" id="headerAge"><i class="bx bx-time-five"></i> —</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PHOTO UPLOAD CARD -->
+  <section class="card glass">
+    <div class="card-head">
+      <h3><i class="bx bx-image-add"></i> Profile Photo</h3>
+      <span class="changes-pill" id="changesPill">2 changes left</span>
+    </div>
+    <p class="photo-note" id="photoNote">Your profile photo can be set once, then changed up to two times in total — after that it's locked in for good, so choose carefully.</p>
+
+    <div class="photo-upload-row">
+      <div class="photo-preview" id="photoPreview">
+        <span id="previewInitials">--</span>
+        <img id="previewImg" alt="Selected photo preview" hidden>
+      </div>
+      <div class="photo-upload-controls">
+        <input type="file" id="photoInput" accept="image/*" hidden>
+        <button type="button" class="btn btn-outline" id="chooseFileBtn"><i class="bx bx-upload"></i> Choose Photo</button>
+        <button type="button" class="btn btn-lime" id="savePhotoBtn" disabled>
+          <span class="spinner" id="photoSpinner"></span>
+          <span id="savePhotoLabel">Save Photo</span>
+        </button>
+        <p class="photo-hint">JPG or PNG, up to 5MB.</p>
+      </div>
+    </div>
+
+    <div class="locked-note" id="lockedNote" hidden><i class="bx bx-lock-alt"></i> You've used both of your photo changes — contact admin if you need it updated.</div>
+  </section>
+
+  <!-- REGISTRATION DETAILS -->
+  <section class="card glass">
+    <div class="card-head"><h3><i class="bx bx-id-card"></i> Registration Details</h3></div>
+    <p class="section-note">This is what was submitted on your membership application. Need something corrected? <a href="contact-admin.html">Contact admin</a>.</p>
+    <div class="detail-grid" id="studentDetailGrid">
+      <div class="detail-item"><span class="detail-label">Full Name</span><span class="detail-value" id="dFullName">—</span></div>
+      <div class="detail-item"><span class="detail-label">Email</span><span class="detail-value" id="dEmail">—</span></div>
+      <div class="detail-item"><span class="detail-label">Date of Birth</span><span class="detail-value" id="dDob">—</span></div>
+      <div class="detail-item"><span class="detail-label">Age</span><span class="detail-value" id="dAge">—</span></div>
+      <div class="detail-item"><span class="detail-label">Preferred Academy</span><span class="detail-value" id="dAcademy">—</span></div>
+      <div class="detail-item"><span class="detail-label">Membership Level</span><span class="detail-value" id="dLevel">—</span></div>
+      <div class="detail-item"><span class="detail-label">Experience Level</span><span class="detail-value" id="dExperience">—</span></div>
+      <div class="detail-item detail-wide"><span class="detail-label">Notes / Interests</span><span class="detail-value" id="dNotes">—</span></div>
+    </div>
+  </section>
+
+  <!-- PARENT / GUARDIAN INFO -->
+  <section class="card glass">
+    <div class="card-head"><h3><i class="bx bx-group"></i> Parent / Guardian Information</h3></div>
+    <div class="detail-grid">
+      <div class="detail-item"><span class="detail-label">Name</span><span class="detail-value" id="pName">—</span></div>
+      <div class="detail-item"><span class="detail-label">Email</span><span class="detail-value" id="pEmail">—</span></div>
+      <div class="detail-item"><span class="detail-label">Phone (WhatsApp)</span><span class="detail-value" id="pPhone">—</span></div>
+    </div>
+  </section>
+
+  <!-- MEMBERSHIP / ACCOUNT INFO -->
+  <section class="card glass">
+    <div class="card-head"><h3><i class="bx bx-shield-quarter"></i> Membership</h3></div>
+    <div class="detail-grid">
+      <div class="detail-item"><span class="detail-label">Username</span><span class="detail-value" id="mUsername">—</span></div>
+      <div class="detail-item"><span class="detail-label">Approved On</span><span class="detail-value" id="mApproved">—</span></div>
+      <div class="detail-item"><span class="detail-label">Account Age</span><span class="detail-value" id="mAccountAge">—</span></div>
+    </div>
+  </section>
+
+  <!-- INSTITUTION ADDRESS (only place this appears in the portal) -->
+  <section class="institution-address">
+    <i class="bx bx-map"></i>
+    <span>Coderina EdTech Foundation, Department of Science, Technology and Innovation (DSTI), No. 4 Ngozi Okonjo-Iweala Way, Utako District, Abuja 900103, FCT, Nigeria.</span>
+  </section>
+
+  <div class="dash-bottom-spacer"></div>
+</main>
+
+<!-- ============ CONFIRM CHANGE MODAL ============ -->
+<div class="modal-overlay" id="confirmOverlay">
+  <div class="modal-card glass">
+    <div class="modal-icon"><i class="bx bx-error"></i></div>
+    <h3 id="confirmTitle">Set this as your profile photo?</h3>
+    <p id="confirmBody">This will use one of your photo changes. You'll have <strong id="confirmRemaining">1</strong> left after this.</p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" id="confirmCancel">Cancel</button>
+      <button class="btn btn-lime" id="confirmProceed">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PERSISTENT BOTTOM NAV (first 5 pages) ============ -->
+<nav class="bottom-nav" id="bottomNav">
+  <a href="dashboard.html" class="bottom-link" data-page="dashboard"><i class="bx bxs-dashboard"></i><span>Home</span></a>
+  <a href="attendance.html" class="bottom-link" data-page="attendance"><i class="bx bx-calendar-check"></i><span>Attendance</span></a>
+  <a href="resources.html" class="bottom-link" data-page="resources"><i class="bx bx-folder-open"></i><span>Resources</span></a>
+  <a href="lms.html" class="bottom-link" data-page="lms"><i class="bx bx-edit-alt"></i><span>LMS</span></a>
+  <a href="calendar.html" class="bottom-link" data-page="calendar"><i class="bx bx-calendar"></i><span>Calendar</span></a>
+</nav>
+
+<script type="module" src="../../js/student/profile.js"></script>
+</body>
+</html>
