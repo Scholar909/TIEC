@@ -47,15 +47,53 @@ onSnapshot(doc(db, 'system', 'activeSession'), (snap) => {
 });
 
 /* =========================================================
-   OPERATOR CHROME
+   HELPERS
    ========================================================= */
 function initials(name){
   return (name || '?').trim().split(/\s+/).map(w => w[0]).slice(0,2).join('').toUpperCase();
 }
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str == null ? '' : String(str);
+  return d.innerHTML;
+}
+function timeAgo(date){
+  const s = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (s < 60) return 'Just now';
+  if (s < 3600) return Math.floor(s/60) + 'm ago';
+  if (s < 86400) return Math.floor(s/3600) + 'h ago';
+  return Math.floor(s/86400) + 'd ago';
+}
+function formatDate(ts){
+  if (!ts || !ts.toDate) return '—';
+  return ts.toDate().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+}
+function formatDob(dobStr){
+  if (!dobStr) return '—';
+  const d = new Date(dobStr);
+  if (isNaN(d)) return dobStr;
+  return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+}
+function calcAge(dobStr){
+  const d = new Date(dobStr);
+  if (isNaN(d)) return '—';
+  const now = new Date();
+  let age = now.getFullYear() - d.getFullYear();
+  const m = now.getMonth() - d.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age--;
+  return `${age} years old`;
+}
+
+/* =========================================================
+   OPERATOR CHROME
+   ========================================================= */
 if (operator){
-  document.getElementById('opAvatar').textContent = initials(operator.fullName);
-  document.getElementById('opName').textContent = operator.fullName || operator.username;
-  document.getElementById('opRole').textContent = operator.role || 'teacher';
+  const name = operator.fullName || operator.username;
+  const role = operator.role || 'teacher';
+  document.getElementById('topAvatar').textContent = initials(name);
+  document.getElementById('ddAvatar').textContent = initials(name);
+  document.getElementById('ddName').textContent = name;
+  document.getElementById('ddRole').textContent = role;
 }
 
 const themeToggle = document.getElementById('themeToggle');
@@ -68,17 +106,31 @@ themeToggle.addEventListener('click', () => {
 });
 
 const sidebar = document.getElementById('sidebar');
-const overlay = document.getElementById('sidebarOverlay');
-function openSidebar(){ sidebar.classList.add('open'); overlay.classList.add('show'); }
-function closeSidebar(){ sidebar.classList.remove('open'); overlay.classList.remove('show'); }
-document.getElementById('sbOpen').addEventListener('click', openSidebar);
-document.getElementById('sbClose').addEventListener('click', closeSidebar);
-overlay.addEventListener('click', closeSidebar);
+const backdrop = document.getElementById('sidebarBackdrop');
+function openSidebar(){ sidebar.classList.add('open'); backdrop.classList.add('show'); }
+function closeSidebar(){ sidebar.classList.remove('open'); backdrop.classList.remove('show'); }
+document.getElementById('hamburger').addEventListener('click', () => {
+  sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+});
+backdrop.addEventListener('click', closeSidebar);
 
-const signOutModal = document.getElementById('signOutModal');
-document.getElementById('signOutBtn').addEventListener('click', () => signOutModal.classList.add('show'));
-document.getElementById('cancelSignOut').addEventListener('click', () => signOutModal.classList.remove('show'));
-document.getElementById('confirmSignOut').addEventListener('click', async () => {
+function wireDropdown(btnId, panelId){
+  const btn = document.getElementById(btnId);
+  const panel = document.getElementById(panelId);
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const willOpen = !panel.classList.contains('open');
+    document.querySelectorAll('.dropdown-panel.open').forEach(p => p.classList.remove('open'));
+    if (willOpen) panel.classList.add('open');
+  });
+}
+wireDropdown('bellBtn', 'bellDropdown');
+wireDropdown('avatarBtn', 'avatarDropdown');
+document.addEventListener('click', () => {
+  document.querySelectorAll('.dropdown-panel.open').forEach(p => p.classList.remove('open'));
+});
+
+async function doSignOut(){
   try{
     if (operator){
       const sessionRef = doc(db, 'system', 'activeSession');
@@ -91,7 +143,9 @@ document.getElementById('confirmSignOut').addEventListener('click', async () => 
   sessionStorage.removeItem('iec_operator');
   await signOut(auth);
   window.location.href = 'admin-login.html';
-});
+}
+document.getElementById('logoutBtnSide').addEventListener('click', doSignOut);
+document.getElementById('logoutBtnTop').addEventListener('click', doSignOut);
 
 /* =========================================================
    TOAST
@@ -107,18 +161,15 @@ function showToast(msg){
 
 /* =========================================================
    APPLICATIONS DATA
-   Field names match the public membership.html #joinForm exactly:
-   applications/{id}: {
-     studentName, studentEmail, studentDob (date string),
-     academy, level ('Young Explorers' | 'Junior Innovators' | 'Teen Innovators'),
-     experience, notes,
-     parentName, parentEmail, parentPhone,
-     submittedAt: Timestamp,
-     status: 'pending' | 'approved' | 'rejected',
-     approvedAt / rejectedAt: Timestamp, approvedBy / rejectedBy: operator username,
-     rejectionReason,
-     studentUid: set once the account is created on approve
-   }
+   Field names match the public membership.html #joinForm exactly.
+   On approve, this is written to students/{uid} — schema matches
+   what pages/student/profile.js already reads:
+   fullName, studentEmail, dob, academy, membershipLevel,
+   experience, notes, parentName, parentEmail, parentPhone,
+   username, approvedAt (Timestamp — "account age" counts from
+   this), applicationId, passwordActivated:false.
+   photoURL / photoChangesRemaining are left unset — optional,
+   student sets these later from their own profile page.
    ========================================================= */
 function levelMeta(level){
   const l = (level || '').toLowerCase();
@@ -136,24 +187,17 @@ const STATUS_META = {
 let allApplications = [];
 let activeTab = 'pending';
 let searchTerm = '';
-let activeAppId = null;
+const expandedState = new Map(); // id -> bool, defaults set the first time a card is seen
+const busyIds = new Set();       // ids currently mid-approve, to lock re-clicks
 
 const appListEl = document.getElementById('appList');
 
-function formatDate(ts){
-  if (!ts || !ts.toDate) return '—';
-  return ts.toDate().toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+function usernameFor(fullName){
+  return (fullName || 'student').trim().toLowerCase().split(/\s+/).join('.');
 }
-function formatDob(dobStr){
-  if (!dobStr) return '—';
-  const d = new Date(dobStr);
-  if (isNaN(d)) return dobStr;
-  return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
-}
-function escapeHtml(str){
-  const d = document.createElement('div');
-  d.textContent = str == null ? '' : String(str);
-  return d.innerHTML;
+function tempPasswordFor(fullName){
+  const abbrev = (fullName || 'student').trim().split(/\s+/).map(w => w[0]).join('').toLowerCase();
+  return `@tiec-student-${abbrev || 'x'}`;
 }
 
 function render(){
@@ -164,12 +208,9 @@ function render(){
   document.getElementById('countRejected').textContent = counts.rejected;
   document.getElementById('countAll').textContent = counts.all;
 
-  const badge = document.getElementById('badgeApplications');
-  if (counts.pending > 0){ badge.textContent = counts.pending; badge.classList.add('show'); }
-  else badge.classList.remove('show');
-
-  document.getElementById('countSummary').textContent =
-    `${counts.pending} pending · ${counts.approved} approved · ${counts.rejected} rejected`;
+  const navBadge = document.getElementById('navBadgeApplications');
+  if (counts.pending > 0){ navBadge.textContent = counts.pending; navBadge.hidden = false; }
+  else navBadge.hidden = true;
 
   let rows = activeTab === 'all' ? allApplications : allApplications.filter(a => a.status === activeTab);
   if (searchTerm){
@@ -178,31 +219,159 @@ function render(){
   }
 
   if (rows.length === 0){
-    appListEl.innerHTML = `<div class="empty-state">No ${activeTab === 'all' ? '' : activeTab} applications${searchTerm ? ' match your search' : ''}.</div>`;
+    appListEl.innerHTML = `<p class="list-empty">No ${activeTab === 'all' ? '' : activeTab} applications${searchTerm ? ' match your search' : ''}.</p>`;
     return;
   }
 
-  appListEl.innerHTML = rows.map(a => {
-    const lvl = levelMeta(a.level);
-    const st = STATUS_META[a.status] || { label: a.status || '—', cls: '' };
-    return `
-      <div class="app-row" data-id="${a.id}">
-        <div class="applicant-cell">
-          <div class="applicant-avatar">${escapeHtml(initials(a.studentName))}</div>
-          <div class="applicant-info">
-            <span class="applicant-name">${escapeHtml(a.studentName || 'Unnamed applicant')}</span>
-            <span class="applicant-parent">${escapeHtml(a.parentName || '')}</span>
+  appListEl.innerHTML = rows.map(a => cardHtml(a)).join('');
+  wireCardEvents();
+}
+
+function cardHtml(a){
+  if (!expandedState.has(a.id)) expandedState.set(a.id, a.status === 'pending');
+  const expanded = expandedState.get(a.id);
+  const lvl = levelMeta(a.level);
+  const st = STATUS_META[a.status] || { label: a.status || '—', cls: '' };
+  const when = a.submittedAt && a.submittedAt.toDate ? timeAgo(a.submittedAt.toDate()) : '';
+  const isBusy = busyIds.has(a.id);
+
+  return `
+    <div class="app-card glass ${expanded ? 'expanded' : ''}" data-id="${a.id}" data-status="${a.status}">
+      <div class="app-card-header" data-role="toggle">
+        <span class="avatar-circle">${escapeHtml(initials(a.studentName))}</span>
+        <div class="app-card-titles">
+          <h3>${escapeHtml(a.studentName || 'Unnamed applicant')}</h3>
+          <div class="app-card-pills">
+            <span class="level-badge ${lvl.cls}">${escapeHtml(lvl.label)}</span>
+            <span class="status-pill ${st.cls}">${escapeHtml(st.label)}</span>
           </div>
         </div>
-        <div><span class="col-mobile-label">Level</span><span class="level-pill ${lvl.cls}">${escapeHtml(lvl.label)}</span></div>
-        <div class="date-cell"><span class="col-mobile-label">Submitted</span>${formatDate(a.submittedAt)}</div>
-        <div><span class="col-mobile-label">Status</span><span class="status-pill ${st.cls}">${escapeHtml(st.label)}</span></div>
-        <div class="row-arrow"><i class='bx bx-chevron-right'></i></div>
-      </div>`;
-  }).join('');
+        <span class="app-card-meta">${when}</span>
+        <button class="expand-toggle" aria-label="Expand"><i class="bx bx-chevron-down"></i></button>
+      </div>
 
-  appListEl.querySelectorAll('.app-row').forEach(row => {
-    row.addEventListener('click', () => openDrawer(row.dataset.id));
+      <div class="app-card-parent-line">
+        <i class="bx bx-group"></i>
+        <span><b>${escapeHtml(a.parentName || 'No parent name')}</b></span>
+        <span class="sep">·</span>
+        <span>${escapeHtml(a.parentPhone || '—')}</span>
+        <span class="sep">·</span>
+        <span>${escapeHtml(a.parentEmail || '—')}</span>
+      </div>
+
+      <div class="app-card-body">
+        <div class="detail-section-title"><i class="bx bx-id-card"></i> Registration Details</div>
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">Student Email</span><span class="detail-value">${escapeHtml(a.studentEmail || '—')}</span></div>
+          <div class="detail-item"><span class="detail-label">Date of Birth</span><span class="detail-value">${escapeHtml(formatDob(a.studentDob))}</span></div>
+          <div class="detail-item"><span class="detail-label">Age</span><span class="detail-value">${a.studentDob ? calcAge(a.studentDob) : '—'}</span></div>
+          <div class="detail-item"><span class="detail-label">Preferred Academy</span><span class="detail-value">${escapeHtml(a.academy || '—')}</span></div>
+          <div class="detail-item"><span class="detail-label">Experience Level</span><span class="detail-value">${escapeHtml(a.experience || '—')}</span></div>
+          <div class="detail-item"><span class="detail-label">Submitted</span><span class="detail-value">${formatDate(a.submittedAt)}</span></div>
+          <div class="detail-item detail-wide"><span class="detail-label">Notes / Interests</span><span class="detail-value">${escapeHtml(a.notes && a.notes.trim() ? a.notes : '—')}</span></div>
+        </div>
+
+        <div class="detail-section-title"><i class="bx bx-group"></i> Parent / Guardian</div>
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">Name</span><span class="detail-value">${escapeHtml(a.parentName || '—')}</span></div>
+          <div class="detail-item"><span class="detail-label">Email</span><span class="detail-value">${escapeHtml(a.parentEmail || '—')}</span></div>
+          <div class="detail-item detail-wide"><span class="detail-label">Phone (WhatsApp)</span><span class="detail-value">${escapeHtml(a.parentPhone || '—')}</span></div>
+        </div>
+
+        ${a.status === 'approved' ? approvedSectionHtml(a) : ''}
+        ${a.status === 'rejected' ? rejectedSectionHtml(a) : ''}
+        ${a.status === 'pending' && !isBusy ? pendingActionsHtml(a) : ''}
+        ${isBusy ? `<div class="approving-note"><span class="mini-spinner"></span> Creating the student's account…</div>` : ''}
+      </div>
+    </div>`;
+}
+
+function approvedSectionHtml(a){
+  const tempPassword = tempPasswordFor(a.studentName);
+  const username = a.username || usernameFor(a.studentName);
+  const link = `${window.location.origin}/pages/student/student-login.html?email=${encodeURIComponent(a.studentEmail || '')}&pwd=${encodeURIComponent(tempPassword)}`;
+  return `
+    <div class="detail-section-title"><i class="bx bx-shield-quarter"></i> Membership</div>
+    <div class="detail-grid">
+      <div class="detail-item"><span class="detail-label">Username</span><span class="detail-value">${escapeHtml(username)}</span></div>
+      <div class="detail-item"><span class="detail-label">Approved On</span><span class="detail-value">${formatDate(a.approvedAt)}</span></div>
+    </div>
+    <p class="temp-pw-note">Share this link so the family can log in and set their permanent password:</p>
+    <div class="link-box">
+      <input type="text" readonly value="${escapeHtml(link)}" data-role="link-input">
+      <button class="btn btn-lime" data-role="copy-link" data-link="${escapeHtml(link)}"><i class="bx bx-copy"></i></button>
+    </div>
+    <p class="temp-pw-note">Temporary password: <code>${escapeHtml(tempPassword)}</code></p>`;
+}
+
+function rejectedSectionHtml(a){
+  return `
+    <div class="detail-section-title"><i class="bx bx-x-circle"></i> Rejection</div>
+    <div class="rejected-note">
+      <i class="bx bx-info-circle"></i>
+      <p>${escapeHtml(a.rejectionReason || 'No reason recorded.')}</p>
+    </div>`;
+}
+
+function pendingActionsHtml(a){
+  return `
+    <div class="reject-reason hidden" data-role="reject-reason-block">
+      <label>Reason for rejection</label>
+      <textarea rows="3" placeholder="Let the family know why…" data-role="reject-reason-input"></textarea>
+      <span class="field-err hidden" data-role="reject-reason-err">A reason is required.</span>
+      <div class="action-row">
+        <button class="btn btn-ghost" data-role="cancel-reject">Cancel</button>
+        <button class="btn btn-danger" data-role="confirm-reject">Confirm Rejection</button>
+      </div>
+    </div>
+    <div class="action-row" data-role="main-actions">
+      <button class="btn btn-outline-danger" data-role="reject-btn"><i class="bx bx-x-circle"></i> Reject</button>
+      <button class="btn btn-lime" data-role="approve-btn"><i class="bx bx-check"></i> Approve</button>
+    </div>`;
+}
+
+function wireCardEvents(){
+  appListEl.querySelectorAll('.app-card').forEach(card => {
+    const id = card.dataset.id;
+    const a = allApplications.find(x => x.id === id);
+    if (!a) return;
+
+    card.querySelector('[data-role="toggle"]').addEventListener('click', () => {
+      const nowExpanded = !expandedState.get(id);
+      expandedState.set(id, nowExpanded);
+      card.classList.toggle('expanded', nowExpanded);
+    });
+
+    const approveBtn = card.querySelector('[data-role="approve-btn"]');
+    if (approveBtn) approveBtn.addEventListener('click', () => approveApplication(a));
+
+    const rejectBtn = card.querySelector('[data-role="reject-btn"]');
+    if (rejectBtn) rejectBtn.addEventListener('click', () => {
+      card.querySelector('[data-role="reject-reason-block"]').classList.remove('hidden');
+      card.querySelector('[data-role="main-actions"]').classList.add('hidden');
+    });
+
+    const cancelReject = card.querySelector('[data-role="cancel-reject"]');
+    if (cancelReject) cancelReject.addEventListener('click', () => {
+      card.querySelector('[data-role="reject-reason-block"]').classList.add('hidden');
+      card.querySelector('[data-role="main-actions"]').classList.remove('hidden');
+    });
+
+    const confirmReject = card.querySelector('[data-role="confirm-reject"]');
+    if (confirmReject) confirmReject.addEventListener('click', () => rejectApplication(a, card));
+
+    const copyBtn = card.querySelector('[data-role="copy-link"]');
+    if (copyBtn) copyBtn.addEventListener('click', async () => {
+      const link = copyBtn.dataset.link;
+      try{
+        await navigator.clipboard.writeText(link);
+      }catch(e){
+        const input = card.querySelector('[data-role="link-input"]');
+        input.select();
+        document.execCommand('copy');
+      }
+      showToast('Link copied');
+    });
   });
 }
 
@@ -219,113 +388,27 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
   render();
 });
 
-/* live listener on the whole collection — fine for a club-scale dataset */
 onSnapshot(query(collection(db, 'applications'), orderBy('submittedAt', 'desc')), (snap) => {
   allApplications = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   render();
-  if (activeAppId){
-    const current = allApplications.find(a => a.id === activeAppId);
-    if (current) populateDrawer(current);
-  }
 }, (err) => {
   console.error(err);
-  appListEl.innerHTML = '<div class="empty-state">Couldn\'t load applications.</div>';
+  appListEl.innerHTML = '<p class="list-empty">Couldn\'t load applications.</p>';
 });
 
-/* =========================================================
-   DETAIL DRAWER
-   ========================================================= */
-const drawerOverlay = document.getElementById('drawerOverlay');
-function openDrawer(id){
-  activeAppId = id;
-  const a = allApplications.find(x => x.id === id);
-  if (!a) return;
-  populateDrawer(a);
-  drawerOverlay.classList.add('show');
-}
-function closeDrawer(){
-  drawerOverlay.classList.remove('show');
-  activeAppId = null;
-  document.getElementById('rejectReasonBlock').classList.add('hidden');
-  document.getElementById('confirmRejectRow').classList.add('hidden');
-  document.getElementById('pendingActions').querySelector('.action-row').classList.remove('hidden');
-  document.getElementById('rejectReason').value = '';
-  document.getElementById('rejectReasonErr').classList.add('hidden');
-  document.getElementById('approvingBlock').classList.add('hidden');
-}
-document.getElementById('drawerClose').addEventListener('click', closeDrawer);
-drawerOverlay.addEventListener('click', (e) => { if (e.target === drawerOverlay) closeDrawer(); });
-
-function populateDrawer(a){
-  const lvl = levelMeta(a.level);
-  const st = STATUS_META[a.status] || { label: a.status || '—', cls: '' };
-
-  document.getElementById('detailAvatar').textContent = initials(a.studentName);
-  document.getElementById('detailName').textContent = a.studentName || 'Unnamed applicant';
-  document.getElementById('detailLevelPill').textContent = lvl.label;
-  document.getElementById('detailLevelPill').className = 'level-pill ' + lvl.cls;
-  document.getElementById('detailStatusPill').textContent = st.label;
-  document.getElementById('detailStatusPill').className = 'status-pill ' + st.cls;
-
-  document.getElementById('detailStudentEmail').textContent = a.studentEmail || '—';
-  document.getElementById('detailDob').textContent = formatDob(a.studentDob);
-  document.getElementById('detailSubmitted').textContent = formatDate(a.submittedAt);
-  document.getElementById('detailAcademy').textContent = a.academy || '—';
-  document.getElementById('detailExperience').textContent = a.experience || '—';
-  document.getElementById('detailNotes').textContent = a.notes || '—';
-  document.getElementById('detailParentName').textContent = a.parentName || '—';
-  document.getElementById('detailParentPhone').textContent = a.parentPhone || '—';
-  document.getElementById('detailParentEmail').textContent = a.parentEmail || '—';
-
-  document.getElementById('pendingActions').classList.toggle('hidden', a.status !== 'pending');
-  document.getElementById('approvingBlock').classList.add('hidden');
-  document.getElementById('approvedBlock').classList.toggle('hidden', a.status !== 'approved');
-  document.getElementById('rejectedBlock').classList.toggle('hidden', a.status !== 'rejected');
-
-  if (a.status === 'approved'){
-    const tempPassword = tempPasswordFor(a.studentName);
-    const link = `${window.location.origin}/pages/student/student-login.html?email=${encodeURIComponent(a.studentEmail)}&pwd=${encodeURIComponent(tempPassword)}`;
-    document.getElementById('signupLinkInput').value = link;
-    document.getElementById('tempPwText').textContent = tempPassword;
-  }
-  if (a.status === 'rejected'){
-    document.getElementById('rejectedReasonText').textContent = a.rejectionReason || 'No reason recorded.';
-  }
-}
-
-/* =========================================================
-   Temporary password: deterministic from the student's full
-   name, so it never needs to be stored in Firestore — it can
-   always be recomputed for the link/copy box.
-   Format: @tiec-student-<initials of each name part, lowercase>
-   ========================================================= */
-function tempPasswordFor(fullName){
-  const abbrev = (fullName || 'student')
-    .trim()
-    .split(/\s+/)
-    .map(w => w[0])
-    .join('')
-    .toLowerCase();
-  return `@tiec-student-${abbrev || 'x'}`;
-}
-
 /* ---------- approve: create the student's account from the admin side ---------- */
-document.getElementById('approveBtn').addEventListener('click', async () => {
-  if (!activeAppId || !operator) return;
-  const a = allApplications.find(x => x.id === activeAppId);
-  if (!a || !a.studentEmail){
-    showToast('This application is missing a student email — can\'t create an account.');
+async function approveApplication(a){
+  if (!operator || !a.studentEmail){
+    showToast("This application is missing a student email — can't create an account.");
     return;
   }
-
-  document.getElementById('pendingActions').classList.add('hidden');
-  document.getElementById('approvingBlock').classList.remove('hidden');
+  busyIds.add(a.id);
+  render();
 
   const tempPassword = tempPasswordFor(a.studentName);
+  const username = usernameFor(a.studentName);
   let secondaryApp;
   try{
-    // Create the account on a secondary Firebase app instance so the
-    // admin's own signed-in session is never touched.
     secondaryApp = initializeApp(firebaseConfig, 'StudentCreate-' + Date.now());
     const secondaryAuth = getAuth(secondaryApp);
     const cred = await createUserWithEmailAndPassword(secondaryAuth, a.studentEmail, tempPassword);
@@ -334,7 +417,7 @@ document.getElementById('approveBtn').addEventListener('click', async () => {
 
     await setDoc(doc(db, 'students', uid), {
       fullName: a.studentName || '',
-      email: a.studentEmail,
+      studentEmail: a.studentEmail,
       dob: a.studentDob || '',
       academy: a.academy || '',
       membershipLevel: a.level || '',
@@ -343,8 +426,9 @@ document.getElementById('approveBtn').addEventListener('click', async () => {
       parentName: a.parentName || '',
       parentEmail: a.parentEmail || '',
       parentPhone: a.parentPhone || '',
+      username,
       applicationId: a.id,
-      dateJoined: serverTimestamp(),
+      approvedAt: serverTimestamp(),
       passwordActivated: false
     });
 
@@ -352,72 +436,48 @@ document.getElementById('approveBtn').addEventListener('click', async () => {
       status: 'approved',
       approvedAt: serverTimestamp(),
       approvedBy: operator.username,
-      studentUid: uid
+      studentUid: uid,
+      username
     });
 
     showToast('Account created — link ready to share');
   }catch(err){
     console.error(err);
-    document.getElementById('pendingActions').classList.remove('hidden');
-    document.getElementById('approvingBlock').classList.add('hidden');
     if (err.code === 'auth/email-already-in-use'){
       showToast('That student email already has an account.');
     } else {
       showToast("Couldn't create the account — try again");
     }
   }finally{
+    busyIds.delete(a.id);
     if (secondaryApp){
       try{ await deleteApp(secondaryApp); }catch(e){ /* ignore */ }
     }
   }
-});
+}
 
-/* ---------- reject (two-step confirm) ---------- */
-document.getElementById('rejectBtn').addEventListener('click', () => {
-  document.getElementById('rejectReasonBlock').classList.remove('hidden');
-  document.getElementById('pendingActions').querySelector('.action-row').classList.add('hidden');
-  document.getElementById('confirmRejectRow').classList.remove('hidden');
-});
-document.getElementById('cancelRejectBtn').addEventListener('click', () => {
-  document.getElementById('rejectReasonBlock').classList.add('hidden');
-  document.getElementById('confirmRejectRow').classList.add('hidden');
-  document.getElementById('pendingActions').querySelector('.action-row').classList.remove('hidden');
-  document.getElementById('rejectReason').value = '';
-  document.getElementById('rejectReasonErr').classList.add('hidden');
-});
-document.getElementById('confirmRejectBtn').addEventListener('click', async () => {
-  if (!activeAppId || !operator) return;
-  const reason = document.getElementById('rejectReason').value.trim();
+/* ---------- reject: status change only — admin follows up with parents directly ---------- */
+async function rejectApplication(a, card){
+  const textarea = card.querySelector('[data-role="reject-reason-input"]');
+  const reason = textarea.value.trim();
   if (!reason){
-    document.getElementById('rejectReasonErr').classList.remove('hidden');
+    card.querySelector('[data-role="reject-reason-err"]').classList.remove('hidden');
     return;
   }
-  const btn = document.getElementById('confirmRejectBtn');
+  const btn = card.querySelector('[data-role="confirm-reject"]');
   btn.disabled = true;
   try{
-    await updateDoc(doc(db, 'applications', activeAppId), {
+    await updateDoc(doc(db, 'applications', a.id), {
       status: 'rejected',
       rejectedAt: serverTimestamp(),
       rejectedBy: operator.username,
       rejectionReason: reason
     });
+    expandedState.set(a.id, false);
     showToast('Application rejected');
   }catch(e){
     console.error(e);
     showToast("Couldn't reject — try again");
+    btn.disabled = false;
   }
-  btn.disabled = false;
-});
-
-/* ---------- copy signup link ---------- */
-document.getElementById('copyLinkBtn').addEventListener('click', async () => {
-  const input = document.getElementById('signupLinkInput');
-  try{
-    await navigator.clipboard.writeText(input.value);
-    showToast('Link copied');
-  }catch(e){
-    input.select();
-    document.execCommand('copy');
-    showToast('Link copied');
-  }
-});
+}
