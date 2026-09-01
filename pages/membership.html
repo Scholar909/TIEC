@@ -566,7 +566,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   <div class="hero-content">
     <span class="eyebrow">Join the club</span>
     <h1>Become an Innovation Explorer</h1>
-    <p class="subtitle">Six levels, ten academies, one ecosystem — find where you fit and start building.</p>
+    <p class="subtitle">Three levels, ten academies, one ecosystem — find where you fit and start building.</p>
     <div class="hero-actions">
       <a href="#join" class="btn btn-lime">Start Registration</a>
       <a href="#levels" class="btn btn-outline">See Membership Levels</a>
@@ -934,7 +934,23 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   </div>
 </footer>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+import {
+  getFirestore, collection, addDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDBRvD87vNdWMS1wvufAd_RNZhuCf2CN4g",
+  authDomain: "the-innovative-explorer-club.firebaseapp.com",
+  projectId: "the-innovative-explorer-club",
+  storageBucket: "the-innovative-explorer-club.firebasestorage.app",
+  messagingSenderId: "421600505981",
+  appId: "1:421600505981:web:6a633ef8b98b4a6f990114"
+};
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
+
 /* =========================================================
    NAVBAR: scroll blur + mobile menu + search expand
    ========================================================= */
@@ -1132,7 +1148,7 @@ function isValidEmail(value){
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
-joinForm.addEventListener('submit', (e) => {
+joinForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const studentName = document.getElementById('studentName').value.trim();
@@ -1160,13 +1176,36 @@ joinForm.addEventListener('submit', (e) => {
   submitBtn.classList.add('loading');
   submitBtn.disabled = true;
 
-  /* Simulated submit — swap for a Firebase write when storage is connected */
-  setTimeout(() => {
-    submitBtn.classList.remove('loading');
-    submitBtn.disabled = false;
+  const academy = document.getElementById('academy').value;
+  const level = document.getElementById('level').value;
+  const experience = document.getElementById('experience').value;
+  const notes = document.getElementById('notes').value.trim();
+  const parentPhone = document.getElementById('parentPhone').value.trim();
+
+  try {
+    await addDoc(collection(db, 'applications'), {
+      studentName,
+      studentEmail,
+      studentDob: dob,
+      academy,
+      level,
+      experience,
+      notes,
+      parentName,
+      parentEmail,
+      parentPhone,
+      status: 'pending',
+      submittedAt: serverTimestamp()
+    });
     joinForm.classList.add('hide');
     formSuccess.classList.add('show');
-  }, 1100);
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong submitting your registration — please try again.");
+  } finally {
+    submitBtn.classList.remove('loading');
+    submitBtn.disabled = false;
+  }
 });
 
 sendAnother.addEventListener('click', () => {
