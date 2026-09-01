@@ -4,159 +4,231 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>(function(){try{if(localStorage.getItem('iec-theme')==='light'){document.documentElement.classList.add('light-mode');}}catch(e){}})();</script>
-<title>Dashboard — TIEC Admin</title>
-  <link
-  rel="icon"
-  type="image/png"
-  href="../assets/images/icon.png"
->
-<link
-  rel="apple-touch-icon"
-  href="../assets/images/icon.png"
->
+<title>Dashboard — Admin Portal — Innovative Explorer Club</title>
+<link rel="icon" type="image/png" href="../../assets/images/icon.png">
+<link rel="apple-touch-icon" href="../../assets/images/icon.png">
 <meta name="robots" content="noindex, nofollow">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css">
+
+<!-- Boxicons Free -->
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<!-- Basic Icons -->
+<link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
+<!-- Filled Icons -->
+<link href="https://cdn.boxicons.com/3.0.8/fonts/filled/boxicons-filled.min.css" rel="stylesheet">
+<!-- Brand Icons -->
+<link href="https://cdn.boxicons.com/3.0.8/fonts/brands/boxicons-brands.min.css" rel="stylesheet">
+
 <link rel="stylesheet" href="../../css/admin/dashboard.css">
 </head>
 <body>
 
-<!-- ============ SIDEBAR ============ -->
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-top">
-    <a href="dashboard.html" class="sb-logo">
-      <img src="../../assets/images/logo-icon.png" alt="Innovative Explorer Club logo">
-      <span>TIEC Admin</span>
-    </a>
-    <button class="icon-btn sb-close" id="sbClose" aria-label="Close menu"><i class="fi-x"></i></button>
-  </div>
+<!-- ============ MOBILE SIDEBAR BACKDROP ============ -->
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
-  <nav class="sb-nav">
-    <a href="dashboard.html" class="sb-link active"><i class="fi-home"></i><span>Dashboard</span></a>
-    <a href="membership-applications.html" class="sb-link"><i class="fi-clipboard-notes"></i><span>Membership Applications</span><span class="sb-badge" id="badgeApplications"></span></a>
-    <a href="students.html" class="sb-link"><i class="fi-torsos-all"></i><span>Students</span></a>
-    <a href="attendance.html" class="sb-link"><i class="fi-check"></i><span>Attendance</span></a>
-    <a href="achievements.html" class="sb-link"><i class="fi-trophy"></i><span>Achievements</span></a>
-    <a href="resources.html" class="sb-link"><i class="fi-page-multiple"></i><span>Resources</span></a>
-    <a href="lms.html" class="sb-link"><i class="fi-book-bookmark"></i><span>LMS</span></a>
-    <a href="calendar-events.html" class="sb-link"><i class="fi-calendar"></i><span>Calendar &amp; Events</span></a>
-    <a href="announcements.html" class="sb-link"><i class="fi-megaphone"></i><span>Announcements</span></a>
-    <a href="messages.html" class="sb-link"><i class="fi-mail"></i><span>Messages</span></a>
-    <a href="notifications.html" class="sb-link"><i class="fi-alert"></i><span>Notifications</span><span class="sb-badge" id="badgeNotifications"></span></a>
-    <a href="settings.html" class="sb-link"><i class="fi-widget"></i><span>Settings</span></a>
+<!-- ============ SIDEBAR (full 12-item nav) ============ -->
+<aside class="sidebar" id="sidebar">
+  <a href="dashboard.html" class="side-logo">
+    <img src="../../assets/images/logo-icon.png" alt="Innovative Explorer Club logo">
+    <span>TIEC Admin</span>
+  </a>
+
+  <nav class="side-nav">
+    <a href="dashboard.html" class="side-link active" data-page="dashboard"><i class="bx bxs-dashboard"></i><span>Dashboard</span></a>
+    <a href="membership-applications.html" class="side-link" data-page="applications"><i class="bx bx-clipboard"></i><span>Membership Applications</span><span class="nav-badge" id="navBadgeApplications" hidden></span></a>
+    <a href="students.html" class="side-link" data-page="students"><i class="bx bx-group"></i><span>Students</span></a>
+    <a href="attendance.html" class="side-link" data-page="attendance"><i class="bx bx-calendar-check"></i><span>Attendance</span></a>
+    <a href="achievements.html" class="side-link" data-page="achievements"><i class="bx bx-trophy"></i><span>Achievements</span></a>
+    <a href="resources.html" class="side-link" data-page="resources"><i class="bx bx-folder-open"></i><span>Resources</span></a>
+    <a href="lms.html" class="side-link" data-page="lms"><i class="bx bx-edit-alt"></i><span>LMS</span></a>
+    <a href="calendar-events.html" class="side-link" data-page="calendar-events"><i class="bx bx-calendar-event"></i><span>Calendar &amp; Events</span></a>
+    <a href="announcements.html" class="side-link" data-page="announcements"><i class="bx bx-megaphone"></i><span>Announcements</span></a>
+    <a href="messages.html" class="side-link" data-page="messages"><i class="bx bx-envelope"></i><span>Messages</span></a>
+    <a href="notifications.html" class="side-link" data-page="notifications"><i class="bx bx-bell"></i><span>Notifications</span><span class="nav-badge" id="navBadgeNotifications" hidden></span></a>
+    <a href="settings.html" class="side-link" data-page="settings"><i class="bx bx-cog"></i><span>Settings</span></a>
   </nav>
 
-  <div class="sb-operator">
-    <div class="op-avatar" id="opAvatar">--</div>
-    <div class="op-info">
-      <span class="op-name" id="opName">Loading…</span>
-      <span class="op-role" id="opRole">—</span>
-    </div>
-    <button class="icon-btn" id="signOutBtn" aria-label="Sign out"><i class="fi-power"></i></button>
-  </div>
+  <button class="side-logout" id="logoutBtnSide"><i class="bx bx-log-out"></i><span>Sign Out</span></button>
 </aside>
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-<!-- ============ MAIN ============ -->
-<div class="main-wrap">
-  <header class="topbar">
-    <button class="icon-btn sb-open" id="sbOpen" aria-label="Open menu"><i class="fi-list-thumbnails"></i></button>
-    <div class="topbar-title">
-      <h1>Dashboard</h1>
-      <p id="todayDate">—</p>
+<!-- ============ TOPBAR ============ -->
+<header class="topbar" id="topbar">
+  <div class="topbar-left">
+    <button class="icon-btn" id="hamburger" aria-label="Toggle menu"><i class="bx bx-menu"></i></button>
+    <span class="topbar-title">Dashboard</span>
+  </div>
+
+  <div class="topbar-right">
+    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="bx bx-moon"></i></button>
+
+    <div class="dropdown-wrap">
+      <button class="icon-btn" id="bellBtn" aria-label="Notifications">
+        <i class="bx bx-bell"></i>
+        <span class="badge-dot" id="bellBadge" hidden></span>
+      </button>
+      <div class="dropdown-panel" id="bellDropdown">
+        <div class="dropdown-head"><span>Notifications</span><a href="notifications.html">View all</a></div>
+        <div class="dropdown-list" id="bellList">
+          <p class="dropdown-empty">No notifications yet.</p>
+        </div>
+      </div>
     </div>
-    <div class="topbar-actions">
-      <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="fi-contrast"></i></button>
-      <a href="notifications.html" class="icon-btn bell-btn" aria-label="Notifications">
-        <i class="fi-alert"></i><span class="bell-dot" id="bellDot" hidden></span>
-      </a>
-    </div>
-  </header>
 
-  <main class="content">
-    <section class="welcome-banner glass">
-      <div>
-        <p class="eyebrow">Welcome back</p>
-        <h2 id="welcomeName">—</h2>
-        <p id="welcomeSub">Here's what's happening at the club today.</p>
+    <div class="dropdown-wrap">
+      <button class="avatar-btn" id="avatarBtn" aria-label="Account menu">
+        <span class="avatar-circle" id="topAvatar">--</span>
+      </button>
+      <div class="dropdown-panel dropdown-panel-right" id="avatarDropdown">
+        <div class="dropdown-profile">
+          <span class="avatar-circle" id="ddAvatar">--</span>
+          <div>
+            <div class="dd-name" id="ddName">Loading…</div>
+            <div class="dd-level" id="ddRole">—</div>
+          </div>
+        </div>
+        <a href="settings.html" class="dropdown-item"><i class="bx bx-cog"></i> Settings</a>
+        <button class="dropdown-item dropdown-item-danger" id="logoutBtnTop"><i class="bx bx-log-out"></i> Sign Out</button>
       </div>
-      <div class="quick-actions">
-        <a href="membership-applications.html" class="btn btn-outline btn-sm"><i class="fi-clipboard-notes"></i><span>Review Applications</span></a>
-        <a href="calendar-events.html" class="btn btn-outline btn-sm"><i class="fi-plus"></i><span>Add Event</span></a>
-        <a href="announcements.html" class="btn btn-lime btn-sm"><i class="fi-megaphone"></i><span>Post Announcement</span></a>
-      </div>
-    </section>
-
-    <section class="stats-grid">
-      <a href="students.html" class="stat-card glass">
-        <div class="stat-icon icon-blue"><i class="fi-torsos-all"></i></div>
-        <div class="stat-body">
-          <span class="stat-value" id="statStudents">—</span>
-          <span class="stat-label">Total Students</span>
-        </div>
-      </a>
-      <a href="membership-applications.html" class="stat-card glass">
-        <div class="stat-icon icon-lime"><i class="fi-clipboard-notes"></i></div>
-        <div class="stat-body">
-          <span class="stat-value" id="statApplications">—</span>
-          <span class="stat-label">Pending Applications</span>
-        </div>
-      </a>
-      <a href="attendance.html" class="stat-card glass">
-        <div class="stat-icon icon-blue"><i class="fi-check"></i></div>
-        <div class="stat-body">
-          <span class="stat-value" id="statAttendance">—</span>
-          <span class="stat-label">Attendance Today</span>
-        </div>
-      </a>
-      <a href="calendar-events.html" class="stat-card glass">
-        <div class="stat-icon icon-lime"><i class="fi-calendar"></i></div>
-        <div class="stat-body">
-          <span class="stat-value" id="statEvents">—</span>
-          <span class="stat-label">Upcoming Events</span>
-        </div>
-        <span class="stat-sub" id="statEventsSub">—</span>
-      </a>
-    </section>
-
-    <section class="panel-grid">
-      <div class="panel-card glass">
-        <div class="panel-head">
-          <h3>Recent Notifications</h3>
-          <a href="notifications.html" class="panel-link">View all <i class="fi-arrow-right"></i></a>
-        </div>
-        <ul class="notif-list" id="notifList">
-          <li class="notif-empty">Loading notifications…</li>
-        </ul>
-      </div>
-
-      <div class="panel-card glass">
-        <div class="panel-head">
-          <h3>Next Up</h3>
-          <a href="calendar-events.html" class="panel-link">Calendar <i class="fi-arrow-right"></i></a>
-        </div>
-        <ul class="event-list" id="eventList">
-          <li class="notif-empty">Loading events…</li>
-        </ul>
-      </div>
-    </section>
-  </main>
-</div>
-
-<div class="modal-overlay" id="signOutModal">
-  <div class="modal-card glass">
-    <div class="icon-badge"><i class="fi-power"></i></div>
-    <h3>Sign out?</h3>
-    <p>You'll need to sign back in with the club admin credentials and your own login to make changes again.</p>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" id="cancelSignOut">Cancel</button>
-      <button class="btn btn-lime" id="confirmSignOut">Sign Out</button>
     </div>
   </div>
-</div>
+</header>
+
+<!-- ============ MAIN CONTENT ============ -->
+<main class="dash-main">
+
+  <section class="welcome-banner glass">
+    <div>
+      <span class="eyebrow">Welcome back</span>
+      <h1 id="welcomeName">Loading your dashboard…</h1>
+      <p id="welcomeSub">Here's what's happening at the club today.</p>
+    </div>
+    <i class="bx bxs-briefcase welcome-icon"></i>
+  </section>
+
+  <div class="grid-2">
+    <!-- OPERATOR SUMMARY -->
+    <div class="card glass profile-summary">
+      <span class="avatar-circle avatar-lg" id="profileAvatar">--</span>
+      <div class="profile-summary-info">
+        <h3 id="profileName">—</h3>
+        <span class="level-badge" id="profileRole">—</span>
+        <a href="settings.html" class="card-link">Manage staff &amp; settings <i class="bx bx-right-arrow-alt"></i></a>
+      </div>
+    </div>
+
+    <!-- APPLICATIONS SNAPSHOT -->
+    <div class="card glass streak-card">
+      <div class="card-head">
+        <h3><i class="bx bx-clipboard"></i> Membership Applications</h3>
+        <a href="membership-applications.html" class="card-link">Review <i class="bx bx-right-arrow-alt"></i></a>
+      </div>
+      <div class="status-bar" id="statusBar">
+        <span class="status-seg seg-pending" id="segPending" style="flex:1;"></span>
+        <span class="status-seg seg-approved" id="segApproved" style="flex:1;"></span>
+        <span class="status-seg seg-rejected" id="segRejected" style="flex:1;"></span>
+      </div>
+      <div class="streak-stats">
+        <div class="streak-stat">
+          <span class="streak-num" id="countPending">–</span>
+          <span class="streak-label">Pending</span>
+        </div>
+        <div class="streak-stat">
+          <span class="streak-num" id="countApproved">–</span>
+          <span class="streak-label">Approved</span>
+        </div>
+        <div class="streak-stat">
+          <span class="streak-num" id="countRejected">–</span>
+          <span class="streak-label">Rejected</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUICK BUTTONS -->
+  <div class="quick-grid">
+    <a href="membership-applications.html" class="quick-btn glass"><i class="bx bx-clipboard"></i><span>Applications</span></a>
+    <a href="students.html" class="quick-btn glass"><i class="bx bx-group"></i><span>Students</span></a>
+    <a href="calendar-events.html" class="quick-btn glass"><i class="bx bx-calendar-plus"></i><span>Add Event</span></a>
+    <a href="announcements.html" class="quick-btn glass"><i class="bx bx-megaphone"></i><span>Announce</span></a>
+  </div>
+
+  <!-- MINI STATS -->
+  <div class="mini-stats">
+    <div class="mini-stat glass">
+      <i class="bx bx-group"></i>
+      <div>
+        <span class="mini-stat-value" id="statStudents">—</span>
+        <span class="mini-stat-label">Total Students</span>
+      </div>
+    </div>
+    <div class="mini-stat glass">
+      <i class="bx bx-calendar-check"></i>
+      <div>
+        <span class="mini-stat-value" id="statAttendance">—</span>
+        <span class="mini-stat-label">Attendance Today</span>
+      </div>
+    </div>
+    <div class="mini-stat glass">
+      <i class="bx bx-calendar-event"></i>
+      <div>
+        <span class="mini-stat-value" id="statEvents">—</span>
+        <span class="mini-stat-label">Upcoming Events</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPCOMING EVENTS -->
+  <div class="card glass">
+    <div class="card-head">
+      <h3><i class="bx bx-calendar-event"></i> Upcoming Events</h3>
+      <a href="calendar-events.html" class="card-link">View all <i class="bx bx-right-arrow-alt"></i></a>
+    </div>
+    <div class="list-stack" id="eventsList">
+      <div class="list-skeleton"></div>
+      <div class="list-skeleton"></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <!-- NEW APPLICATIONS -->
+    <div class="card glass">
+      <div class="card-head">
+        <h3><i class="bx bx-user-plus"></i> New Applications</h3>
+        <a href="membership-applications.html" class="card-link">View all <i class="bx bx-right-arrow-alt"></i></a>
+      </div>
+      <div class="list-stack" id="applicationsList">
+        <div class="list-skeleton"></div>
+        <div class="list-skeleton"></div>
+      </div>
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    <div class="card glass">
+      <div class="card-head">
+        <h3><i class="bx bx-bell"></i> Recent Notifications</h3>
+        <a href="notifications.html" class="card-link">View all <i class="bx bx-right-arrow-alt"></i></a>
+      </div>
+      <div class="list-stack" id="notificationsList">
+        <div class="list-skeleton"></div>
+        <div class="list-skeleton"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dash-bottom-spacer"></div>
+</main>
+
+<!-- ============ PERSISTENT BOTTOM NAV (first 5 pages) ============ -->
+<nav class="bottom-nav" id="bottomNav">
+  <a href="dashboard.html" class="bottom-link active" data-page="dashboard"><i class="bx bxs-dashboard"></i><span>Home</span></a>
+  <a href="membership-applications.html" class="bottom-link" data-page="applications"><i class="bx bx-clipboard"></i><span>Apps</span></a>
+  <a href="students.html" class="bottom-link" data-page="students"><i class="bx bx-group"></i><span>Students</span></a>
+  <a href="attendance.html" class="bottom-link" data-page="attendance"><i class="bx bx-calendar-check"></i><span>Attend.</span></a>
+  <a href="settings.html" class="bottom-link" data-page="settings"><i class="bx bx-cog"></i><span>Settings</span></a>
+</nav>
 
 <script type="module" src="../../js/admin/dashboard.js"></script>
 </body>
