@@ -4,8 +4,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 import {
   getFirestore, doc, getDoc, setDoc, deleteField, onSnapshot,
-  collection, getCountFromServer, query, where, orderBy, limit, getDocs,
-  Timestamp
+  collection, query, where, orderBy, limit, getDocs, getCountFromServer, Timestamp
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -21,7 +20,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 /* =========================================================
-   AUTH GUARD — every admin page should start with this block
+   AUTH GUARD (same block every admin page must repeat)
    ========================================================= */
 const operatorRaw = sessionStorage.getItem('iec_operator');
 if (!operatorRaw) {
@@ -36,7 +35,6 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-/* Live watch: if another operator takes over the shared session, kick this tab out. */
 onSnapshot(doc(db, 'system', 'activeSession'), (snap) => {
   if (!snap.exists()) return;
   const data = snap.data();
@@ -49,53 +47,88 @@ onSnapshot(doc(db, 'system', 'activeSession'), (snap) => {
 });
 
 /* =========================================================
-   OPERATOR CHROME
+   HELPERS
    ========================================================= */
 function initials(name){
   return (name || '?').trim().split(/\s+/).map(w => w[0]).slice(0,2).join('').toUpperCase();
 }
-if (operator){
-  document.getElementById('opAvatar').textContent = initials(operator.fullName);
-  document.getElementById('opName').textContent = operator.fullName || operator.username;
-  document.getElementById('opRole').textContent = operator.role || 'teacher';
-  document.getElementById('welcomeName').textContent = (operator.fullName || operator.username).split(' ')[0]
-    ? `Welcome back, ${(operator.fullName || operator.username)}` : 'Welcome back';
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str == null ? '' : String(str);
+  return d.innerHTML;
+}
+function timeAgo(date){
+  const s = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (s < 60) return 'Just now';
+  if (s < 3600) return Math.floor(s/60) + 'm ago';
+  if (s < 86400) return Math.floor(s/3600) + 'h ago';
+  return Math.floor(s/86400) + 'd ago';
 }
 
-document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-GB', {
-  weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-});
+/* =========================================================
+   OPERATOR CHROME
+   ========================================================= */
+if (operator){
+  const name = operator.fullName || operator.username;
+  const role = operator.role || 'teacher';
+  document.getElementById('topAvatar').textContent = initials(name);
+  document.getElementById('ddAvatar').textContent = initials(name);
+  document.getElementById('ddName').textContent = name;
+  document.getElementById('ddRole').textContent = role;
+  document.getElementById('profileAvatar').textContent = initials(name);
+  document.getElementById('profileName').textContent = name;
+  document.getElementById('profileRole').textContent = role;
+  document.getElementById('welcomeName').textContent = `Welcome back, ${name.split(' ')[0]}`;
+}
 
 /* =========================================================
    THEME (persisted)
    ========================================================= */
 const themeToggle = document.getElementById('themeToggle');
-themeToggle.innerHTML = document.documentElement.classList.contains('light-mode') ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+themeToggle.innerHTML = document.documentElement.classList.contains('light-mode') ? "<i class='bx bx-sun'></i>" : "<i class='bx bx-moon'></i>";
 themeToggle.addEventListener('click', () => {
   document.documentElement.classList.toggle('light-mode');
   const light = document.documentElement.classList.contains('light-mode');
-  themeToggle.innerHTML = light ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+  themeToggle.innerHTML = light ? "<i class='bx bx-sun'></i>" : "<i class='bx bx-moon'></i>";
   try{ localStorage.setItem('iec-theme', light ? 'light' : 'dark'); }catch(e){}
 });
 
 /* =========================================================
-   SIDEBAR (mobile drawer)
+   SIDEBAR (mobile off-canvas)
    ========================================================= */
 const sidebar = document.getElementById('sidebar');
-const overlay = document.getElementById('sidebarOverlay');
-function openSidebar(){ sidebar.classList.add('open'); overlay.classList.add('show'); }
-function closeSidebar(){ sidebar.classList.remove('open'); overlay.classList.remove('show'); }
-document.getElementById('sbOpen').addEventListener('click', openSidebar);
-document.getElementById('sbClose').addEventListener('click', closeSidebar);
-overlay.addEventListener('click', closeSidebar);
+const backdrop = document.getElementById('sidebarBackdrop');
+function openSidebar(){ sidebar.classList.add('open'); backdrop.classList.add('show'); }
+function closeSidebar(){ sidebar.classList.remove('open'); backdrop.classList.remove('show'); }
+document.getElementById('hamburger').addEventListener('click', openSidebar);
+backdrop.addEventListener('click', closeSidebar);
+
+/* =========================================================
+   DROPDOWNS (bell + avatar)
+   ========================================================= */
+function setupDropdown(btnId, panelId){
+  const btn = document.getElementById(btnId);
+  const panel = document.getElementById(panelId);
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = panel.classList.contains('open');
+    document.querySelectorAll('.dropdown-panel.open').forEach(p => p.classList.remove('open'));
+    if (!isOpen) panel.classList.add('open');
+  });
+}
+setupDropdown('bellBtn', 'bellDropdown');
+setupDropdown('avatarBtn', 'avatarDropdown');
+document.addEventListener('click', () => {
+  document.querySelectorAll('.dropdown-panel.open').forEach(p => p.classList.remove('open'));
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') document.querySelectorAll('.dropdown-panel.open').forEach(p => p.classList.remove('open'));
+});
 
 /* =========================================================
    SIGN OUT
    ========================================================= */
-const signOutModal = document.getElementById('signOutModal');
-document.getElementById('signOutBtn').addEventListener('click', () => signOutModal.classList.add('show'));
-document.getElementById('cancelSignOut').addEventListener('click', () => signOutModal.classList.remove('show'));
-document.getElementById('confirmSignOut').addEventListener('click', async () => {
+async function doSignOut(){
   try{
     if (operator){
       const sessionRef = doc(db, 'system', 'activeSession');
@@ -108,7 +141,9 @@ document.getElementById('confirmSignOut').addEventListener('click', async () => 
   sessionStorage.removeItem('iec_operator');
   await signOut(auth);
   window.location.href = 'admin-login.html';
-});
+}
+document.getElementById('logoutBtnSide').addEventListener('click', doSignOut);
+document.getElementById('logoutBtnTop').addEventListener('click', doSignOut);
 
 /* =========================================================
    DASHBOARD DATA
@@ -116,8 +151,8 @@ document.getElementById('confirmSignOut').addEventListener('click', async () => 
    - students/{uid}                    → count = Total Students
    - applications/{id}.status          → 'pending' | 'approved' | 'rejected'
    - attendanceRecords/{id}: { date: 'YYYY-MM-DD', status: 'present'|'absent' }
-   - events/{id}: { title, date: Timestamp, type }
-   - notifications/{id}: { title, type, createdAt: Timestamp }, newest first
+   - events/{id}: { title, date: Timestamp }
+   - notifications/{id}: { title, type, createdAt: Timestamp, readBy?: [usernames] }
    ========================================================= */
 async function loadStudentsCount(){
   try{
@@ -126,26 +161,12 @@ async function loadStudentsCount(){
   }catch(e){ console.error(e); document.getElementById('statStudents').textContent = '—'; }
 }
 
-async function loadPendingApplications(){
-  try{
-    const q = query(collection(db, 'applications'), where('status', '==', 'pending'));
-    const snap = await getCountFromServer(q);
-    const count = snap.data().count;
-    document.getElementById('statApplications').textContent = count;
-    const badge = document.getElementById('badgeApplications');
-    if (count > 0){ badge.textContent = count; badge.classList.add('show'); }
-  }catch(e){ console.error(e); document.getElementById('statApplications').textContent = '—'; }
-}
-
 async function loadAttendanceToday(){
   try{
     const todayStr = new Date().toISOString().slice(0,10);
     const q = query(collection(db, 'attendanceRecords'), where('date', '==', todayStr));
     const snap = await getDocs(q);
-    if (snap.empty){
-      document.getElementById('statAttendance').textContent = '—';
-      return;
-    }
+    if (snap.empty){ document.getElementById('statAttendance').textContent = '—'; return; }
     let present = 0;
     snap.forEach(d => { if (d.data().status === 'present') present++; });
     document.getElementById('statAttendance').textContent = `${present}/${snap.size}`;
@@ -153,93 +174,135 @@ async function loadAttendanceToday(){
 }
 
 async function loadUpcomingEvents(){
+  const listEl = document.getElementById('eventsList');
   try{
     const now = Timestamp.fromDate(new Date());
     const q = query(collection(db, 'events'), where('date', '>=', now), orderBy('date', 'asc'), limit(5));
     const snap = await getDocs(q);
     document.getElementById('statEvents').textContent = snap.size;
 
-    const listEl = document.getElementById('eventList');
     if (snap.empty){
-      document.getElementById('statEventsSub').textContent = 'None scheduled';
-      listEl.innerHTML = '<li class="notif-empty">No upcoming events yet.</li>';
+      listEl.innerHTML = '<p class="list-empty">No upcoming events yet.</p>';
       return;
     }
-    const first = snap.docs[0].data();
-    document.getElementById('statEventsSub').textContent = first.title || 'Untitled event';
-
     listEl.innerHTML = '';
     snap.forEach(d => {
       const ev = d.data();
-      const when = ev.date && ev.date.toDate ? ev.date.toDate().toLocaleDateString('en-GB', { day:'numeric', month:'short' }) : '';
-      const li = document.createElement('li');
-      li.innerHTML = `<span class="item-icon"><i class="fi-calendar"></i></span>
-        <span class="item-body"><span class="item-title">${escapeHtml(ev.title || 'Untitled event')}</span>
-        <span class="item-meta">${when}</span></span>`;
-      listEl.appendChild(li);
+      const when = ev.date && ev.date.toDate ? ev.date.toDate().toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' }) : '';
+      const row = document.createElement('div');
+      row.className = 'list-row';
+      row.innerHTML = `<span class="list-row-icon"><i class="bx bx-calendar-event"></i></span>
+        <span class="list-row-body"><span class="list-row-title">${escapeHtml(ev.title || 'Untitled event')}</span>
+        <span class="list-row-meta">${when}</span></span>`;
+      listEl.appendChild(row);
     });
   }catch(e){
     console.error(e);
     document.getElementById('statEvents').textContent = '—';
-    document.getElementById('eventList').innerHTML = '<li class="notif-empty">Couldn\'t load events.</li>';
+    listEl.innerHTML = '<p class="list-empty">Couldn\'t load events.</p>';
   }
 }
 
-async function loadRecentNotifications(){
+async function loadApplications(){
+  const listEl = document.getElementById('applicationsList');
   try{
-    const q = query(collection(db, 'notifications'), orderBy('createdAt', 'desc'), limit(5));
-    const snap = await getDocs(q);
-    const listEl = document.getElementById('notifList');
-    if (snap.empty){
-      listEl.innerHTML = '<li class="notif-empty">No notifications yet.</li>';
+    const snap = await getDocs(query(collection(db, 'applications'), orderBy('submittedAt', 'desc'), limit(50)));
+    const counts = { pending:0, approved:0, rejected:0 };
+    snap.forEach(d => { const s = d.data().status; if (counts[s] !== undefined) counts[s]++; });
+
+    document.getElementById('countPending').textContent = counts.pending;
+    document.getElementById('countApproved').textContent = counts.approved;
+    document.getElementById('countRejected').textContent = counts.rejected;
+
+    const total = counts.pending + counts.approved + counts.rejected || 1;
+    document.getElementById('segPending').style.flex = counts.pending / total;
+    document.getElementById('segApproved').style.flex = counts.approved / total;
+    document.getElementById('segRejected').style.flex = counts.rejected / total;
+
+    if (counts.pending > 0){
+      const badge = document.getElementById('navBadgeApplications');
+      badge.textContent = counts.pending; badge.hidden = false;
+    }
+
+    const recent = snap.docs.slice(0, 5);
+    if (recent.length === 0){
+      listEl.innerHTML = '<p class="list-empty">No applications yet.</p>';
       return;
     }
+    listEl.innerHTML = '';
+    recent.forEach(d => {
+      const a = d.data();
+      const when = a.submittedAt && a.submittedAt.toDate ? timeAgo(a.submittedAt.toDate()) : '';
+      const row = document.createElement('div');
+      row.className = 'list-row';
+      row.innerHTML = `<span class="list-row-icon"><i class="bx bx-user-plus"></i></span>
+        <span class="list-row-body"><span class="list-row-title">${escapeHtml(a.studentName || 'Unnamed applicant')}</span>
+        <span class="list-row-meta">${when}</span></span>
+        <span class="list-row-pill pill-${a.status || 'pending'}">${escapeHtml(a.status || 'pending')}</span>`;
+      listEl.appendChild(row);
+    });
+  }catch(e){
+    console.error(e);
+    listEl.innerHTML = '<p class="list-empty">Couldn\'t load applications.</p>';
+  }
+}
+
+async function loadNotifications(){
+  const listEl = document.getElementById('notificationsList');
+  const bellListEl = document.getElementById('bellList');
+  try{
+    const snap = await getDocs(query(collection(db, 'notifications'), orderBy('createdAt', 'desc'), limit(5)));
+    if (snap.empty){
+      listEl.innerHTML = '<p class="list-empty">No notifications yet.</p>';
+      bellListEl.innerHTML = '<p class="dropdown-empty">No notifications yet.</p>';
+      return;
+    }
+
     let unread = 0;
     listEl.innerHTML = '';
+    bellListEl.innerHTML = '';
     snap.forEach(d => {
       const n = d.data();
       if (!n.readBy || !operator || !n.readBy.includes(operator.username)) unread++;
       const when = n.createdAt && n.createdAt.toDate ? timeAgo(n.createdAt.toDate()) : '';
-      const li = document.createElement('li');
-      li.innerHTML = `<span class="item-icon"><i class="${iconForType(n.type)}"></i></span>
-        <span class="item-body"><span class="item-title">${escapeHtml(n.title || 'Notification')}</span>
-        <span class="item-meta">${when}</span></span>`;
-      listEl.appendChild(li);
+
+      const row = document.createElement('div');
+      row.className = 'list-row';
+      row.innerHTML = `<span class="list-row-icon"><i class="${iconForType(n.type)}"></i></span>
+        <span class="list-row-body"><span class="list-row-title">${escapeHtml(n.title || 'Notification')}</span>
+        <span class="list-row-meta">${when}</span></span>`;
+      listEl.appendChild(row);
+
+      const bellRow = document.createElement('div');
+      bellRow.className = 'notif-row';
+      bellRow.innerHTML = `<i class="${iconForType(n.type)}"></i>
+        <div><div class="notif-title">${escapeHtml(n.title || 'Notification')}</div>
+        <div class="notif-time">${when}</div></div>`;
+      bellListEl.appendChild(bellRow);
     });
+
     if (unread > 0){
-      const badge = document.getElementById('badgeNotifications');
-      badge.textContent = unread; badge.classList.add('show');
-      document.getElementById('bellDot').hidden = false;
+      document.getElementById('bellBadge').hidden = false;
+      const navBadge = document.getElementById('navBadgeNotifications');
+      navBadge.textContent = unread; navBadge.hidden = false;
     }
   }catch(e){
     console.error(e);
-    document.getElementById('notifList').innerHTML = '<li class="notif-empty">Couldn\'t load notifications.</li>';
+    listEl.innerHTML = '<p class="list-empty">Couldn\'t load notifications.</p>';
+    bellListEl.innerHTML = '<p class="dropdown-empty">Couldn\'t load notifications.</p>';
   }
 }
-
 function iconForType(type){
   switch(type){
-    case 'application': return 'fi-clipboard-notes';
-    case 'quiz': return 'fi-book-bookmark';
-    case 'message': return 'fi-mail';
-    default: return 'fi-alert';
+    case 'application': return 'bx bx-clipboard';
+    case 'quiz': return 'bx bx-edit-alt';
+    case 'message': return 'bx bx-envelope';
+    default: return 'bx bx-bell';
   }
-}
-function timeAgo(date){
-  const s = Math.floor((Date.now() - date.getTime()) / 1000);
-  if (s < 60) return 'Just now';
-  if (s < 3600) return Math.floor(s/60) + 'm ago';
-  if (s < 86400) return Math.floor(s/3600) + 'h ago';
-  return Math.floor(s/86400) + 'd ago';
-}
-function escapeHtml(str){
-  const d = document.createElement('div');
-  d.textContent = str;
-  return d.innerHTML;
 }
 
 loadStudentsCount();
-loadPendingApplications();
 loadAttendanceToday();
 loadUpcomingEvents();
-loadRecentNotifications();
+loadApplications();
+loadNotifications();
