@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){try{if(localStorage.getItem('iec-theme')==='light'){document.documentElement.classList.add('light-mode');}}catch(e){}})();</script>
 <title>Innovative Explorer Club — Learn. Build. Innovate. Explore.</title>
 <link
   rel="icon"
@@ -20,8 +21,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-<!-- Icon set: Foundation Icons (used everywhere instead of emoji) -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css">
+<!-- Boxicons -->
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/filled/boxicons-filled.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/brands/boxicons-brands.min.css" rel="stylesheet">
 
 <style>
 /* =========================================================
@@ -91,7 +95,7 @@ p{margin:0;color:var(--gray);}
 a{color:inherit;text-decoration:none;}
 img{max-width:100%;display:block;}
 button{font-family:inherit;cursor:pointer;}
-i[class^="fi-"]{line-height:1;}
+i[class^="bx"]{line-height:1;}
 .eyebrow{
   font-size:.72rem;
   font-weight:600;
@@ -451,11 +455,11 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   <div class="nav-right">
     <div class="search-wrap" id="searchWrap">
       <input type="text" class="search-input" placeholder="Search...">
-      <button class="icon-btn" id="searchToggle" aria-label="Toggle search"><i class="fi-magnifying-glass"></i></button>
+      <button class="icon-btn" id="searchToggle" aria-label="Toggle search"><i class="bx bx-search"></i></button>
     </div>
-    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="fi-contrast"></i></button>
+    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="bx bx-moon"></i></button>
     <a href="pages/membership.html" class="btn btn-lime nav-join"><span class="full">Join Community</span></a>
-    <button class="icon-btn hamburger" id="hamburger" aria-label="Toggle menu"><i class="fi-list-thumbnails"></i></button>
+    <button class="icon-btn hamburger" id="hamburger" aria-label="Toggle menu"><i class="bx bx-menu"></i></button>
   </div>
 </nav>
 
@@ -480,7 +484,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     <div class="stat"><div class="num" data-count="500">0</div><div class="label">Students Inspired</div></div>
     <div class="stat"><div class="num" data-count="20">0</div><div class="label">Tech Programs</div></div>
     <div class="stat"><div class="num" data-count="100">0</div><div class="label">Projects Built</div></div>
-    <div class="stat"><div class="static-line"><i class="fi-trophy"></i>National &amp; International Competitions</div></div>
+    <div class="stat"><div class="static-line"><i class="bx bx-trophy"></i>National &amp; International Competitions</div></div>
   </div>
 </header>
 
@@ -513,14 +517,14 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     <p>Eight tracks, one goal — give you the tools to build things that work.</p>
   </div>
   <div class="programs-grid container reveal">
-    <div class="program-card glass"><i class="icon fi-wrench"></i><h3>Robotics</h3><p>Design, wire, and program robots from the ground up.</p></div>
-    <div class="program-card glass"><i class="icon fi-html5"></i><h3>Programming</h3><p>From first script to full applications.</p></div>
-    <div class="program-card glass"><i class="icon fi-widget"></i><h3>3D Printing</h3><p>Model, slice, and print your own parts.</p></div>
-    <div class="program-card glass"><i class="icon fi-layout"></i><h3>CAD</h3><p>Precision design for real-world builds.</p></div>
-    <div class="program-card glass"><i class="icon fi-compass"></i><h3>Drone Technology</h3><p>Flight controllers, ESCs, and frames.</p></div>
-    <div class="program-card glass"><i class="icon fi-paint-bucket"></i><h3>Graphics Design</h3><p>Branding, UI, and visual storytelling.</p></div>
-    <div class="program-card glass"><i class="icon fi-lightbulb"></i><h3>AI</h3><p>Practical machine learning projects.</p></div>
-    <div class="program-card glass"><i class="icon fi-laptop"></i><h3>Computer Hardware and Software</h3><p>Repair, repurpose, and rebuild electronics.</p></div>
+    <div class="program-card glass"><i class="icon bx bx-wrench"></i><h3>Robotics</h3><p>Design, wire, and program robots from the ground up.</p></div>
+    <div class="program-card glass"><i class="icon bx bx-code-alt"></i><h3>Programming</h3><p>From first script to full applications.</p></div>
+    <div class="program-card glass"><i class="icon bx bx-printer"></i><h3>3D Printing</h3><p>Model, slice, and print your own parts.</p></div>
+    <div class="program-card glass"><i class="icon bx bx-layout"></i><h3>CAD</h3><p>Precision design for real-world builds.</p></div>
+    <div class="program-card glass"><i class="icon bx bx-compass"></i><h3>Drone Technology</h3><p>Flight controllers, ESCs, and frames.</p></div>
+    <div class="program-card glass"><i class="icon bx bx-paint"></i><h3>Graphics Design</h3><p>Branding, UI, and visual storytelling.</p></div>
+    <div class="program-card glass"><i class="icon bx bx-sun"></i><h3>AI</h3><p>Practical machine learning projects.</p></div>
+    <div class="program-card glass"><i class="icon bx bx-laptop"></i><h3>Computer Hardware and Software</h3><p>Repair, repurpose, and rebuild electronics.</p></div>
   </div>
 </section>
 
@@ -533,14 +537,14 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     <h2>What membership actually gets you</h2>
   </div>
   <div class="why-grid container reveal">
-    <div class="why-card glass"><i class="icon fi-wrench"></i><h3>Hands-on Learning</h3><p>Every session ends with something you built.</p></div>
-    <div class="why-card glass"><i class="icon fi-trophy"></i><h3>Competitions</h3><p>Represent the club at national and international events.</p></div>
-    <div class="why-card glass"><i class="icon fi-torso-business"></i><h3>Mentorship</h3><p>Learn directly from experienced builders.</p></div>
-    <div class="why-card glass"><i class="icon fi-archive"></i><h3>Projects</h3><p>Take home real, working prototypes.</p></div>
-    <div class="why-card glass"><i class="icon fi-torsos"></i><h3>Networking</h3><p>Meet people who care about the same things you do.</p></div>
-    <div class="why-card glass"><i class="icon fi-burst-new"></i><h3>Innovation</h3><p>Space to try ideas nobody's graded on.</p></div>
-    <div class="why-card glass"><i class="icon fi-map"></i><h3>Tech Excursions</h3><p>Explore innovation centers and technology events beyond the classroom.</p></div>
-    <div class="why-card glass"><i class="icon fi-torsos-all"></i><h3>Community Hangouts</h3><p>Connect through social outings, team activities and community events.</p></div>
+    <div class="why-card glass"><i class="icon bx bx-wrench"></i><h3>Hands-on Learning</h3><p>Every session ends with something you built.</p></div>
+    <div class="why-card glass"><i class="icon bx bx-trophy"></i><h3>Competitions</h3><p>Represent the club at national and international events.</p></div>
+    <div class="why-card glass"><i class="icon bx bx-user"></i><h3>Mentorship</h3><p>Learn directly from experienced builders.</p></div>
+    <div class="why-card glass"><i class="icon bx bx-archive"></i><h3>Projects</h3><p>Take home real, working prototypes.</p></div>
+    <div class="why-card glass"><i class="icon bx bx-group"></i><h3>Networking</h3><p>Meet people who care about the same things you do.</p></div>
+    <div class="why-card glass"><i class="icon bx bx-bulb"></i><h3>Innovation</h3><p>Space to try ideas nobody's graded on.</p></div>
+    <div class="why-card glass"><i class="icon bx bx-map"></i><h3>Tech Excursions</h3><p>Explore innovation centers and technology events beyond the classroom.</p></div>
+    <div class="why-card glass"><i class="icon bx bx-community"></i><h3>Community Hangouts</h3><p>Connect through social outings, team activities and community events.</p></div>
   </div>
 </section>
 
@@ -558,8 +562,8 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       <span class="eyebrow">Robotics Showcase</span>
       <h3>Build Day: Autonomous Bots Demo</h3>
       <div class="event-meta">
-        <span><i class="fi-calendar"></i> Sat, Aug 22, 2026</span>
-        <span><i class="fi-map"></i> Main Innovation Hall</span>
+        <span><i class="bx bx-calendar"></i> Sat, Aug 22, 2026</span>
+        <span><i class="bx bx-map"></i> Main Innovation Hall</span>
       </div>
       <div class="countdown" id="countdown">
         <div><div class="n" id="cd-days">00</div><div class="l">Days</div></div>
@@ -664,7 +668,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     <h2>Ready to Begin?</h2>
     <p>Join Our WhatsApp Community Today.</p>
     <div class="cta-actions">
-      <a href="#" class="btn btn-lime"><i class="fi-telephone"></i> Contact WhatsApp</a>
+      <a href="#" class="btn btn-lime"><i class="bx bxl-whatsapp"></i> Contact WhatsApp</a>
       <a href="pages/membership.html" class="btn btn-outline">Register Interest</a>
     </div>
   </div>
@@ -682,10 +686,10 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       </div>
       <p style="font-size:.86rem;">Empowering young minds through technology and innovation.</p>
       <div class="social-row">
-        <a href="#" class="icon-btn glass" aria-label="Instagram"><i class="fi-social-instagram"></i></a>
-        <a href="#" class="icon-btn glass" aria-label="Facebook"><i class="fi-social-facebook"></i></a>
-        <a href="#" class="icon-btn glass" aria-label="WhatsApp"><i class="fi-telephone"></i></a>
-        <a href="https://maps.app.goo.gl/qfNDcXp3cec9hd2RA" class="icon-btn glass" aria-label="Map"><i class="fi-map"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="Instagram"><i class="bx bxl-instagram"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="Facebook"><i class="bx bxl-facebook"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="WhatsApp"><i class="bx bxl-whatsapp"></i></a>
+        <a href="https://maps.app.goo.gl/qfNDcXp3cec9hd2RA" class="icon-btn glass" aria-label="Map"><i class="bx bx-map"></i></a>
       </div>
     </div>
     <div class="footer-col">
@@ -700,7 +704,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     <div class="footer-col">
       <h4>Address</h4>
       
-      <div class="footer-address"><i class="fi-map"></i><span>Coderina EdTech Foundation, Department of Science, Technology and Innovation (DSTI)<br>No. 4 Ngozi Okonjo-Iweala Way, Utako District, Abuja 900103, Federal Capital Territory (FCT), Nigeria.</span></div>
+      <div class="footer-address"><i class="bx bx-map"></i><span>Coderina EdTech Foundation, Department of Science, Technology and Innovation (DSTI)<br>No. 4 Ngozi Okonjo-Iweala Way, Utako District, Abuja 900103, Federal Capital Territory (FCT), Nigeria.</span></div>
     </div>
     <div class="footer-map">
       <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3939.9483490731654!2d7.4445455775889355!3d9.068470288364598!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x104ddf81cc7ccb07%3A0xc50e6cfe01a43fac!2sCoderina%20Education%20and%20Technology%20Foundation!5e0!3m2!1sen!2sng!4v1785316511093!5m2!1sen!2sng" llowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
@@ -739,12 +743,27 @@ document.getElementById('searchToggle').addEventListener('click', () => {
   if (searchWrap.classList.contains('open')) searchWrap.querySelector('input').focus();
 });
 
-/* Dark / light toggle */
+/* Dark / light toggle (persisted) */
 const themeToggle = document.getElementById('themeToggle');
+
+themeToggle.innerHTML =
+  document.documentElement.classList.contains('light-mode')
+    ? "<i class='bx bx-sun'></i>"
+    : "<i class='bx bx-moon'></i>";
+
 themeToggle.addEventListener('click', () => {
   document.documentElement.classList.toggle('light-mode');
+
   const light = document.documentElement.classList.contains('light-mode');
-  themeToggle.innerHTML = light ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+
+  themeToggle.innerHTML =
+    light
+      ? "<i class='bx bx-sun'></i>"
+      : "<i class='bx bx-moon'></i>";
+
+  try {
+    localStorage.setItem('iec-theme', light ? 'light' : 'dark');
+  } catch(e) {}
 });
 
 /* =========================================================
