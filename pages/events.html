@@ -22,9 +22,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-<!-- Icon set: Foundation Icons (used everywhere instead of emoji) -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css">
-
+<!-- Boxicons -->
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/filled/boxicons-filled.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/brands/boxicons-brands.min.css" rel="stylesheet">
 <style>
 /* =========================================================
    DESIGN TOKENS — identical to home page
@@ -92,7 +94,7 @@ p{margin:0;color:var(--gray);}
 a{color:inherit;text-decoration:none;}
 img{max-width:100%;display:block;}
 button{font-family:inherit;cursor:pointer;}
-i[class^="fi-"]{line-height:1;}
+i[class^="bx"]{line-height:1;}
 .eyebrow{
   font-size:.72rem;
   font-weight:600;
@@ -513,11 +515,11 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   <div class="nav-right">
     <div class="search-wrap" id="searchWrap">
       <input type="text" class="search-input" placeholder="Search...">
-      <button class="icon-btn" id="searchToggle" aria-label="Toggle search"><i class="fi-magnifying-glass"></i></button>
+      <button class="icon-btn" id="searchToggle" aria-label="Toggle search"><i class="bx bx-search"></i></button>
     </div>
-    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="fi-contrast"></i></button>
+    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="bx bx-moon"></i></button>
     <a href="membership.html" class="btn btn-lime nav-join"><span class="full">Join Community</span></a>
-    <button class="icon-btn hamburger" id="hamburger" aria-label="Toggle menu"><i class="fi-list-thumbnails"></i></button>
+    <button class="icon-btn hamburger" id="hamburger" aria-label="Toggle menu"><i class="bx bx-menu"></i></button>
   </div>
 </nav>
 
@@ -530,7 +532,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
 
   <div class="breadcrumb">
     <a href="../index.html">Home</a>
-    <i class="fi-arrow-down" style="transform:rotate(-90deg);"></i>
+    <i class="bx bx-chevron-down" style="transform:rotate(-90deg);"></i>
     <span class="current">Events</span>
   </div>
 
@@ -575,9 +577,9 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       <span class="eyebrow">Flagship · Club-wide</span>
       <h3>STEM Expo 2026</h3>
       <div class="event-meta">
-        <span><i class="fi-calendar"></i> September 26, 2026</span>
-        <span><i class="fi-clock"></i> 9:00 AM</span>
-        <span><i class="fi-marker"></i> Coderina EdTech Foundation, Abuja</span>
+        <span><i class="bx bx-calendar"></i> September 26, 2026</span>
+        <span><i class="bx bx-time"></i> 9:00 AM</span>
+        <span><i class="bx bx-map-pin"></i> Coderina EdTech Foundation, Abuja</span>
       </div>
       <p>Every academy under one roof for a day — live robot demos, AI project booths, drone flight zones, and a maker market of member-built projects.</p>
       <div class="countdown" id="countdown">
@@ -604,7 +606,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       </div>
       <div class="event-mini-body">
         <p>Tour the workshop, meet mentors, and see this term's robots in action.</p>
-        <div class="event-mini-meta"><i class="fi-marker"></i> Club Workshop, Abuja</div>
+        <div class="event-mini-meta"><i class="bx bx-map-pin"></i> Club Workshop, Abuja</div>
       </div>
     </div>
     <div class="event-mini-card glass">
@@ -617,7 +619,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       </div>
       <div class="event-mini-body">
         <p>We unpack this year's FIRST LEGO League challenge theme together as teams form.</p>
-        <div class="event-mini-meta"><i class="fi-marker"></i> Club Workshop, Abuja</div>
+        <div class="event-mini-meta"><i class="bx bx-map-pin"></i> Club Workshop, Abuja</div>
       </div>
     </div>
     <div class="event-mini-card glass">
@@ -630,7 +632,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       </div>
       <div class="event-mini-body">
         <p>Members race custom-built FPV drones through our indoor gate course.</p>
-        <div class="event-mini-meta"><i class="fi-marker"></i> Club Workshop, Abuja</div>
+        <div class="event-mini-meta"><i class="bx bx-map-pin"></i> Club Workshop, Abuja</div>
       </div>
     </div>
   </div>
@@ -651,8 +653,8 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       <div class="cal-head">
         <h3 id="calMonthLabel">Month Year</h3>
         <div class="cal-nav">
-          <button id="calPrev" aria-label="Previous month"><i class="fi-arrow-left"></i></button>
-          <button id="calNext" aria-label="Next month"><i class="fi-arrow-right"></i></button>
+          <button id="calPrev" aria-label="Previous month"><i class="bx bx-chevron-left"></i></button>
+          <button id="calNext" aria-label="Next month"><i class="bx bx-chevron-right"></i></button>
         </div>
       </div>
       <div class="cal-grid" id="calGrid"></div>
@@ -676,16 +678,16 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     <p>The club's own signature events, held every year.</p>
   </div>
   <div class="flagship-grid container reveal">
-    <div class="flagship-card glass"><i class="icon fi-podium"></i><span class="season">Spring</span><h4>Innovation Explorers Summit</h4><p>Our biggest gathering — keynote talks, workshops, and cross-academy showcases.</p></div>
-    <div class="flagship-card glass"><i class="icon fi-widget"></i><span class="season">Summer</span><h4>Maker Faire</h4><p>A weekend market of member-built inventions, open to the public.</p></div>
-    <div class="flagship-card glass"><i class="icon fi-trophy"></i><span class="season">Autumn</span><h4>Robotics Championship</h4><p>Our internal robotics league finals, before national qualifiers.</p></div>
-    <div class="flagship-card glass"><i class="icon fi-lightbulb"></i><span class="season">Winter</span><h4>AI Festival</h4><p>Model demos, ethics panels, and a build-in-a-day AI hackathon.</p></div>
-    <div class="flagship-card glass"><i class="icon fi-graph-bar"></i><span class="season">September</span><h4>STEM Expo</h4><p>Every academy under one roof for a single showcase day.</p></div>
-    <div class="flagship-card glass"><i class="icon fi-graph-trend"></i><span class="season">Autumn</span><h4>Startup Demo Day</h4><p>Entrepreneurship Hub teams pitch real ventures to a panel of judges.</p></div>
-    <div class="flagship-card glass"><i class="icon fi-idea-bulb"></i><span class="season">Spring</span><h4>Young Inventors Challenge</h4><p>A design-and-build sprint for our youngest Explorers.</p></div>
-    <div class="flagship-card glass"><i class="icon fi-compass"></i><span class="season">October</span><h4>Drone Racing Championship</h4><p>Qualifiers and finals across our indoor FPV racing circuit.</p></div>
-    <div class="flagship-card glass"><i class="icon fi-briefcase"></i><span class="season">Winter</span><h4>Tech Career Fair</h4><p>Members meet mentors, alumni, and partner companies hiring in tech.</p></div>
-    <div class="flagship-card glass"><i class="icon fi-crown"></i><span class="season">November</span><h4>Innovation Awards Night</h4><p>A formal evening celebrating the year's standout projects and members.</p></div>
+    <div class="flagship-card glass"><i class="icon bx bx-award"></i><span class="season">Spring</span><h4>Innovation Explorers Summit</h4><p>Our biggest gathering — keynote talks, workshops, and cross-academy showcases.</p></div>
+    <div class="flagship-card glass"><i class="icon bx bx-printer"></i><span class="season">Summer</span><h4>Maker Faire</h4><p>A weekend market of member-built inventions, open to the public.</p></div>
+    <div class="flagship-card glass"><i class="icon bx bx-trophy"></i><span class="season">Autumn</span><h4>Robotics Championship</h4><p>Our internal robotics league finals, before national qualifiers.</p></div>
+    <div class="flagship-card glass"><i class="icon bx bx-sun"></i><span class="season">Winter</span><h4>AI Festival</h4><p>Model demos, ethics panels, and a build-in-a-day AI hackathon.</p></div>
+    <div class="flagship-card glass"><i class="icon bx bx-bar-chart-alt-2"></i><span class="season">September</span><h4>STEM Expo</h4><p>Every academy under one roof for a single showcase day.</p></div>
+    <div class="flagship-card glass"><i class="icon bx bx-trending-up"></i><span class="season">Autumn</span><h4>Startup Demo Day</h4><p>Entrepreneurship Hub teams pitch real ventures to a panel of judges.</p></div>
+    <div class="flagship-card glass"><i class="icon bx bx-bulb"></i><span class="season">Spring</span><h4>Young Inventors Challenge</h4><p>A design-and-build sprint for our youngest Explorers.</p></div>
+    <div class="flagship-card glass"><i class="icon bx bx-compass"></i><span class="season">October</span><h4>Drone Racing Championship</h4><p>Qualifiers and finals across our indoor FPV racing circuit.</p></div>
+    <div class="flagship-card glass"><i class="icon bx bx-briefcase"></i><span class="season">Winter</span><h4>Tech Career Fair</h4><p>Members meet mentors, alumni, and partner companies hiring in tech.</p></div>
+    <div class="flagship-card glass"><i class="icon bx bx-crown"></i><span class="season">November</span><h4>Innovation Awards Night</h4><p>A formal evening celebrating the year's standout projects and members.</p></div>
   </div>
 </section>
 
@@ -709,7 +711,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     <div class="tab-panel active" id="tab-local">
       <div class="comp-list">
         <div class="comp-item glass">
-          <div class="comp-icon"><i class="fi-wrench"></i></div>
+          <div class="comp-icon"><i class="bx bx-wrench"></i></div>
           <div class="comp-body">
             <h4>Club Robotics Scrimmage</h4>
             <span class="comp-meta">Monthly · In-house</span>
@@ -717,7 +719,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
           </div>
         </div>
         <div class="comp-item glass">
-          <div class="comp-icon"><i class="fi-compass"></i></div>
+          <div class="comp-icon"><i class="bx bx-compass"></i></div>
           <div class="comp-body">
             <h4>Indoor Drone Race Nights</h4>
             <span class="comp-meta">Bi-weekly · In-house</span>
@@ -725,7 +727,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
           </div>
         </div>
         <div class="comp-item glass">
-          <div class="comp-icon"><i class="fi-html5"></i></div>
+          <div class="comp-icon"><i class="bx bx-code-alt"></i></div>
           <div class="comp-body">
             <h4>Club Hackathons</h4>
             <span class="comp-meta">Quarterly · In-house</span>
@@ -738,7 +740,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     <div class="tab-panel" id="tab-national">
       <div class="comp-list">
         <div class="comp-item glass">
-          <div class="comp-icon"><i class="fi-trophy"></i></div>
+          <div class="comp-icon"><i class="bx bx-trophy"></i></div>
           <div class="comp-body">
             <h4>FIRST Tech Challenge (FTC) — Nigeria Qualifiers</h4>
             <span class="comp-meta">September – April season</span>
@@ -746,7 +748,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
           </div>
         </div>
         <div class="comp-item glass">
-          <div class="comp-icon"><i class="fi-trophy"></i></div>
+          <div class="comp-icon"><i class="bx bx-trophy"></i></div>
           <div class="comp-body">
             <h4>FIRST LEGO League (FLL) — National Championship</h4>
             <span class="comp-meta">Kickoff Aug/Sept · Championships Jan</span>
@@ -754,7 +756,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
           </div>
         </div>
         <div class="comp-item glass">
-          <div class="comp-icon"><i class="fi-graph-trend"></i></div>
+          <div class="comp-icon"><i class="bx bx-trending-up"></i></div>
           <div class="comp-body">
             <h4>National STEM &amp; Innovation Fairs</h4>
             <span class="comp-meta">Year-round</span>
@@ -767,7 +769,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     <div class="tab-panel" id="tab-international">
       <div class="comp-list">
         <div class="comp-item glass">
-          <div class="comp-icon"><i class="fi-trophy"></i></div>
+          <div class="comp-icon"><i class="bx bx-trophy"></i></div>
           <div class="comp-body">
             <h4>World Robot Olympiad (WRO) — International Final</h4>
             <span class="comp-meta">International Final · Dec 8–10, 2026 · San Juan, Puerto Rico</span>
@@ -775,7 +777,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
           </div>
         </div>
         <div class="comp-item glass">
-          <div class="comp-icon"><i class="fi-trophy"></i></div>
+          <div class="comp-icon"><i class="bx bx-trophy"></i></div>
           <div class="comp-body">
             <h4>RoboCup</h4>
             <span class="comp-meta">Held annually, typically June–July</span>
@@ -783,7 +785,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
           </div>
         </div>
         <div class="comp-item glass">
-          <div class="comp-icon"><i class="fi-trophy"></i></div>
+          <div class="comp-icon"><i class="bx bx-trophy"></i></div>
           <div class="comp-body">
             <h4>FIRST Championship</h4>
             <span class="comp-meta">World finals · April</span>
@@ -805,16 +807,16 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     <p>Where membership can take you.</p>
   </div>
   <div class="travel-grid container reveal">
-    <div class="travel-chip glass"><i class="fi-trophy"></i><span>WRO</span></div>
-    <div class="travel-chip glass"><i class="fi-wrench"></i><span>FLL</span></div>
-    <div class="travel-chip glass"><i class="fi-gear"></i><span>FTC</span></div>
-    <div class="travel-chip glass"><i class="fi-mountains"></i><span>STEM Camps</span></div>
-    <div class="travel-chip glass"><i class="fi-lightbulb"></i><span>AI Conferences</span></div>
-    <div class="travel-chip glass"><i class="fi-graph-bar"></i><span>Science Fairs</span></div>
-    <div class="travel-chip glass"><i class="fi-map"></i><span>Exchange Programs</span></div>
-    <div class="travel-chip glass"><i class="fi-widget"></i><span>Innovation Expos</span></div>
-    <div class="travel-chip glass"><i class="fi-book"></i><span>University Tours</span></div>
-    <div class="travel-chip glass"><i class="fi-briefcase"></i><span>Company Visits</span></div>
+    <div class="travel-chip glass"><i class="bx bx-trophy"></i><span>WRO</span></div>
+    <div class="travel-chip glass"><i class="bx bx-wrench"></i><span>FLL</span></div>
+    <div class="travel-chip glass"><i class="bx bx-cog"></i><span>FTC</span></div>
+    <div class="travel-chip glass"><i class="bx bx-landscape"></i><span>STEM Camps</span></div>
+    <div class="travel-chip glass"><i class="bx bx-bulb"></i><span>AI Conferences</span></div>
+    <div class="travel-chip glass"><i class="bx bx-bar-chart-alt-2"></i><span>Science Fairs</span></div>
+    <div class="travel-chip glass"><i class="bx bx-map"></i><span>Exchange Programs</span></div>
+    <div class="travel-chip glass"><i class="bx bx-printer"></i><span>Innovation Expos</span></div>
+    <div class="travel-chip glass"><i class="bx bx-book"></i><span>University Tours</span></div>
+    <div class="travel-chip glass"><i class="bx bx-briefcase"></i><span>Company Visits</span></div>
   </div>
 </section>
 
@@ -860,7 +862,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     <h2>Never miss an event again</h2>
     <p>Join our WhatsApp community for reminders, or register your interest to get on the list.</p>
     <div class="cta-actions">
-      <a href="#" class="btn btn-lime"><i class="fi-telephone"></i> Join WhatsApp</a>
+      <a href="#" class="btn btn-lime"><i class="bx bxl-whatsapp"></i> Join WhatsApp</a>
       <a href="membership.html" class="btn btn-outline">Register Interest</a>
     </div>
   </div>
@@ -878,10 +880,10 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       </div>
       <p style="font-size:.86rem;">Empowering young minds through technology and innovation.</p>
       <div class="social-row">
-        <a href="#" class="icon-btn glass" aria-label="Instagram"><i class="fi-social-instagram"></i></a>
-        <a href="#" class="icon-btn glass" aria-label="Facebook"><i class="fi-social-facebook"></i></a>
-        <a href="#" class="icon-btn glass" aria-label="WhatsApp"><i class="fi-telephone"></i></a>
-        <a href="https://maps.app.goo.gl/qfNDcXp3cec9hd2RA" class="icon-btn glass" aria-label="Map"><i class="fi-map"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="Instagram"><i class="bx bxl-instagram"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="Facebook"><i class="bx bxl-facebook"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="WhatsApp"><i class="bx bxl-whatsapp"></i></a>
+        <a href="https://maps.app.goo.gl/qfNDcXp3cec9hd2RA" class="icon-btn glass" aria-label="Map"><i class="bx bx-map"></i></a>
       </div>
     </div>
     <div class="footer-col">
@@ -895,7 +897,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     </div>
     <div class="footer-col">
       <h4>Address</h4>
-      <div class="footer-address"><i class="fi-map"></i><span>Coderina EdTech Foundation, Department of Science, Technology and Innovation (DSTI)<br>No. 4 Ngozi Okonjo-Iweala Way, Utako District, Abuja 900103, Federal Capital Territory (FCT), Nigeria.</span></div>
+      <div class="footer-address"><i class="bx bx-map"></i><span>Coderina EdTech Foundation, Department of Science, Technology and Innovation (DSTI)<br>No. 4 Ngozi Okonjo-Iweala Way, Utako District, Abuja 900103, Federal Capital Territory (FCT), Nigeria.</span></div>
     </div>
     <div class="footer-map">
       <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3939.9483490731654!2d7.4445455775889355!3d9.068470288364598!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x104ddf81cc7ccb07%3A0xc50e6cfe01a43fac!2sCoderina%20Education%20and%20Technology%20Foundation!5e0!3m2!1sen!2sng!4v1785316511093!5m2!1sen!2sng" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
@@ -936,11 +938,11 @@ document.getElementById('searchToggle').addEventListener('click', () => {
 
 /* Dark / light toggle (persisted) */
 const themeToggle = document.getElementById('themeToggle');
-themeToggle.innerHTML = document.documentElement.classList.contains('light-mode') ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+themeToggle.innerHTML = document.documentElement.classList.contains('light-mode') ? '<i class="bx bx-sun"></i>' : '<i class="bx bx-moon"></i>';
 themeToggle.addEventListener('click', () => {
   document.documentElement.classList.toggle('light-mode');
   const light = document.documentElement.classList.contains('light-mode');
-  themeToggle.innerHTML = light ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+  themeToggle.innerHTML = light ? '<i class="bx bx-sun"></i>' : '<i class="bx bx-moon"></i>';
   try{ localStorage.setItem('iec-theme', light ? 'light' : 'dark'); }catch(e){}
 });
 

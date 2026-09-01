@@ -22,9 +22,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-<!-- Icon set: Foundation Icons (used everywhere instead of emoji) -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css">
-
+<!-- Boxicons -->
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/filled/boxicons-filled.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/brands/boxicons-brands.min.css" rel="stylesheet">
 <style>
 /* =========================================================
    DESIGN TOKENS — identical to home page
@@ -92,7 +94,7 @@ p{margin:0;color:var(--gray);}
 a{color:inherit;text-decoration:none;}
 img{max-width:100%;display:block;}
 button{font-family:inherit;cursor:pointer;}
-i[class^="fi-"]{line-height:1;}
+i[class^="bx"]{line-height:1;}
 .eyebrow{
   font-size:.72rem;
   font-weight:600;
@@ -413,11 +415,11 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   <div class="nav-right">
     <div class="search-wrap" id="searchWrap">
       <input type="text" class="search-input" placeholder="Search...">
-      <button class="icon-btn" id="searchToggle" aria-label="Toggle search"><i class="fi-magnifying-glass"></i></button>
+      <button class="icon-btn" id="searchToggle" aria-label="Toggle search"><i class="bx bx-search"></i></button>
     </div>
-    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="fi-contrast"></i></button>
+    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="bx bx-moon"></i></button>
     <a href="membership.html" class="btn btn-lime nav-join"><span class="full">Join Community</span></a>
-    <button class="icon-btn hamburger" id="hamburger" aria-label="Toggle menu"><i class="fi-list-thumbnails"></i></button>
+    <button class="icon-btn hamburger" id="hamburger" aria-label="Toggle menu"><i class="bx bx-menu"></i></button>
   </div>
 </nav>
 
@@ -430,7 +432,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
 
   <div class="breadcrumb">
     <a href="../index.html">Home</a>
-    <i class="fi-arrow-down" style="transform:rotate(-90deg);"></i>
+    <i class="bx bx-chevron-down" style="transform:rotate(-90deg);"></i>
     <span class="current">FAQ</span>
   </div>
 
@@ -441,9 +443,9 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   </div>
 
   <div class="faq-search-wrap" id="faqSearchWrap">
-    <i class="fi-magnifying-glass"></i>
+    <i class="bx bx-search"></i>
     <input type="text" id="faqSearchInput" placeholder="Search a question...">
-    <button class="faq-search-clear" id="faqSearchClear" aria-label="Clear search"><i class="fi-x"></i></button>
+    <button class="faq-search-clear" id="faqSearchClear" aria-label="Clear search"><i class="bx bx-x"></i></button>
   </div>
 </header>
 
@@ -452,15 +454,15 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
      ========================================================= -->
 <div class="subnav-wrap">
   <div class="subnav" id="catBar">
-    <button data-cat="all" class="active"><i class="fi-list-bullet"></i> All</button>
-    <button data-cat="general"><i class="fi-info"></i> General</button>
-    <button data-cat="membership"><i class="fi-torsos"></i> Membership</button>
-    <button data-cat="programs"><i class="fi-widget"></i> Programs</button>
-    <button data-cat="competitions"><i class="fi-trophy"></i> Competitions</button>
-    <button data-cat="certificates"><i class="fi-page"></i> Certificates</button>
-    <button data-cat="fees"><i class="fi-dollar"></i> Fees</button>
-    <button data-cat="age"><i class="fi-torso"></i> Age Requirements</button>
-    <button data-cat="parents"><i class="fi-torsos-all"></i> Parent Questions</button>
+    <button data-cat="all" class="active"><i class="bx bx-list-ul"></i> All</button>
+    <button data-cat="general"><i class="bx bx-info-circle"></i> General</button>
+    <button data-cat="membership"><i class="bx bx-group"></i> Membership</button>
+    <button data-cat="programs"><i class="bx bx-printer"></i> Programs</button>
+    <button data-cat="competitions"><i class="bx bx-trophy"></i> Competitions</button>
+    <button data-cat="certificates"><i class="bx bx-file"></i> Certificates</button>
+    <button data-cat="fees"><i class="bx bx-dollar"></i> Fees</button>
+    <button data-cat="age"><i class="bx bx-user"></i> Age Requirements</button>
+    <button data-cat="parents"><i class="bx bx-group-all"></i> Parent Questions</button>
   </div>
 </div>
 
@@ -471,129 +473,129 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   <div class="faq-list reveal" id="faqList">
 
     <div class="faq-item glass" data-category="general">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="fi-info"></i></div><h4>What is the Innovative Explorer Club (TIEC)?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-info-circle"></i></div><h4>What is the Innovative Explorer Club (TIEC)?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">TIEC is a student technology and innovation club offering hands-on learning across eight academies — Robotics, Coding, AI, Maker Space, Entrepreneurship, Creative Media, Green Innovation, and Future Skills.</div></div>
     </div>
 
     <div class="faq-item glass" data-category="general">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="fi-info"></i></div><h4>Where is the club located?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-info-circle"></i></div><h4>Where is the club located?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">We're based at the Coderina EdTech Foundation, Department of Science, Technology and Innovation (DSTI), No. 4 Ngozi Okonjo-Iweala Way, Utako District, Abuja, Nigeria.</div></div>
     </div>
 
     <div class="faq-item glass" data-category="general">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="fi-info"></i></div><h4>Do I need any prior experience to join?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-info-circle"></i></div><h4>Do I need any prior experience to join?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">No. Every academy starts with fundamentals, and mentors adjust pace to fit complete beginners as well as members with prior experience.</div></div>
     </div>
 
     <div class="faq-item glass" data-category="membership">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="fi-torsos"></i></div><h4>How do I become a member?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-group"></i></div><h4>How do I become a member?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">Fill out the registration form on our Membership page. We'll follow up to place you in the right level and academy based on your age and interests.</div></div>
     </div>
 
     <div class="faq-item glass" data-category="membership">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="fi-torsos"></i></div><h4>What membership levels are available?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
-      <div class="faq-answer"><div class="faq-answer-inner">Six levels by age: Young Explorers (6–9), Junior Innovators (10–13), Teen Innovators (14–18), University Fellows (18–25), Professional Innovators (25+), and the Mentor Circle for industry experts.</div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-group"></i></div><h4>What membership levels are available?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
+      <div class="faq-answer"><div class="faq-answer-inner">Three levels by age: Young Explorers (6–9), Junior Innovators (10–13) and Teen Innovators (14–18).</div></div>
     </div>
 
     <div class="faq-item glass" data-category="membership">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="fi-torsos"></i></div><h4>Can I switch academies after joining?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-group"></i></div><h4>Can I switch academies after joining?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">Yes. Many members explore more than one academy — talk to your mentor about switching or adding a track at the start of a term.</div></div>
     </div>
 
     <div class="faq-item glass" data-category="programs">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="fi-widget"></i></div><h4>What programs does TIEC offer?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-printer"></i></div><h4>What programs does TIEC offer?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">Robotics, Coding, AI, Maker Space, Entrepreneurship, Creative Media, Green Innovation, and Future Skills — see the full breakdown on our Programs page.</div></div>
     </div>
 
     <div class="faq-item glass" data-category="programs">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="fi-widget"></i></div><h4>How long is each term?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-printer"></i></div><h4>How long is each term?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">Terms generally run 10–12 weeks with weekly sessions, aligned loosely with the academic calendar.</div></div>
     </div>
 
     <div class="faq-item glass" data-category="programs">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="fi-widget"></i></div><h4>Can I join more than one academy?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-printer"></i></div><h4>Can I join more than one academy?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">Yes, membership gives you access to every academy, not just one — many members split time between two or three tracks.</div></div>
     </div>
 
     <div class="faq-item glass" data-category="competitions">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="fi-trophy"></i></div><h4>Which competitions do members travel to?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-trophy"></i></div><h4>Which competitions do members travel to?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">Locally we run club scrimmages and hackathons; nationally we compete in FLL and FTC qualifiers; internationally, teams have traveled to the World Robot Olympiad and similar events.</div></div>
     </div>
 
     <div class="faq-item glass" data-category="competitions">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="fi-trophy"></i></div><h4>Do I need to be on a team to compete?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-trophy"></i></div><h4>Do I need to be on a team to compete?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">Most competitions are team-based, but we help place interested members on a team — you don't need to arrive with one already formed.</div></div>
     </div>
 
     <div class="faq-item glass" data-category="competitions">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="fi-trophy"></i></div><h4>How are competition teams selected?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-trophy"></i></div><h4>How are competition teams selected?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">Mentors select teams based on club scrimmage performance, attendance, and role fit — not just raw skill, since teamwork matters as much as technical ability.</div></div>
     </div>
 
     <div class="faq-item glass" data-category="certificates">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="fi-page"></i></div><h4>Do I get a certificate after completing a program?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-file"></i></div><h4>Do I get a certificate after completing a program?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">Yes, every completed term earns a certificate, logged in your Innovation Passport alongside your project history.</div></div>
     </div>
 
     <div class="faq-item glass" data-category="certificates">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="fi-page"></i></div><h4>Are certificates recognized outside the club?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-file"></i></div><h4>Are certificates recognized outside the club?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">Certificates reflect real, verifiable project work, and members have used them to support scholarship, internship, and university applications.</div></div>
     </div>
 
     <div class="faq-item glass" data-category="certificates">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="fi-page"></i></div><h4>How do I request a copy of my certificate?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-file"></i></div><h4>How do I request a copy of my certificate?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">Reach out through the Contact page with your full name and term — we'll email a copy within a few business days.</div></div>
     </div>
 
     <div class="faq-item glass" data-category="fees">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="fi-dollar"></i></div><h4>Is there a membership fee?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-dollar"></i></div><h4>Is there a membership fee?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">Yes, a term fee applies and varies by academy and materials used. See the Membership page for current fee details.</div></div>
     </div>
 
     <div class="faq-item glass" data-category="fees">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="fi-dollar"></i></div><h4>Are scholarships available?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-dollar"></i></div><h4>Are scholarships available?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">Yes, a limited number of need-based scholarships are available each term — ask about eligibility when you register.</div></div>
     </div>
 
     <div class="faq-item glass" data-category="fees">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="fi-dollar"></i></div><h4>What does the membership fee cover?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-dollar"></i></div><h4>What does the membership fee cover?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">Weekly classes, mentor time, shared materials and tools, and access to club events — competition travel costs are handled separately.</div></div>
     </div>
 
     <div class="faq-item glass" data-category="age">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="fi-torso"></i></div><h4>What's the minimum age to join?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-user"></i></div><h4>What's the minimum age to join?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">Six years old, in our Young Explorers track — sessions at that level are shorter and more guided.</div></div>
     </div>
 
     <div class="faq-item glass" data-category="age">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="fi-torso"></i></div><h4>Is there an upper age limit?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-user"></i></div><h4>Is there an upper age limit?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">No. Professional Innovators (25+) and our Mentor Circle keep the club open to adults building skills or giving back as mentors.</div></div>
     </div>
 
     <div class="faq-item glass" data-category="age">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="fi-torso"></i></div><h4>How do I know which track fits my child's age?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-user"></i></div><h4>How do I know which track fits my child's age?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">Membership levels are grouped by age band on our About page — registration will place your child automatically, and you can request a change if needed.</div></div>
     </div>
 
     <div class="faq-item glass" data-category="parents">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="fi-torsos-all"></i></div><h4>Can parents sit in on sessions?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-group-all"></i></div><h4>Can parents sit in on sessions?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">Parents are welcome at open houses and showcase events; regular weekly sessions are member-only so students can focus and build independence.</div></div>
     </div>
 
     <div class="faq-item glass" data-category="parents">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="fi-torsos-all"></i></div><h4>How do I track my child's progress?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-group-all"></i></div><h4>How do I track my child's progress?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">Each member's Innovation Passport logs completed classes, certificates, and projects — parents receive a term-end summary as well.</div></div>
     </div>
 
     <div class="faq-item glass" data-category="parents">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="fi-torsos-all"></i></div><h4>Is the workshop safe for young children?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-group-all"></i></div><h4>Is the workshop safe for young children?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">Yes. Younger tracks use age-appropriate tools under close mentor supervision, and safety briefings are part of every Maker Space and electronics session.</div></div>
     </div>
 
   </div>
 
   <div class="faq-empty" id="faqEmpty">
-    <i class="fi-magnifying-glass"></i>
+    <i class="bx bx-search"></i>
     No questions match that search — try a different term, or ask us directly.
   </div>
 </section>
@@ -608,7 +610,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     <p>Reach out directly and a member of the team will get back to you.</p>
     <div class="cta-actions">
       <a href="contact.html" class="btn btn-lime">Contact Us</a>
-      <a href="#" class="btn btn-outline"><i class="fi-telephone"></i> Join WhatsApp</a>
+      <a href="#" class="btn btn-outline"><i class="bx bxl-whatsapp"></i> Join WhatsApp</a>
     </div>
   </div>
 </section>
@@ -625,10 +627,10 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       </div>
       <p style="font-size:.86rem;">Empowering young minds through technology and innovation.</p>
       <div class="social-row">
-        <a href="#" class="icon-btn glass" aria-label="Instagram"><i class="fi-social-instagram"></i></a>
-        <a href="#" class="icon-btn glass" aria-label="Facebook"><i class="fi-social-facebook"></i></a>
-        <a href="#" class="icon-btn glass" aria-label="WhatsApp"><i class="fi-telephone"></i></a>
-        <a href="https://maps.app.goo.gl/qfNDcXp3cec9hd2RA" class="icon-btn glass" aria-label="Map"><i class="fi-map"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="Instagram"><i class="bx bxl-instagram"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="Facebook"><i class="bx bxl-facebook"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="WhatsApp"><i class="bx bxl-whatsapp"></i></a>
+        <a href="https://maps.app.goo.gl/qfNDcXp3cec9hd2RA" class="icon-btn glass" aria-label="Map"><i class="bx bx-map"></i></a>
       </div>
     </div>
     <div class="footer-col">
@@ -642,7 +644,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     </div>
     <div class="footer-col">
       <h4>Address</h4>
-      <div class="footer-address"><i class="fi-map"></i><span>Coderina EdTech Foundation, Department of Science, Technology and Innovation (DSTI)<br>No. 4 Ngozi Okonjo-Iweala Way, Utako District, Abuja 900103, Federal Capital Territory (FCT), Nigeria.</span></div>
+      <div class="footer-address"><i class="bx bx-map"></i><span>Coderina EdTech Foundation, Department of Science, Technology and Innovation (DSTI)<br>No. 4 Ngozi Okonjo-Iweala Way, Utako District, Abuja 900103, Federal Capital Territory (FCT), Nigeria.</span></div>
     </div>
     <div class="footer-map">
       <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3939.9483490731654!2d7.4445455775889355!3d9.068470288364598!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x104ddf81cc7ccb07%3A0xc50e6cfe01a43fac!2sCoderina%20Education%20and%20Technology%20Foundation!5e0!3m2!1sen!2sng!4v1785316511093!5m2!1sen!2sng" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
@@ -683,11 +685,11 @@ document.getElementById('searchToggle').addEventListener('click', () => {
 
 /* Dark / light toggle (persisted) */
 const themeToggle = document.getElementById('themeToggle');
-themeToggle.innerHTML = document.documentElement.classList.contains('light-mode') ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+themeToggle.innerHTML = document.documentElement.classList.contains('light-mode') ? '<i class="bx bx-sun"></i>' : '<i class="bx bx-moon"></i>';
 themeToggle.addEventListener('click', () => {
   document.documentElement.classList.toggle('light-mode');
   const light = document.documentElement.classList.contains('light-mode');
-  themeToggle.innerHTML = light ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+  themeToggle.innerHTML = light ? '<i class="bx bx-sun"></i>' : '<i class="bx bx-moon"></i>';
   try{ localStorage.setItem('iec-theme', light ? 'light' : 'dark'); }catch(e){}
 });
 

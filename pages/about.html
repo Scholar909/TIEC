@@ -22,9 +22,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-<!-- Icon set: Foundation Icons (used everywhere instead of emoji) -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css">
-
+<!-- Boxicons -->
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/filled/boxicons-filled.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/brands/boxicons-brands.min.css" rel="stylesheet">
+  
 <style>
 /* =========================================================
    DESIGN TOKENS — identical to home page
@@ -92,7 +95,7 @@ p{margin:0;color:var(--gray);}
 a{color:inherit;text-decoration:none;}
 img{max-width:100%;display:block;}
 button{font-family:inherit;cursor:pointer;}
-i[class^="fi-"]{line-height:1;}
+i[class^="bx"]{line-height:1;}
 .eyebrow{
   font-size:.72rem;
   font-weight:600;
@@ -471,11 +474,11 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   <div class="nav-right">
     <div class="search-wrap" id="searchWrap">
       <input type="text" class="search-input" placeholder="Search...">
-      <button class="icon-btn" id="searchToggle" aria-label="Toggle search"><i class="fi-magnifying-glass"></i></button>
+      <button class="icon-btn" id="searchToggle" aria-label="Toggle search"><i class="bx bx-search"></i></button>
     </div>
-    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="fi-contrast"></i></button>
+    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="bx bx-moon"></i></button>
     <a href="membership.html" class="btn btn-lime nav-join"><span class="full">Join Community</span></a>
-    <button class="icon-btn hamburger" id="hamburger" aria-label="Toggle menu"><i class="fi-list-thumbnails"></i></button>
+    <button class="icon-btn hamburger" id="hamburger" aria-label="Toggle menu"><i class="bx bx-menu"></i></button>
   </div>
 </nav>
 
@@ -488,7 +491,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
 
   <div class="breadcrumb">
     <a href="../index.html">Home</a>
-    <i class="fi-arrow-down" style="transform:rotate(-90deg);"></i>
+    <i class="bx bx-chevron-down" style="transform:rotate(-90deg);"></i>
     <span class="current">About</span>
   </div>
 
@@ -524,7 +527,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
 <section class="section" id="story">
   <div class="story-wrap container reveal">
     <div class="story-visual">
-      <i class="fi-lightbulb"></i>
+      <i class="bx bx-sun"></i>
       <span class="tag-pill">Est. Abuja, Nigeria</span>
     </div>
     <div class="story-text">
@@ -547,12 +550,12 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   </div>
   <div class="vm-grid container reveal">
     <div class="vm-card glass">
-      <i class="fi-quote quote-mark"></i>
+      <i class="bx bxs-quote-left quote-mark"></i>
       <h3>Vision</h3>
       <p>To raise Africa's next generation of innovators, creators, entrepreneurs, engineers, and technology leaders.</p>
     </div>
     <div class="vm-card glass">
-      <i class="fi-quote quote-mark"></i>
+      <i class="bx bxs-quote-left quote-mark"></i>
       <h3>Mission</h3>
       <p>To provide lifelong, hands-on STEM and innovation education that empowers learners to explore, create, invent, collaborate, solve real-world problems, and grow into industry-ready professionals and entrepreneurs through practical learning, mentorship, competitions, and community.</p>
     </div>
@@ -574,8 +577,8 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       <h4>Ngozi A.</h4>
       <span class="role">Founder &amp; Executive Director</span>
       <div class="team-socials">
-        <a href="#" class="icon-btn" aria-label="LinkedIn"><i class="fi-torso-business"></i></a>
-        <a href="#" class="icon-btn" aria-label="Email"><i class="fi-mail"></i></a>
+        <a href="#" class="icon-btn" aria-label="LinkedIn"><i class="bx bx-user-voice"></i></a>
+        <a href="#" class="icon-btn" aria-label="Email"><i class="bx bx-envelope"></i></a>
       </div>
     </div>
     <div class="team-card glass">
@@ -583,8 +586,8 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       <h4>Emeka U.</h4>
       <span class="role">Head of Programs</span>
       <div class="team-socials">
-        <a href="#" class="icon-btn" aria-label="LinkedIn"><i class="fi-torso-business"></i></a>
-        <a href="#" class="icon-btn" aria-label="Email"><i class="fi-mail"></i></a>
+        <a href="#" class="icon-btn" aria-label="LinkedIn"><i class="bx bx-user-voice"></i></a>
+        <a href="#" class="icon-btn" aria-label="Email"><i class="bx bx-envelope"></i></a>
       </div>
     </div>
     <div class="team-card glass">
@@ -592,8 +595,8 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       <h4>Blessing I.</h4>
       <span class="role">Robotics &amp; AI Lead</span>
       <div class="team-socials">
-        <a href="#" class="icon-btn" aria-label="LinkedIn"><i class="fi-torso-business"></i></a>
-        <a href="#" class="icon-btn" aria-label="Email"><i class="fi-mail"></i></a>
+        <a href="#" class="icon-btn" aria-label="LinkedIn"><i class="bx bx-user-voice"></i></a>
+        <a href="#" class="icon-btn" aria-label="Email"><i class="bx bx-envelope"></i></a>
       </div>
     </div>
     <div class="team-card glass">
@@ -601,8 +604,8 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       <h4>Yusuf M.</h4>
       <span class="role">Partnerships &amp; Outreach</span>
       <div class="team-socials">
-        <a href="#" class="icon-btn" aria-label="LinkedIn"><i class="fi-torso-business"></i></a>
-        <a href="#" class="icon-btn" aria-label="Email"><i class="fi-mail"></i></a>
+        <a href="#" class="icon-btn" aria-label="LinkedIn"><i class="bx bx-user-voice"></i></a>
+        <a href="#" class="icon-btn" aria-label="Email"><i class="bx bx-envelope"></i></a>
       </div>
     </div>
     <div class="team-card glass">
@@ -610,8 +613,8 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       <h4>Aisha B.</h4>
       <span class="role">Volunteer &amp; Mentor Coordinator</span>
       <div class="team-socials">
-        <a href="#" class="icon-btn" aria-label="LinkedIn"><i class="fi-torso-business"></i></a>
-        <a href="#" class="icon-btn" aria-label="Email"><i class="fi-mail"></i></a>
+        <a href="#" class="icon-btn" aria-label="LinkedIn"><i class="bx bx-user-voice"></i></a>
+        <a href="#" class="icon-btn" aria-label="Email"><i class="bx bx-envelope"></i></a>
       </div>
     </div>
   </div>
@@ -632,12 +635,12 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
         <tr><th>Level</th><th>Age</th></tr>
       </thead>
       <tbody>
-        <tr><td class="level"><i class="fi-compass"></i> Young Explorers</td><td class="age">6 – 9</td></tr>
-        <tr><td class="level"><i class="fi-widget"></i> Junior Innovators</td><td class="age">10 – 13</td></tr>
-        <tr><td class="level"><i class="fi-wrench"></i> Teen Innovators</td><td class="age">14 – 18</td></tr>
-        <tr><td class="level"><i class="fi-book"></i> University Fellows</td><td class="age">18 – 25</td></tr>
-        <tr><td class="level"><i class="fi-address-book"></i> Professional Innovators</td><td class="age">25+</td></tr>
-        <tr><td class="level"><i class="fi-torso-business"></i> Mentor Circle</td><td class="age">Industry Experts</td></tr>
+        <tr><td class="level"><i class="bx bx-compass"></i> Young Explorers</td><td class="age">6 – 9</td></tr>
+        <tr><td class="level"><i class="bx bx-printer"></i> Junior Innovators</td><td class="age">10 – 13</td></tr>
+        <tr><td class="level"><i class="bx bx-wrench"></i> Teen Innovators</td><td class="age">14 – 18</td></tr>
+        <tr><td class="level"><i class="bx bx-book"></i> University Fellows</td><td class="age">18 – 25</td></tr>
+        <tr><td class="level"><i class="bx bx-id-card"></i> Professional Innovators</td><td class="age">25+</td></tr>
+        <tr><td class="level"><i class="bx bx-user-voice"></i> Mentor Circle</td><td class="age">Industry Experts</td></tr>
       </tbody>
     </table>
   </div>
@@ -653,16 +656,16 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     <p>Every level unlocks more of the ecosystem.</p>
   </div>
   <div class="benefits-grid container reveal">
-    <div class="benefit-chip glass"><i class="fi-calendar"></i><span>Weekly Classes</span></div>
-    <div class="benefit-chip glass"><i class="fi-page"></i><span>Certificates</span></div>
-    <div class="benefit-chip glass"><i class="fi-map"></i><span>Innovation Passport</span></div>
-    <div class="benefit-chip glass"><i class="fi-torsos"></i><span>Networking</span></div>
-    <div class="benefit-chip glass"><i class="fi-dollar"></i><span>Scholarships</span></div>
-    <div class="benefit-chip glass"><i class="fi-torso-business"></i><span>Career Mentoring</span></div>
-    <div class="benefit-chip glass"><i class="fi-briefcase"></i><span>Industry Visits</span></div>
-    <div class="benefit-chip glass"><i class="fi-lightbulb"></i><span>Startup Incubation</span></div>
-    <div class="benefit-chip glass"><i class="fi-compass"></i><span>International Exchange</span></div>
-    <div class="benefit-chip glass"><i class="fi-podium"></i><span>Annual Summit</span></div>
+    <div class="benefit-chip glass"><i class="bx bx-calendar"></i><span>Weekly Classes</span></div>
+    <div class="benefit-chip glass"><i class="bx bx-file"></i><span>Certificates</span></div>
+    <div class="benefit-chip glass"><i class="bx bx-map"></i><span>Innovation Passport</span></div>
+    <div class="benefit-chip glass"><i class="bx bx-group"></i><span>Networking</span></div>
+    <div class="benefit-chip glass"><i class="bx bx-dollar"></i><span>Scholarships</span></div>
+    <div class="benefit-chip glass"><i class="bx bx-user-voice"></i><span>Career Mentoring</span></div>
+    <div class="benefit-chip glass"><i class="bx bx-briefcase"></i><span>Industry Visits</span></div>
+    <div class="benefit-chip glass"><i class="bx bx-bulb"></i><span>Startup Incubation</span></div>
+    <div class="benefit-chip glass"><i class="bx bx-compass"></i><span>International Exchange</span></div>
+    <div class="benefit-chip glass"><i class="bx bx-award"></i><span>Annual Summit</span></div>
   </div>
 </section>
 
@@ -693,12 +696,12 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   </div>
   <div class="partners-track-wrap reveal">
     <div class="partners-track" id="partnersTrack">
-      <div class="partner-chip glass"><i class="fi-foundation"></i> Coderina EdTech Foundation</div>
-      <div class="partner-chip glass"><i class="fi-book"></i> DSTI</div>
-      <div class="partner-chip glass"><i class="fi-widget"></i> Partner Slot</div>
-      <div class="partner-chip glass"><i class="fi-lightbulb"></i> Partner Slot</div>
-      <div class="partner-chip glass"><i class="fi-briefcase"></i> Partner Slot</div>
-      <div class="partner-chip glass"><i class="fi-graph-trend"></i> Partner Slot</div>
+      <div class="partner-chip glass"><i class="bx bx-building"></i> Coderina EdTech Foundation</div>
+      <div class="partner-chip glass"><i class="bx bx-book"></i> DSTI</div>
+      <div class="partner-chip glass"><i class="bx bx-printer"></i> Partner Slot</div>
+      <div class="partner-chip glass"><i class="bx bx-bulb"></i> Partner Slot</div>
+      <div class="partner-chip glass"><i class="bx bx-briefcase"></i> Partner Slot</div>
+      <div class="partner-chip glass"><i class="bx bx-trending-up"></i> Partner Slot</div>
     </div>
   </div>
   <div class="partner-cta reveal">
@@ -733,10 +736,10 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       </div>
       <p style="font-size:.86rem;">Empowering young minds through technology and innovation.</p>
       <div class="social-row">
-        <a href="#" class="icon-btn glass" aria-label="Instagram"><i class="fi-social-instagram"></i></a>
-        <a href="#" class="icon-btn glass" aria-label="Facebook"><i class="fi-social-facebook"></i></a>
-        <a href="#" class="icon-btn glass" aria-label="WhatsApp"><i class="fi-telephone"></i></a>
-        <a href="https://maps.app.goo.gl/qfNDcXp3cec9hd2RA" class="icon-btn glass" aria-label="Map"><i class="fi-map"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="Instagram"><i class="bx bxl-instagram"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="Facebook"><i class="bx bxl-facebook"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="WhatsApp"><i class="bx bxl-whatsapp"></i></a>
+        <a href="https://maps.app.goo.gl/qfNDcXp3cec9hd2RA" class="icon-btn glass" aria-label="Map"><i class="bx bx-map"></i></a>
       </div>
     </div>
     <div class="footer-col">
@@ -750,7 +753,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     </div>
     <div class="footer-col">
       <h4>Address</h4>
-      <div class="footer-address"><i class="fi-map"></i><span>Coderina EdTech Foundation, Department of Science, Technology and Innovation (DSTI)<br>No. 4 Ngozi Okonjo-Iweala Way, Utako District, Abuja 900103, Federal Capital Territory (FCT), Nigeria.</span></div>
+      <div class="footer-address"><i class="bx bx-map"></i><span>Coderina EdTech Foundation, Department of Science, Technology and Innovation (DSTI)<br>No. 4 Ngozi Okonjo-Iweala Way, Utako District, Abuja 900103, Federal Capital Territory (FCT), Nigeria.</span></div>
     </div>
     <div class="footer-map">
       <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3939.9483490731654!2d7.4445455775889355!3d9.068470288364598!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x104ddf81cc7ccb07%3A0xc50e6cfe01a43fac!2sCoderina%20Education%20and%20Technology%20Foundation!5e0!3m2!1sen!2sng!4v1785316511093!5m2!1sen!2sng" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
@@ -791,11 +794,11 @@ document.getElementById('searchToggle').addEventListener('click', () => {
 
 /* Dark / light toggle (persisted) */
 const themeToggle = document.getElementById('themeToggle');
-themeToggle.innerHTML = document.documentElement.classList.contains('light-mode') ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+themeToggle.innerHTML = document.documentElement.classList.contains('light-mode') ? '<i class="bx bx-sun"></i>' : '<i class="bx bx-moon"></i>';
 themeToggle.addEventListener('click', () => {
   document.documentElement.classList.toggle('light-mode');
   const light = document.documentElement.classList.contains('light-mode');
-  themeToggle.innerHTML = light ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+  themeToggle.innerHTML = light ? '<i class="bx bx-sun"></i>' : '<i class="bx bx-moon"></i>';
   try{ localStorage.setItem('iec-theme', light ? 'light' : 'dark'); }catch(e){}
 });
 

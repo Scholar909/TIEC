@@ -22,9 +22,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-<!-- Icon set: Foundation Icons (used everywhere instead of emoji) -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css">
-
+<!-- Boxicons -->
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/filled/boxicons-filled.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/brands/boxicons-brands.min.css" rel="stylesheet">
 <style>
 /* =========================================================
    DESIGN TOKENS — identical to home page
@@ -92,7 +94,7 @@ p{margin:0;color:var(--gray);}
 a{color:inherit;text-decoration:none;}
 img{max-width:100%;display:block;}
 button{font-family:inherit;cursor:pointer;}
-i[class^="fi-"]{line-height:1;}
+i[class^="bx"]{line-height:1;}
 .eyebrow{
   font-size:.72rem;
   font-weight:600;
@@ -542,11 +544,11 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   <div class="nav-right">
     <div class="search-wrap" id="searchWrap">
       <input type="text" class="search-input" placeholder="Search...">
-      <button class="icon-btn" id="searchToggle" aria-label="Toggle search"><i class="fi-magnifying-glass"></i></button>
+      <button class="icon-btn" id="searchToggle" aria-label="Toggle search"><i class="bx bx-search"></i></button>
     </div>
-    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="fi-contrast"></i></button>
+    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="bx bx-moon"></i></button>
     <a href="#join" class="btn btn-lime nav-join"><span class="full">Join Community</span></a>
-    <button class="icon-btn hamburger" id="hamburger" aria-label="Toggle menu"><i class="fi-list-thumbnails"></i></button>
+    <button class="icon-btn hamburger" id="hamburger" aria-label="Toggle menu"><i class="bx bx-menu"></i></button>
   </div>
 </nav>
 
@@ -559,7 +561,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
 
   <div class="breadcrumb">
     <a href="../index.html">Home</a>
-    <i class="fi-arrow-down" style="transform:rotate(-90deg);"></i>
+    <i class="bx bx-chevron-down" style="transform:rotate(-90deg);"></i>
     <span class="current">Membership</span>
   </div>
 
@@ -601,7 +603,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   <div class="levels-grid container reveal" id="levelsGrid">
 
     <div class="level-card glass" data-level="Young Explorers">
-      <div class="level-icon"><i class="fi-compass"></i></div>
+      <div class="level-icon"><i class="bx bx-compass"></i></div>
       <h4>Young Explorers</h4>
       <span class="age-range">6 – 9 years</span>
       <p>First hands-on encounters with robots, code blocks, and building kits — playful, guided, and screen-light.</p>
@@ -609,7 +611,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     </div>
 
     <div class="level-card glass" data-level="Junior Innovators">
-      <div class="level-icon"><i class="fi-widget"></i></div>
+      <div class="level-icon"><i class="bx bx-printer"></i></div>
       <h4>Junior Innovators</h4>
       <span class="age-range">10 – 13 years</span>
       <p>Real tools, real projects — intro robotics, Scratch-to-Python coding, and first CAD designs.</p>
@@ -617,7 +619,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     </div>
 
     <div class="level-card glass" data-level="Teen Innovators">
-      <div class="level-icon"><i class="fi-wrench"></i></div>
+      <div class="level-icon"><i class="bx bx-wrench"></i></div>
       <h4>Teen Innovators</h4>
       <span class="age-range">14 – 18 years</span>
       <p>Full academy access, competition teams, and portfolio-grade projects for WRO, FTC, and beyond.</p>
@@ -637,16 +639,16 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     <p>Every member gets access to the full list below, from day one.</p>
   </div>
   <div class="benefit-grid container reveal">
-    <div class="benefit-card glass"><i class="fi-calendar"></i><span>Weekly Classes</span></div>
-    <div class="benefit-card glass"><i class="fi-page"></i><span>Certificates</span></div>
-    <div class="benefit-card glass"><i class="fi-map"></i><span>Innovation Passport</span></div>
-    <div class="benefit-card glass"><i class="fi-torsos"></i><span>Networking</span></div>
-    <div class="benefit-card glass"><i class="fi-dollar"></i><span>Scholarships</span></div>
-    <div class="benefit-card glass"><i class="fi-torso-business"></i><span>Career Mentoring</span></div>
-    <div class="benefit-card glass"><i class="fi-briefcase"></i><span>Industry Visits</span></div>
-    <div class="benefit-card glass"><i class="fi-lightbulb"></i><span>Startup Incubation</span></div>
-    <div class="benefit-card glass"><i class="fi-compass"></i><span>International Exchange</span></div>
-    <div class="benefit-card glass"><i class="fi-podium"></i><span>Annual Summit</span></div>
+    <div class="benefit-card glass"><i class="bx bx-calendar"></i><span>Weekly Classes</span></div>
+    <div class="benefit-card glass"><i class="bx bx-file"></i><span>Certificates</span></div>
+    <div class="benefit-card glass"><i class="bx bx-map"></i><span>Innovation Passport</span></div>
+    <div class="benefit-card glass"><i class="bx bx-group"></i><span>Networking</span></div>
+    <div class="benefit-card glass"><i class="bx bx-dollar"></i><span>Scholarships</span></div>
+    <div class="benefit-card glass"><i class="bx bx-user-voice"></i><span>Career Mentoring</span></div>
+    <div class="benefit-card glass"><i class="bx bx-briefcase"></i><span>Industry Visits</span></div>
+    <div class="benefit-card glass"><i class="bx bx-bulb"></i><span>Startup Incubation</span></div>
+    <div class="benefit-card glass"><i class="bx bx-compass"></i><span>International Exchange</span></div>
+    <div class="benefit-card glass"><i class="bx bx-award"></i><span>Annual Summit</span></div>
   </div>
 </section>
 
@@ -660,11 +662,11 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     <p>The same five stages, whatever level you start at.</p>
   </div>
   <div class="journey-track container reveal">
-    <div class="journey-step"><div class="journey-num"><i class="fi-compass"></i></div><h4>Explore</h4><p>Try taster sessions across academies to find your track.</p></div>
-    <div class="journey-step"><div class="journey-num"><i class="fi-book"></i></div><h4>Learn</h4><p>Weekly classes build core skills with mentor guidance.</p></div>
-    <div class="journey-step"><div class="journey-num"><i class="fi-wrench"></i></div><h4>Build</h4><p>Apply your skills to a real project every term.</p></div>
-    <div class="journey-step"><div class="journey-num"><i class="fi-trophy"></i></div><h4>Compete</h4><p>Take your project to club, national, or international events.</p></div>
-    <div class="journey-step is-last"><div class="journey-num"><i class="fi-torso-business"></i></div><h4>Lead</h4><p>Mentor younger Explorers or join the Mentor Circle.</p></div>
+    <div class="journey-step"><div class="journey-num"><i class="bx bx-compass"></i></div><h4>Explore</h4><p>Try taster sessions across academies to find your track.</p></div>
+    <div class="journey-step"><div class="journey-num"><i class="bx bx-book"></i></div><h4>Learn</h4><p>Weekly classes build core skills with mentor guidance.</p></div>
+    <div class="journey-step"><div class="journey-num"><i class="bx bx-wrench"></i></div><h4>Build</h4><p>Apply your skills to a real project every term.</p></div>
+    <div class="journey-step"><div class="journey-num"><i class="bx bx-trophy"></i></div><h4>Compete</h4><p>Take your project to club, national, or international events.</p></div>
+    <div class="journey-step is-last"><div class="journey-num"><i class="bx bx-user-voice"></i></div><h4>Lead</h4><p>Mentor younger Explorers or join the Mentor Circle.</p></div>
   </div>
 </section>
 
@@ -680,14 +682,14 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   <div class="fees-wrap container reveal">
     <div class="fee-list glass">
       <ul>
-        <li><i class="fi-check"></i> A term fee covers weekly classes, mentor time, shared tools and materials, and access to club events.</li>
-        <li><i class="fi-check"></i> Competition travel (national or international) is billed separately and announced ahead of each event.</li>
-        <li><i class="fi-check"></i> Exact fees depend on your academy and level — the team will confirm current pricing when you register.</li>
-        <li><i class="fi-check"></i> A limited number of need-based scholarships are available every term.</li>
+        <li><i class="bx bx-check"></i> A term fee covers weekly classes, mentor time, shared tools and materials, and access to club events.</li>
+        <li><i class="bx bx-check"></i> Competition travel (national or international) is billed separately and announced ahead of each event.</li>
+        <li><i class="bx bx-check"></i> Exact fees depend on your academy and level — the team will confirm current pricing when you register.</li>
+        <li><i class="bx bx-check"></i> A limited number of need-based scholarships are available every term.</li>
       </ul>
     </div>
     <div class="fee-note glass">
-      <i class="fi-dollar"></i>
+      <i class="bx bx-dollar"></i>
       <h4>Need a scholarship?</h4>
       <p>Mention it on the Join Now form below or in your registration, and our team will walk you through eligibility.</p>
     </div>
@@ -725,23 +727,23 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     <div class="join-card glass">
       <form id="joinForm" novalidate>
 
-        <div class="form-subhead"><i class="fi-torso"></i><h3>Student Information</h3></div>
+        <div class="form-subhead"><i class="bx bx-user"></i><h3>Student Information</h3></div>
 
         <div class="form-row">
           <div class="form-group" id="group-studentName">
             <label for="studentName">Student Full Name</label>
             <input type="text" id="studentName" name="studentName" placeholder="Student's full name">
-            <span class="form-error-msg"><i class="fi-alert"></i> Please enter the student's name</span>
+            <span class="form-error-msg"><i class="bx bx-error-circle"></i> Please enter the student's name</span>
           </div>
           <div class="form-group" id="group-studentEmail">
             <label for="studentEmail">Student Email</label>
             <input type="email" id="studentEmail" name="studentEmail" placeholder="you@email.com">
-            <span class="form-error-msg"><i class="fi-alert"></i> Enter a valid email address</span>
+            <span class="form-error-msg"><i class="bx bx-error-circle"></i> Enter a valid email address</span>
           </div>
           <div class="form-group" id="group-dob">
             <label for="studentDob">Date of Birth</label>
             <input type="date" id="studentDob" name="studentDob">
-            <span class="form-error-msg"><i class="fi-alert"></i> Please select a date of birth</span>
+            <span class="form-error-msg"><i class="bx bx-error-circle"></i> Please select a date of birth</span>
           </div>
         </div>
 
@@ -786,18 +788,18 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
           <textarea id="notes" name="notes" placeholder="Anything that helps us place you — prior projects, specific interests, scholarship questions..."></textarea>
         </div>
 
-        <div class="form-subhead"><i class="fi-torsos-all"></i><h3>Parent / Guardian Information</h3></div>
+        <div class="form-subhead"><i class="bx bx-group-all"></i><h3>Parent / Guardian Information</h3></div>
 
         <div class="form-row">
           <div class="form-group" id="group-parentName">
             <label for="parentName">Parent / Guardian Name</label>
             <input type="text" id="parentName" name="parentName" placeholder="Full name">
-            <span class="form-error-msg"><i class="fi-alert"></i> Please enter a parent or guardian name</span>
+            <span class="form-error-msg"><i class="bx bx-error-circle"></i> Please enter a parent or guardian name</span>
           </div>
           <div class="form-group" id="group-parentEmail">
             <label for="parentEmail">Parent / Guardian Email</label>
             <input type="email" id="parentEmail" name="parentEmail" placeholder="you@email.com">
-            <span class="form-error-msg"><i class="fi-alert"></i> Enter a valid email address</span>
+            <span class="form-error-msg"><i class="bx bx-error-circle"></i> Enter a valid email address</span>
           </div>
         </div>
 
@@ -810,7 +812,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
           <input type="checkbox" id="consent">
           <span>I agree to be contacted by the Innovative Explorer Club about this registration and club updates.</span>
         </label>
-        <span class="form-error-msg" id="consentError" style="margin:-16px 0 20px;"><i class="fi-alert"></i> Please confirm you agree to be contacted</span>
+        <span class="form-error-msg" id="consentError" style="margin:-16px 0 20px;"><i class="bx bx-error-circle"></i> Please confirm you agree to be contacted</span>
 
         <button type="submit" class="btn btn-lime form-submit btn-block" id="submitBtn">
           <span class="spinner"></span>
@@ -819,7 +821,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       </form>
 
       <div class="form-success" id="formSuccess">
-        <div class="check"><i class="fi-check"></i></div>
+        <div class="check"><i class="bx bx-check"></i></div>
         <h3>Registration received</h3>
         <p>Thanks for joining — we'll follow up by email to confirm your level, academy, and orientation date.</p>
         <button type="button" class="btn btn-outline" id="sendAnother">Register Another Member</button>
@@ -840,27 +842,27 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   <div class="mini-faq reveal">
 
     <div class="faq-item glass">
-      <div class="faq-question"><h4>How quickly will I hear back after registering?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><h4>How quickly will I hear back after registering?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">Usually within a few business days — we'll email to confirm your level, academy, and the next orientation date.</div></div>
     </div>
 
     <div class="faq-item glass">
-      <div class="faq-question"><h4>Can I try a session before committing?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><h4>Can I try a session before committing?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">Yes — orientation sessions are free, and you're welcome to sit in on a class before registering fully.</div></div>
     </div>
 
     <div class="faq-item glass">
-      <div class="faq-question"><h4>What if I'm not sure which academy fits?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><h4>What if I'm not sure which academy fits?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">Select "Not sure yet" on the form — mentors will help you find a fit during orientation, and you can switch tracks later.</div></div>
     </div>
 
     <div class="faq-item glass">
-      <div class="faq-question"><h4>Is there a sibling or family discount?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><h4>Is there a sibling or family discount?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">Ask the team when you register — discounts and scholarships are considered case by case.</div></div>
     </div>
 
     <div class="faq-item glass">
-      <div class="faq-question"><h4>Can I pause or cancel my membership?</h4><div class="faq-chevron"><i class="fi-plus"></i></div></div>
+      <div class="faq-question"><h4>Can I pause or cancel my membership?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">Yes, membership runs per term with no long-term lock-in — let us know before the next term starts.</div></div>
     </div>
 
@@ -880,7 +882,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     <p>Not ready to register? Reach out with questions and we'll help you figure out the right fit.</p>
     <div class="cta-actions">
       <a href="contact.html" class="btn btn-lime">Contact Us</a>
-      <a href="#" class="btn btn-outline"><i class="fi-telephone"></i> Join WhatsApp</a>
+      <a href="#" class="btn btn-outline"><i class="bx bxl-whatsapp"></i> Join WhatsApp</a>
     </div>
   </div>
 </section>
@@ -897,10 +899,10 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       </div>
       <p style="font-size:.86rem;">Empowering young minds through technology and innovation.</p>
       <div class="social-row">
-        <a href="#" class="icon-btn glass" aria-label="Instagram"><i class="fi-social-instagram"></i></a>
-        <a href="#" class="icon-btn glass" aria-label="Facebook"><i class="fi-social-facebook"></i></a>
-        <a href="#" class="icon-btn glass" aria-label="WhatsApp"><i class="fi-telephone"></i></a>
-        <a href="https://maps.app.goo.gl/qfNDcXp3cec9hd2RA" class="icon-btn glass" aria-label="Map"><i class="fi-map"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="Instagram"><i class="bx bxl-instagram"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="Facebook"><i class="bx bxl-facebook"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="WhatsApp"><i class="bx bxl-whatsapp"></i></a>
+        <a href="https://maps.app.goo.gl/qfNDcXp3cec9hd2RA" class="icon-btn glass" aria-label="Map"><i class="bx bx-map"></i></a>
       </div>
     </div>
     <div class="footer-col">
@@ -914,7 +916,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     </div>
     <div class="footer-col">
       <h4>Address</h4>
-      <div class="footer-address"><i class="fi-map"></i><span>Coderina EdTech Foundation, Department of Science, Technology and Innovation (DSTI)<br>No. 4 Ngozi Okonjo-Iweala Way, Utako District, Abuja 900103, Federal Capital Territory (FCT), Nigeria.</span></div>
+      <div class="footer-address"><i class="bx bx-map"></i><span>Coderina EdTech Foundation, Department of Science, Technology and Innovation (DSTI)<br>No. 4 Ngozi Okonjo-Iweala Way, Utako District, Abuja 900103, Federal Capital Territory (FCT), Nigeria.</span></div>
     </div>
     <div class="footer-map">
       <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3939.9483490731654!2d7.4445455775889355!3d9.068470288364598!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x104ddf81cc7ccb07%3A0xc50e6cfe01a43fac!2sCoderina%20Education%20and%20Technology%20Foundation!5e0!3m2!1sen!2sng!4v1785316511093!5m2!1sen!2sng" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
@@ -971,11 +973,11 @@ document.getElementById('searchToggle').addEventListener('click', () => {
 
 /* Dark / light toggle (persisted) */
 const themeToggle = document.getElementById('themeToggle');
-themeToggle.innerHTML = document.documentElement.classList.contains('light-mode') ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+themeToggle.innerHTML = document.documentElement.classList.contains('light-mode') ? '<i class="bx bx-sun"></i>' : '<i class="bx bx-moon"></i>';
 themeToggle.addEventListener('click', () => {
   document.documentElement.classList.toggle('light-mode');
   const light = document.documentElement.classList.contains('light-mode');
-  themeToggle.innerHTML = light ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+  themeToggle.innerHTML = light ? '<i class="bx bx-sun"></i>' : '<i class="bx bx-moon"></i>';
   try{ localStorage.setItem('iec-theme', light ? 'light' : 'dark'); }catch(e){}
 });
 

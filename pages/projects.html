@@ -22,9 +22,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-<!-- Icon set: Foundation Icons (used everywhere instead of emoji) -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css">
-
+<!-- Boxicons -->
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/filled/boxicons-filled.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/brands/boxicons-brands.min.css" rel="stylesheet">
 <style>
 /* =========================================================
    DESIGN TOKENS — identical to home page
@@ -92,7 +94,7 @@ p{margin:0;color:var(--gray);}
 a{color:inherit;text-decoration:none;}
 img{max-width:100%;display:block;}
 button{font-family:inherit;cursor:pointer;}
-i[class^="fi-"]{line-height:1;}
+i[class^="bx"]{line-height:1;}
 .eyebrow{
   font-size:.72rem;
   font-weight:600;
@@ -467,11 +469,11 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   <div class="nav-right">
     <div class="search-wrap" id="searchWrap">
       <input type="text" class="search-input" placeholder="Search...">
-      <button class="icon-btn" id="searchToggle" aria-label="Toggle search"><i class="fi-magnifying-glass"></i></button>
+      <button class="icon-btn" id="searchToggle" aria-label="Toggle search"><i class="bx bx-search"></i></button>
     </div>
-    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="fi-contrast"></i></button>
+    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="bx bx-moon"></i></button>
     <a href="membership.html" class="btn btn-lime nav-join"><span class="full">Join Community</span></a>
-    <button class="icon-btn hamburger" id="hamburger" aria-label="Toggle menu"><i class="fi-list-thumbnails"></i></button>
+    <button class="icon-btn hamburger" id="hamburger" aria-label="Toggle menu"><i class="bx bx-menu"></i></button>
   </div>
 </nav>
 
@@ -484,7 +486,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
 
   <div class="breadcrumb">
     <a href="../index.html">Home</a>
-    <i class="fi-arrow-down" style="transform:rotate(-90deg);"></i>
+    <i class="bx bx-chevron-down" style="transform:rotate(-90deg);"></i>
     <span class="current">Projects</span>
   </div>
 
@@ -536,118 +538,118 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   <div class="project-grid container reveal" id="projectGrid">
 
     <div class="project-card glass" data-category="robotics">
-      <div class="project-thumb"><span class="p-badge">Robotics</span><i class="fi-wrench"></i></div>
+      <div class="project-thumb"><span class="p-badge">Robotics</span><i class="bx bx-wrench"></i></div>
       <div class="project-body">
         <h4>Autonomous Line-Follower Bot</h4>
         <p>A sensor-guided robot built for the RoboMission track, tuned across six PID iterations.</p>
         <div class="project-tags"><span>Arduino</span><span>PID Control</span><span>C++</span></div>
         <div class="project-foot">
-          <span class="project-team"><i class="fi-torsos"></i> Robotics Academy</span>
-          <a href="#" class="project-link">View <i class="fi-arrow-right"></i></a>
+          <span class="project-team"><i class="bx bx-group"></i> Robotics Academy</span>
+          <a href="#" class="project-link">View <i class="bx bx-chevron-right"></i></a>
         </div>
       </div>
     </div>
 
     <div class="project-card glass" data-category="ai">
-      <div class="project-thumb"><span class="p-badge">AI</span><i class="fi-lightbulb"></i></div>
+      <div class="project-thumb"><span class="p-badge">AI</span><i class="bx bx-bulb"></i></div>
       <div class="project-body">
         <h4>Crop Disease Classifier</h4>
         <p>A computer vision model that flags common crop diseases from a phone photo, trained by the AI Academy.</p>
         <div class="project-tags"><span>Python</span><span>Computer Vision</span><span>TensorFlow</span></div>
         <div class="project-foot">
-          <span class="project-team"><i class="fi-torsos"></i> AI Academy</span>
-          <a href="#" class="project-link">View <i class="fi-arrow-right"></i></a>
+          <span class="project-team"><i class="bx bx-group"></i> AI Academy</span>
+          <a href="#" class="project-link">View <i class="bx bx-chevron-right"></i></a>
         </div>
       </div>
     </div>
 
     <div class="project-card glass" data-category="iot">
-      <div class="project-thumb"><span class="p-badge">IoT</span><i class="fi-network"></i></div>
+      <div class="project-thumb"><span class="p-badge">IoT</span><i class="bx bx-network-chart"></i></div>
       <div class="project-body">
         <h4>Smart Irrigation Controller</h4>
         <p>Soil-moisture sensors and a scheduled pump relay, monitored from a live web dashboard.</p>
         <div class="project-tags"><span>ESP32</span><span>MQTT</span><span>Green Innovation</span></div>
         <div class="project-foot">
-          <span class="project-team"><i class="fi-torsos"></i> Maker Space</span>
-          <a href="#" class="project-link">View <i class="fi-arrow-right"></i></a>
+          <span class="project-team"><i class="bx bx-group"></i> Maker Space</span>
+          <a href="#" class="project-link">View <i class="bx bx-chevron-right"></i></a>
         </div>
       </div>
     </div>
 
     <div class="project-card glass" data-category="websites">
-      <div class="project-thumb"><span class="p-badge">Websites</span><i class="fi-web"></i></div>
+      <div class="project-thumb"><span class="p-badge">Websites</span><i class="bx bx-globe"></i></div>
       <div class="project-body">
         <h4>Local Market Directory</h4>
         <p>A directory site connecting neighborhood vendors to shoppers, built as a Coding Academy term project.</p>
         <div class="project-tags"><span>HTML/CSS</span><span>JavaScript</span><span>Firebase</span></div>
         <div class="project-foot">
-          <span class="project-team"><i class="fi-torsos"></i> Coding Academy</span>
-          <a href="#" class="project-link">View <i class="fi-arrow-right"></i></a>
+          <span class="project-team"><i class="bx bx-group"></i> Coding Academy</span>
+          <a href="#" class="project-link">View <i class="bx bx-chevron-right"></i></a>
         </div>
       </div>
     </div>
 
     <div class="project-card glass" data-category="apps">
-      <div class="project-thumb"><span class="p-badge">Apps</span><i class="fi-mobile"></i></div>
+      <div class="project-thumb"><span class="p-badge">Apps</span><i class="bx bx-mobile-alt"></i></div>
       <div class="project-body">
         <h4>Study Streak</h4>
         <p>A habit-tracking mobile app for revision schedules, with reminders and streak badges.</p>
         <div class="project-tags"><span>React Native</span><span>Mobile</span></div>
         <div class="project-foot">
-          <span class="project-team"><i class="fi-torsos"></i> Coding Academy</span>
-          <a href="#" class="project-link">View <i class="fi-arrow-right"></i></a>
+          <span class="project-team"><i class="bx bx-group"></i> Coding Academy</span>
+          <a href="#" class="project-link">View <i class="bx bx-chevron-right"></i></a>
         </div>
       </div>
     </div>
 
     <div class="project-card glass" data-category="smart-devices">
-      <div class="project-thumb"><span class="p-badge">Smart Devices</span><i class="fi-mobile-signal"></i></div>
+      <div class="project-thumb"><span class="p-badge">Smart Devices</span><i class="bx bx-broadcast"></i></div>
       <div class="project-body">
         <h4>Gesture-Controlled Desk Lamp</h4>
         <p>An ultrasonic sensor and RGB strip combo that dims and shifts color with a hand wave.</p>
         <div class="project-tags"><span>Raspberry Pi</span><span>Electronics</span></div>
         <div class="project-foot">
-          <span class="project-team"><i class="fi-torsos"></i> Maker Space</span>
-          <a href="#" class="project-link">View <i class="fi-arrow-right"></i></a>
+          <span class="project-team"><i class="bx bx-group"></i> Maker Space</span>
+          <a href="#" class="project-link">View <i class="bx bx-chevron-right"></i></a>
         </div>
       </div>
     </div>
 
     <div class="project-card glass" data-category="drones">
-      <div class="project-thumb"><span class="p-badge">Drones</span><i class="fi-compass"></i></div>
+      <div class="project-thumb"><span class="p-badge">Drones</span><i class="bx bx-compass"></i></div>
       <div class="project-body">
         <h4>FPV Racing Quad — "Falcon"</h4>
         <p>A custom-built racing quadcopter on a Pixhawk flight controller, built for our indoor gate course.</p>
         <div class="project-tags"><span>Pixhawk</span><span>FPV</span><span>Drone Tech</span></div>
         <div class="project-foot">
-          <span class="project-team"><i class="fi-torsos"></i> Drone Technology</span>
-          <a href="#" class="project-link">View <i class="fi-arrow-right"></i></a>
+          <span class="project-team"><i class="bx bx-group"></i> Drone Technology</span>
+          <a href="#" class="project-link">View <i class="bx bx-chevron-right"></i></a>
         </div>
       </div>
     </div>
 
     <div class="project-card glass" data-category="robotics">
-      <div class="project-thumb"><span class="p-badge">Robotics</span><i class="fi-wrench"></i></div>
+      <div class="project-thumb"><span class="p-badge">Robotics</span><i class="bx bx-wrench"></i></div>
       <div class="project-body">
         <h4>Sumo Bot "Tremor"</h4>
         <p>A low-center-of-gravity pusher built for club sumo brackets — undefeated this term.</p>
         <div class="project-tags"><span>3D Printed</span><span>Torque Motors</span></div>
         <div class="project-foot">
-          <span class="project-team"><i class="fi-torsos"></i> Robotics Academy</span>
-          <a href="#" class="project-link">View <i class="fi-arrow-right"></i></a>
+          <span class="project-team"><i class="bx bx-group"></i> Robotics Academy</span>
+          <a href="#" class="project-link">View <i class="bx bx-chevron-right"></i></a>
         </div>
       </div>
     </div>
 
     <div class="project-card glass" data-category="ai">
-      <div class="project-thumb"><span class="p-badge">AI</span><i class="fi-lightbulb"></i></div>
+      <div class="project-thumb"><span class="p-badge">AI</span><i class="bx bx-bulb"></i></div>
       <div class="project-body">
         <h4>Homework Helper Chatbot</h4>
         <p>A prompt-engineered study assistant scoped to explain, not just answer, built with AI ethics guardrails.</p>
         <div class="project-tags"><span>Prompt Engineering</span><span>AI Ethics</span></div>
         <div class="project-foot">
-          <span class="project-team"><i class="fi-torsos"></i> AI Academy</span>
-          <a href="#" class="project-link">View <i class="fi-arrow-right"></i></a>
+          <span class="project-team"><i class="bx bx-group"></i> AI Academy</span>
+          <a href="#" class="project-link">View <i class="bx bx-chevron-right"></i></a>
         </div>
       </div>
     </div>
@@ -668,35 +670,35 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   </div>
   <div class="repo-grid container reveal">
     <div class="repo-card glass">
-      <div class="repo-top"><div class="repo-icon"><i class="fi-widget"></i></div><h4>tiec-line-follower-firmware</h4></div>
+      <div class="repo-top"><div class="repo-icon"><i class="bx bx-printer"></i></div><h4>tiec-line-follower-firmware</h4></div>
       <p>Reusable Arduino firmware for PID-based line-following robots, used across our Robotics Academy kits.</p>
       <div class="repo-foot">
         <span class="repo-lang"><span class="dot"></span> C++</span>
-        <span class="repo-stats"><span><i class="fi-star"></i> —</span><span><i class="fi-link"></i> Fork</span></span>
+        <span class="repo-stats"><span><i class="bx bx-star"></i> —</span><span><i class="bx bx-git-repo-forked"></i> Fork</span></span>
       </div>
     </div>
     <div class="repo-card glass">
-      <div class="repo-top"><div class="repo-icon"><i class="fi-widget"></i></div><h4>iot-dashboard-starter</h4></div>
+      <div class="repo-top"><div class="repo-icon"><i class="bx bx-printer"></i></div><h4>iot-dashboard-starter</h4></div>
       <p>A drop-in MQTT-to-web dashboard template for member IoT projects, built on Firebase.</p>
       <div class="repo-foot">
         <span class="repo-lang"><span class="dot" style="background:#f0c419;"></span> JavaScript</span>
-        <span class="repo-stats"><span><i class="fi-star"></i> —</span><span><i class="fi-link"></i> Fork</span></span>
+        <span class="repo-stats"><span><i class="bx bx-star"></i> —</span><span><i class="bx bx-git-repo-forked"></i> Fork</span></span>
       </div>
     </div>
     <div class="repo-card glass">
-      <div class="repo-top"><div class="repo-icon"><i class="fi-widget"></i></div><h4>crop-vision-model</h4></div>
+      <div class="repo-top"><div class="repo-icon"><i class="bx bx-printer"></i></div><h4>crop-vision-model</h4></div>
       <p>Training scripts and a lightweight inference pipeline for the AI Academy's crop disease classifier.</p>
       <div class="repo-foot">
         <span class="repo-lang"><span class="dot" style="background:#3572A5;"></span> Python</span>
-        <span class="repo-stats"><span><i class="fi-star"></i> —</span><span><i class="fi-link"></i> Fork</span></span>
+        <span class="repo-stats"><span><i class="bx bx-star"></i> —</span><span><i class="bx bx-git-repo-forked"></i> Fork</span></span>
       </div>
     </div>
     <div class="repo-card glass">
-      <div class="repo-top"><div class="repo-icon"><i class="fi-widget"></i></div><h4>fpv-flight-configs</h4></div>
+      <div class="repo-top"><div class="repo-icon"><i class="bx bx-printer"></i></div><h4>fpv-flight-configs</h4></div>
       <p>Shared Pixhawk and Betaflight configuration presets tuned for our indoor racing course.</p>
       <div class="repo-foot">
         <span class="repo-lang"><span class="dot" style="background:#e34c26;"></span> Config</span>
-        <span class="repo-stats"><span><i class="fi-star"></i> —</span><span><i class="fi-link"></i> Fork</span></span>
+        <span class="repo-stats"><span><i class="bx bx-star"></i> —</span><span><i class="bx bx-git-repo-forked"></i> Fork</span></span>
       </div>
     </div>
   </div>
@@ -756,7 +758,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   </div>
   <div class="research-list container reveal">
     <div class="research-item glass">
-      <div class="research-icon"><i class="fi-graph-bar"></i></div>
+      <div class="research-icon"><i class="bx bx-bar-chart-alt-2"></i></div>
       <div class="research-body">
         <div class="research-top"><h4>Low-Cost Soil Sensing for Smallholder Farms</h4><span class="status-tag status-ongoing">Ongoing</span></div>
         <p>Evaluating budget capacitive moisture sensors against lab-grade equipment to see how much accuracy a low-cost IoT kit can realistically deliver.</p>
@@ -764,7 +766,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       </div>
     </div>
     <div class="research-item glass">
-      <div class="research-icon"><i class="fi-lightbulb"></i></div>
+      <div class="research-icon"><i class="bx bx-bulb"></i></div>
       <div class="research-body">
         <div class="research-top"><h4>Bias in Small-Scale Vision Datasets</h4><span class="status-tag status-published">Published</span></div>
         <p>A student-led audit of the crop disease classifier's training data, documenting where model accuracy dropped and why.</p>
@@ -772,7 +774,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       </div>
     </div>
     <div class="research-item glass">
-      <div class="research-icon"><i class="fi-compass"></i></div>
+      <div class="research-icon"><i class="bx bx-compass"></i></div>
       <div class="research-body">
         <div class="research-top"><h4>Battery Efficiency Across FPV Frame Sizes</h4><span class="status-tag status-ongoing">Ongoing</span></div>
         <p>Comparing flight time and stability across three frame sizes to inform the next generation of club racing builds.</p>
@@ -794,26 +796,26 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   <div class="challenge-grid container reveal">
     <div class="challenge-card glass">
       <span class="challenge-status status-open">Open</span>
-      <i class="icon fi-trees"></i>
+      <i class="icon bx bx-tree"></i>
       <h4>Design a Low-Cost Water Filter</h4>
       <p>Build a working prototype that filters visibly cloudy water using materials under a set budget.</p>
-      <div class="challenge-deadline"><i class="fi-calendar"></i> Entries close Oct 1, 2026</div>
+      <div class="challenge-deadline"><i class="bx bx-calendar"></i> Entries close Oct 1, 2026</div>
       <a href="membership.html" class="btn btn-outline btn-sm">Enter Challenge</a>
     </div>
     <div class="challenge-card glass">
       <span class="challenge-status status-upcoming">Upcoming</span>
-      <i class="icon fi-lightbulb"></i>
+      <i class="icon bx bx-sun"></i>
       <h4>AI for Accessibility</h4>
       <p>Prototype a tool that uses AI to make everyday tasks easier for someone with a physical or sensory disability.</p>
-      <div class="challenge-deadline"><i class="fi-calendar"></i> Opens Sept 15, 2026</div>
+      <div class="challenge-deadline"><i class="bx bx-calendar"></i> Opens Sept 15, 2026</div>
       <a href="membership.html" class="btn btn-outline btn-sm">Get Notified</a>
     </div>
     <div class="challenge-card glass">
       <span class="challenge-status status-closed">Closed</span>
-      <i class="icon fi-widget"></i>
+      <i class="icon bx bx-printer"></i>
       <h4>Reinvent an Everyday Object</h4>
       <p>Redesign and 3D print a common household object to solve a problem with its original design.</p>
-      <div class="challenge-deadline"><i class="fi-calendar"></i> Closed July 2026</div>
+      <div class="challenge-deadline"><i class="bx bx-calendar"></i> Closed July 2026</div>
       <a href="#" class="btn btn-outline btn-sm">View Winners</a>
     </div>
   </div>
@@ -829,7 +831,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     <p>Finished something you're proud of? Get it featured on this page.</p>
     <div class="cta-actions">
       <a href="membership.html" class="btn btn-lime">Submit a Project</a>
-      <a href="#" class="btn btn-outline"><i class="fi-telephone"></i> Join WhatsApp</a>
+      <a href="#" class="btn btn-outline"><i class="bx bxl-whatsapp"></i> Join WhatsApp</a>
     </div>
   </div>
 </section>
@@ -846,10 +848,10 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       </div>
       <p style="font-size:.86rem;">Empowering young minds through technology and innovation.</p>
       <div class="social-row">
-        <a href="#" class="icon-btn glass" aria-label="Instagram"><i class="fi-social-instagram"></i></a>
-        <a href="#" class="icon-btn glass" aria-label="Facebook"><i class="fi-social-facebook"></i></a>
-        <a href="#" class="icon-btn glass" aria-label="WhatsApp"><i class="fi-telephone"></i></a>
-        <a href="https://maps.app.goo.gl/qfNDcXp3cec9hd2RA" class="icon-btn glass" aria-label="Map"><i class="fi-map"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="Instagram"><i class="bx bxl-instagram"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="Facebook"><i class="bx bxl-facebook"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="WhatsApp"><i class="bx bxl-whatsapp"></i></a>
+        <a href="https://maps.app.goo.gl/qfNDcXp3cec9hd2RA" class="icon-btn glass" aria-label="Map"><i class="bx bx-map"></i></a>
       </div>
     </div>
     <div class="footer-col">
@@ -863,7 +865,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     </div>
     <div class="footer-col">
       <h4>Address</h4>
-      <div class="footer-address"><i class="fi-map"></i><span>Coderina EdTech Foundation, Department of Science, Technology and Innovation (DSTI)<br>No. 4 Ngozi Okonjo-Iweala Way, Utako District, Abuja 900103, Federal Capital Territory (FCT), Nigeria.</span></div>
+      <div class="footer-address"><i class="bx bx-map"></i><span>Coderina EdTech Foundation, Department of Science, Technology and Innovation (DSTI)<br>No. 4 Ngozi Okonjo-Iweala Way, Utako District, Abuja 900103, Federal Capital Territory (FCT), Nigeria.</span></div>
     </div>
     <div class="footer-map">
       <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3939.9483490731654!2d7.4445455775889355!3d9.068470288364598!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x104ddf81cc7ccb07%3A0xc50e6cfe01a43fac!2sCoderina%20Education%20and%20Technology%20Foundation!5e0!3m2!1sen!2sng!4v1785316511093!5m2!1sen!2sng" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
@@ -904,11 +906,11 @@ document.getElementById('searchToggle').addEventListener('click', () => {
 
 /* Dark / light toggle (persisted) */
 const themeToggle = document.getElementById('themeToggle');
-themeToggle.innerHTML = document.documentElement.classList.contains('light-mode') ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+themeToggle.innerHTML = document.documentElement.classList.contains('light-mode') ? '<i class="bx bx-sun"></i>' : '<i class="bx bx-moon"></i>';
 themeToggle.addEventListener('click', () => {
   document.documentElement.classList.toggle('light-mode');
   const light = document.documentElement.classList.contains('light-mode');
-  themeToggle.innerHTML = light ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+  themeToggle.innerHTML = light ? '<i class="bx bx-sun"></i>' : '<i class="bx bx-moon"></i>';
   try{ localStorage.setItem('iec-theme', light ? 'light' : 'dark'); }catch(e){}
 });
 

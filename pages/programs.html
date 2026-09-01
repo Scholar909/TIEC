@@ -22,9 +22,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-<!-- Icon set: Foundation Icons (used everywhere instead of emoji) -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.min.css">
-
+<!-- Boxicons -->
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/filled/boxicons-filled.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/brands/boxicons-brands.min.css" rel="stylesheet">
 <style>
 /* =========================================================
    DESIGN TOKENS — identical to home page
@@ -92,7 +94,7 @@ p{margin:0;color:var(--gray);}
 a{color:inherit;text-decoration:none;}
 img{max-width:100%;display:block;}
 button{font-family:inherit;cursor:pointer;}
-i[class^="fi-"]{line-height:1;}
+i[class^="bx"]{line-height:1;}
 .eyebrow{
   font-size:.72rem;
   font-weight:600;
@@ -423,11 +425,11 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   <div class="nav-right">
     <div class="search-wrap" id="searchWrap">
       <input type="text" class="search-input" placeholder="Search...">
-      <button class="icon-btn" id="searchToggle" aria-label="Toggle search"><i class="fi-magnifying-glass"></i></button>
+      <button class="icon-btn" id="searchToggle" aria-label="Toggle search"><i class="bx bx-search"></i></button>
     </div>
-    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="fi-contrast"></i></button>
+    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="bx bx-moon"></i></button>
     <a href="membership.html" class="btn btn-lime nav-join"><span class="full">Join Community</span></a>
-    <button class="icon-btn hamburger" id="hamburger" aria-label="Toggle menu"><i class="fi-list-thumbnails"></i></button>
+    <button class="icon-btn hamburger" id="hamburger" aria-label="Toggle menu"><i class="bx bx-menu"></i></button>
   </div>
 </nav>
 
@@ -440,7 +442,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
 
   <div class="breadcrumb">
     <a href="../index.html">Home</a>
-    <i class="fi-arrow-down" style="transform:rotate(-90deg);"></i>
+    <i class="bx bx-chevron-down" style="transform:rotate(-90deg);"></i>
     <span class="current">Programs</span>
   </div>
 
@@ -484,16 +486,16 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     <p>A snapshot of the kinds of things that come out of our labs every term.</p>
   </div>
   <div class="ecosystem-grid container reveal">
-    <div class="eco-chip glass"><i class="fi-wrench"></i><span>Robots</span></div>
-    <div class="eco-chip glass"><i class="fi-mobile-signal"></i><span>Smart Devices</span></div>
-    <div class="eco-chip glass"><i class="fi-widget"></i><span>Drones</span></div>
-    <div class="eco-chip glass"><i class="fi-record"></i><span>Rockets</span></div>
-    <div class="eco-chip glass"><i class="fi-sound"></i><span>Satellites</span></div>
-    <div class="eco-chip glass"><i class="fi-rss"></i><span>IoT</span></div>
-    <div class="eco-chip glass"><i class="fi-lightbulb"></i><span>AI Projects</span></div>
-    <div class="eco-chip glass"><i class="fi-mobile"></i><span>Mobile Apps</span></div>
-    <div class="eco-chip glass"><i class="fi-web"></i><span>Websites</span></div>
-    <div class="eco-chip glass"><i class="fi-play"></i><span>Games</span></div>
+    <div class="eco-chip glass"><i class="bx bx-wrench"></i><span>Robots</span></div>
+    <div class="eco-chip glass"><i class="bx bx-broadcast"></i><span>Smart Devices</span></div>
+    <div class="eco-chip glass"><i class="bx bx-printer"></i><span>Drones</span></div>
+    <div class="eco-chip glass"><i class="bx bx-rocket"></i><span>Rockets</span></div>
+    <div class="eco-chip glass"><i class="bx bx-satellite"></i><span>Satellites</span></div>
+    <div class="eco-chip glass"><i class="bx bx-rss"></i><span>IoT</span></div>
+    <div class="eco-chip glass"><i class="bx bx-bulb"></i><span>AI Projects</span></div>
+    <div class="eco-chip glass"><i class="bx bx-mobile-alt"></i><span>Mobile Apps</span></div>
+    <div class="eco-chip glass"><i class="bx bx-globe"></i><span>Websites</span></div>
+    <div class="eco-chip glass"><i class="bx bx-play"></i><span>Games</span></div>
   </div>
 </section>
 
@@ -511,13 +513,13 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
 
     <div class="academy-card glass" id="robotics">
       <div class="academy-header">
-        <div class="academy-icon"><i class="fi-wrench"></i></div>
+        <div class="academy-icon"><i class="bx bx-wrench"></i></div>
         <div class="academy-title">
           <h3>Robotics Academy</h3>
           <p>Design, wire, and program robots — from first build to competition floor.</p>
         </div>
         <span class="academy-count">7 tracks</span>
-        <div class="academy-chevron"><i class="fi-plus"></i></div>
+        <div class="academy-chevron"><i class="bx bx-plus"></i></div>
       </div>
       <div class="academy-body">
         <div class="academy-body-inner">
@@ -530,13 +532,13 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
 
     <div class="academy-card glass" id="coding">
       <div class="academy-header">
-        <div class="academy-icon"><i class="fi-html5"></i></div>
+        <div class="academy-icon"><i class="bx bx-code-alt"></i></div>
         <div class="academy-title">
           <h3>Coding Academy</h3>
           <p>Learn to think in code, from your first script to full applications.</p>
         </div>
         <span class="academy-count">7 tracks</span>
-        <div class="academy-chevron"><i class="fi-plus"></i></div>
+        <div class="academy-chevron"><i class="bx bx-plus"></i></div>
       </div>
       <div class="academy-body">
         <div class="academy-body-inner">
@@ -550,7 +552,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
 <div class="academy-card glass" id="aerospace">
     <div class="academy-header">
         <div class="academy-icon">
-            <i class="fi-target-two"></i>
+            <i class="bx bx-target-lock"></i>
         </div>
 
         <div class="academy-title">
@@ -561,7 +563,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
         <span class="academy-count">8 tracks</span>
 
         <div class="academy-chevron">
-            <i class="fi-plus"></i>
+            <i class="bx bx-plus"></i>
         </div>
     </div>
 
@@ -583,13 +585,13 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
 
     <div class="academy-card glass" id="ai">
       <div class="academy-header">
-        <div class="academy-icon"><i class="fi-lightbulb"></i></div>
+        <div class="academy-icon"><i class="bx bx-bulb"></i></div>
         <div class="academy-title">
           <h3>AI Academy</h3>
           <p>Explore the systems shaping tomorrow — and learn to build them responsibly.</p>
         </div>
         <span class="academy-count">7 tracks</span>
-        <div class="academy-chevron"><i class="fi-plus"></i></div>
+        <div class="academy-chevron"><i class="bx bx-plus"></i></div>
       </div>
       <div class="academy-body">
         <div class="academy-body-inner">
@@ -602,13 +604,13 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
 
     <div class="academy-card glass" id="makerspace">
       <div class="academy-header">
-        <div class="academy-icon"><i class="fi-widget"></i></div>
+        <div class="academy-icon"><i class="bx bx-printer"></i></div>
         <div class="academy-title">
           <h3>Maker Space</h3>
           <p>Hands-on fabrication — where ideas become physical prototypes.</p>
         </div>
         <span class="academy-count">8 tracks</span>
-        <div class="academy-chevron"><i class="fi-plus"></i></div>
+        <div class="academy-chevron"><i class="bx bx-plus"></i></div>
       </div>
       <div class="academy-body">
         <div class="academy-body-inner">
@@ -621,13 +623,13 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
 
     <div class="academy-card glass" id="entrepreneurship">
       <div class="academy-header">
-        <div class="academy-icon"><i class="fi-graph-trend"></i></div>
+        <div class="academy-icon"><i class="bx bx-trending-up"></i></div>
         <div class="academy-title">
           <h3>Entrepreneurship Hub</h3>
           <p>Turn projects into products, and products into ventures.</p>
         </div>
         <span class="academy-count">8 tracks</span>
-        <div class="academy-chevron"><i class="fi-plus"></i></div>
+        <div class="academy-chevron"><i class="bx bx-plus"></i></div>
       </div>
       <div class="academy-body">
         <div class="academy-body-inner">
@@ -640,13 +642,13 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
 
     <div class="academy-card glass" id="creative-media">
       <div class="academy-header">
-        <div class="academy-icon"><i class="fi-photo"></i></div>
+        <div class="academy-icon"><i class="bx bx-image"></i></div>
         <div class="academy-title">
           <h3>Creative Media Lab</h3>
           <p>Tell the story of what you build.</p>
         </div>
         <span class="academy-count">7 tracks</span>
-        <div class="academy-chevron"><i class="fi-plus"></i></div>
+        <div class="academy-chevron"><i class="bx bx-plus"></i></div>
       </div>
       <div class="academy-body">
         <div class="academy-body-inner">
@@ -659,13 +661,13 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
 
     <div class="academy-card glass" id="green-innovation">
       <div class="academy-header">
-        <div class="academy-icon"><i class="fi-trees"></i></div>
+        <div class="academy-icon"><i class="bx bx-tree"></i></div>
         <div class="academy-title">
           <h3>Green Innovation</h3>
           <p>Technology in service of a sustainable future.</p>
         </div>
         <span class="academy-count">5 tracks</span>
-        <div class="academy-chevron"><i class="fi-plus"></i></div>
+        <div class="academy-chevron"><i class="bx bx-plus"></i></div>
       </div>
       <div class="academy-body">
         <div class="academy-body-inner">
@@ -678,13 +680,13 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
 
 <div class="academy-card glass" id="reverse-engineering">
       <div class="academy-header">
-        <div class="academy-icon"><i class="fi-zoom-in"></i></div>
+        <div class="academy-icon"><i class="bx bx-zoom-in"></i></div>
         <div class="academy-title">
           <h3>Reverse Engineering Academy</h3>
           <p>Take it apart to understand it — then rebuild it better.</p>
         </div>
         <span class="academy-count">7 tracks</span>
-        <div class="academy-chevron"><i class="fi-plus"></i></div>
+        <div class="academy-chevron"><i class="bx bx-plus"></i></div>
       </div>
       <div class="academy-body">
         <div class="academy-body-inner">
@@ -697,13 +699,13 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
 
     <div class="academy-card glass" id="future-skills">
       <div class="academy-header">
-        <div class="academy-icon"><i class="fi-torso-business"></i></div>
+        <div class="academy-icon"><i class="bx bx-user-voice"></i></div>
         <div class="academy-title">
           <h3>Future Skills Academy</h3>
           <p>The human skills every innovator needs, regardless of track.</p>
         </div>
         <span class="academy-count">6 tracks</span>
-        <div class="academy-chevron"><i class="fi-plus"></i></div>
+        <div class="academy-chevron"><i class="bx bx-plus"></i></div>
       </div>
       <div class="academy-body">
         <div class="academy-body-inner">
@@ -726,7 +728,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     <h2>Found a track you want to try?</h2>
     <p>Membership gives you access to every academy — not just one.</p>
     <div class="cta-actions">
-      <a href="#" class="btn btn-lime"><i class="fi-telephone"></i> Join WhatsApp</a>
+      <a href="#" class="btn btn-lime"><i class="bx bxl-whatsapp"></i> Join WhatsApp</a>
       <a href="membership.html" class="btn btn-outline">Register Interest</a>
     </div>
   </div>
@@ -744,10 +746,10 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       </div>
       <p style="font-size:.86rem;">Empowering young minds through technology and innovation.</p>
       <div class="social-row">
-        <a href="#" class="icon-btn glass" aria-label="Instagram"><i class="fi-social-instagram"></i></a>
-        <a href="#" class="icon-btn glass" aria-label="Facebook"><i class="fi-social-facebook"></i></a>
-        <a href="#" class="icon-btn glass" aria-label="WhatsApp"><i class="fi-telephone"></i></a>
-        <a href="https://maps.app.goo.gl/qfNDcXp3cec9hd2RA" class="icon-btn glass" aria-label="Map"><i class="fi-map"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="Instagram"><i class="bx bxl-instagram"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="Facebook"><i class="bx bxl-facebook"></i></a>
+        <a href="#" class="icon-btn glass" aria-label="WhatsApp"><i class="bx bxl-whatsapp"></i></a>
+        <a href="https://maps.app.goo.gl/qfNDcXp3cec9hd2RA" class="icon-btn glass" aria-label="Map"><i class="bx bx-map"></i></a>
       </div>
     </div>
     <div class="footer-col">
@@ -761,7 +763,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     </div>
     <div class="footer-col">
       <h4>Address</h4>
-      <div class="footer-address"><i class="fi-map"></i><span>Coderina EdTech Foundation, Department of Science, Technology and Innovation (DSTI)<br>No. 4 Ngozi Okonjo-Iweala Way, Utako District, Abuja 900103, Federal Capital Territory (FCT), Nigeria.</span></div>
+      <div class="footer-address"><i class="bx bx-map"></i><span>Coderina EdTech Foundation, Department of Science, Technology and Innovation (DSTI)<br>No. 4 Ngozi Okonjo-Iweala Way, Utako District, Abuja 900103, Federal Capital Territory (FCT), Nigeria.</span></div>
     </div>
     <div class="footer-map">
       <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3939.9483490731654!2d7.4445455775889355!3d9.068470288364598!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x104ddf81cc7ccb07%3A0xc50e6cfe01a43fac!2sCoderina%20Education%20and%20Technology%20Foundation!5e0!3m2!1sen!2sng!4v1785316511093!5m2!1sen!2sng" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
@@ -802,11 +804,11 @@ document.getElementById('searchToggle').addEventListener('click', () => {
 
 /* Dark / light toggle (persisted) */
 const themeToggle = document.getElementById('themeToggle');
-themeToggle.innerHTML = document.documentElement.classList.contains('light-mode') ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+themeToggle.innerHTML = document.documentElement.classList.contains('light-mode') ? '<i class="bx bx-sun"></i>' : '<i class="bx bx-moon"></i>';
 themeToggle.addEventListener('click', () => {
   document.documentElement.classList.toggle('light-mode');
   const light = document.documentElement.classList.contains('light-mode');
-  themeToggle.innerHTML = light ? '<i class="fi-lightbulb"></i>' : '<i class="fi-contrast"></i>';
+  themeToggle.innerHTML = light ? '<i class="bx bx-sun"></i>' : '<i class="bx bx-moon"></i>';
   try{ localStorage.setItem('iec-theme', light ? 'light' : 'dark'); }catch(e){}
 });
 
