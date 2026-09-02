@@ -494,6 +494,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       <button type="button" class="reason-chip" data-reason="Partnership">Partnership</button>
       <button type="button" class="reason-chip" data-reason="Press">Press</button>
       <button type="button" class="reason-chip" data-reason="Volunteer / Mentor">Volunteer / Mentor</button>
+      <button type="button" class="reason-chip" data-reason="Other">Other</button>
     </div>
 
     <div class="contact-wrap">
@@ -527,6 +528,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
                 <option>Partnership</option>
                 <option>Press</option>
                 <option>Volunteer / Mentor</option>
+                <option>Other</option>
               </select>
             </div>
           </div>
@@ -659,7 +661,42 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   </div>
 </footer>
 
-<script>
+<!-- EmailJS SDK — loaded as a plain script so `emailjs` is a global the module script below can use -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+import {
+  getFirestore, collection, addDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDBRvD87vNdWMS1wvufAd_RNZhuCf2CN4g",
+  authDomain: "the-innovative-explorer-club.firebaseapp.com",
+  projectId: "the-innovative-explorer-club",
+  storageBucket: "the-innovative-explorer-club.firebasestorage.app",
+  messagingSenderId: "421600505981",
+  appId: "1:421600505981:web:6a633ef8b98b4a6f990114"
+};
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
+
+/* =========================================================
+   EMAILJS SETUP — replace these three values once your
+   EmailJS account is ready (https://www.emailjs.com):
+     1. EMAILJS_PUBLIC_KEY   → Account → API Keys → Public Key
+     2. EMAILJS_SERVICE_ID   → Email Services → your connected service
+     3. EMAILJS_TEMPLATE_ID  → Email Templates → the template you build
+
+   Build the EmailJS template with variables matching the
+   templateParams keys sent below: {{visitor_name}}, {{visitor_email}},
+   {{visitor_phone}}, {{reason}}, {{message}}.
+   ========================================================= */
+const EMAILJS_PUBLIC_KEY = 'l3a0ppvzcfugMl2ja';   // TODO
+const EMAILJS_SERVICE_ID = 'service_62tyel1';   // TODO
+const EMAILJS_TEMPLATE_ID = 'template_75fgr3o'; // TODO
+window.emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+
 /* =========================================================
    NAVBAR: scroll blur + mobile menu + search expand
    ========================================================= */
@@ -808,9 +845,11 @@ subjectSelect.addEventListener('change', () => {
 });
 
 /* =========================================================
-   CONTACT FORM: validation + simulated submit
-   (Wire this up to Firebase later — replace the setTimeout
-   block in handleSubmit with a real write/call.)
+   CONTACT FORM: validation + real submit
+   Writes to the shared `adminMessages` collection (tag:
+   'visitor') so the future admin contact page can list public
+   contact-form messages alongside student portal messages, and
+   fires an EmailJS alert to admin's inbox.
    ========================================================= */
 const contactForm = document.getElementById('contactForm');
 const submitBtn = document.getElementById('submitBtn');
@@ -831,11 +870,13 @@ function isValidEmail(value){
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
-contactForm.addEventListener('submit', (e) => {
+contactForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const name = document.getElementById('cName').value.trim();
   const email = document.getElementById('cEmail').value.trim();
+  const phone = document.getElementById('cPhone').value.trim();
+  const reason = document.getElementById('cSubject').value;
   const message = document.getElementById('cMessage').value.trim();
 
   const nameValid = name.length > 1;
@@ -851,13 +892,36 @@ contactForm.addEventListener('submit', (e) => {
   submitBtn.classList.add('loading');
   submitBtn.disabled = true;
 
-  /* Simulated submit — swap for a Firebase write when storage is connected */
-  setTimeout(() => {
-    submitBtn.classList.remove('loading');
-    submitBtn.disabled = false;
+  try{
+    await addDoc(collection(db, 'adminMessages'), {
+      name, email, phone, reason, message,
+      tag: 'visitor',
+      status: 'unread',
+      createdAt: serverTimestamp()
+    });
+
+    try{
+      await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        tagged_name: `Visitor - ${name}`,
+        visitor_name: name,
+        visitor_email: email,
+        visitor_phone: phone || 'Not provided',
+        reason,
+        message
+      });
+    } catch (emailErr){
+      console.error('Admin alert email failed to send (message was still saved):', emailErr);
+    }
+
     contactForm.classList.add('hide');
     formSuccess.classList.add('show');
-  }, 1100);
+  } catch (err){
+    console.error(err);
+    alert("Something went wrong sending your message — please try again.");
+  } finally {
+    submitBtn.classList.remove('loading');
+    submitBtn.disabled = false;
+  }
 });
 
 sendAnother.addEventListener('click', () => {

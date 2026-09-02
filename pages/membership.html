@@ -936,6 +936,9 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   </div>
 </footer>
 
+<!-- EmailJS SDK — loaded as a plain script so `emailjs` is a global the module script below can use -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 import {
@@ -952,6 +955,36 @@ const firebaseConfig = {
 };
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
+
+/* =========================================================
+   EMAILJS SETUP — replace these values once your EmailJS
+   account is ready (https://www.emailjs.com):
+     1. EMAILJS_PUBLIC_KEY   → Account → API Keys → Public Key
+     2. EMAILJS_SERVICE_ID   → Email Services → your connected service
+     3. EMAILJS_TEMPLATE_ID  → Email Templates → the template you build
+     4. ADMIN_DASHBOARD_URL  → once the admin portal is live, point
+        this at its login/applications page
+
+   Build the EmailJS template with variables matching the
+   templateParams keys sent below: {{student_name}}, {{student_email}},
+   {{parent_name}}, {{parent_email}}, {{parent_phone}}, {{admin_link}}.
+   A template body along the lines of:
+
+     Membership Submission to TIEC
+     Student Name: {{student_name}}
+     Student Email: {{student_email}}
+     Parent Name: {{parent_name}}
+     Parent Email: {{parent_email}}
+     Parent Number: {{parent_phone}}
+
+     Log in to the admin dashboard to accept or decline this
+     application: {{admin_link}}
+   ========================================================= */
+const EMAILJS_PUBLIC_KEY = 'l3a0ppvzcfugMl2ja';    // TODO
+const EMAILJS_SERVICE_ID = 'service_62tyel1';    // TODO
+const EMAILJS_TEMPLATE_ID = 'template_0fmcsps';  // TODO
+const ADMIN_DASHBOARD_URL = 'https://tiec.com.ng/pages/admin/dashboard.html'; // TODO
+window.emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
 
 /* =========================================================
    NAVBAR: scroll blur + mobile menu + search expand
@@ -1199,6 +1232,20 @@ joinForm.addEventListener('submit', async (e) => {
       status: 'pending',
       submittedAt: serverTimestamp()
     });
+
+    try{
+      await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        student_name: studentName,
+        student_email: studentEmail,
+        parent_name: parentName,
+        parent_email: parentEmail,
+        parent_phone: parentPhone,
+        admin_link: ADMIN_DASHBOARD_URL
+      });
+    } catch (emailErr){
+      console.error('Admin alert email failed to send (application was still saved):', emailErr);
+    }
+
     joinForm.classList.add('hide');
     formSuccess.classList.add('show');
   } catch (err) {
