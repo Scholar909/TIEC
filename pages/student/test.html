@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){try{if(localStorage.getItem('iec-theme')==='light'){document.documentElement.classList.add('light-mode');}}catch(e){}})();</script>
+<title>Test — Student Portal — Innovative Explorer Club</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="../../assets/images/icon.png">
+<link rel="apple-touch-icon" href="../../assets/images/icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Boxicons Free -->
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<!-- Basic Icons -->
+<link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
+<!-- Filled Icons -->
+<link href="https://cdn.boxicons.com/3.0.8/fonts/filled/boxicons-filled.min.css" rel="stylesheet">
+<!-- Brand Icons -->
+<link href="https://cdn.boxicons.com/3.0.8/fonts/brands/boxicons-brands.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="../../css/student/test.css">
+</head>
+<body>
+
+<!-- ============ FOCUS-MODE TOPBAR (no sidebar / bottom-nav — keeps a live test distraction-free) ============ -->
+<header class="test-topbar" id="testTopbar">
+  <button class="icon-btn" id="exitBtn" aria-label="Exit test"><i class="bx bx-x"></i></button>
+  <span class="test-topbar-title" id="testTitle">Loading test…</span>
+  <div class="test-topbar-right">
+    <span class="timer-chip" id="timerChip" hidden><i class="bx bx-time-five"></i> <span id="timerText">--:--</span></span>
+    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="bx bx-moon"></i></button>
+  </div>
+</header>
+
+<!-- ============ MAIN ============ -->
+<main class="test-main">
+
+  <!-- LOADING -->
+  <div class="test-state" id="loadingState">
+    <div class="spinner-lg"></div>
+    <p>Loading your test…</p>
+  </div>
+
+  <!-- BLOCKED (not found / not open / already completed) -->
+  <div class="test-state" id="blockedState" hidden>
+    <i class="bx bx-error-circle blocked-icon"></i>
+    <h2 id="blockedTitle">This test isn't available</h2>
+    <p id="blockedMessage">—</p>
+    <a href="lms.html" class="btn btn-lime">Back to LMS</a>
+  </div>
+
+  <!-- TEST FORM -->
+  <div class="test-body" id="testBody" hidden>
+    <p class="test-desc" id="testDesc"></p>
+
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <span class="progress-label"><span id="answeredCount">0</span> of <span id="totalCount">0</span> answered</span>
+    </div>
+
+    <div class="question-list" id="questionList"></div>
+
+    <div class="submit-bar glass">
+      <span id="submitHint">Answer every question, then submit.</span>
+      <button class="btn btn-lime" id="submitBtn"><i class="bx bx-send"></i> Submit Test</button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="test-state" id="resultState" hidden>
+    <div class="result-icon" id="resultIcon"><i class="bx bx-check"></i></div>
+    <h2 id="resultTitle">Test submitted</h2>
+    <p id="resultMessage">—</p>
+    <div class="score-circle" id="scoreCircle" hidden>
+      <span id="scoreValue">0%</span>
+    </div>
+    <a href="lms.html" class="btn btn-lime">Back to LMS</a>
+  </div>
+
+</main>
+
+<!-- ============ CONFIRM SUBMIT MODAL ============ -->
+<div class="modal-overlay" id="confirmOverlay">
+  <div class="modal-card glass">
+    <div class="modal-icon"><i class="bx bx-error"></i></div>
+    <h3>Submit this test?</h3>
+    <p id="confirmSubmitBody">You won't be able to change your answers after this.</p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" id="confirmCancel">Keep Reviewing</button>
+      <button class="btn btn-lime" id="confirmProceed">Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ EXIT CONFIRM MODAL ============ -->
+<div class="modal-overlay" id="exitOverlay">
+  <div class="modal-card glass">
+    <div class="modal-icon modal-icon-danger"><i class="bx bx-log-out-circle"></i></div>
+    <h3>Leave this test?</h3>
+    <p>Your answers on this page aren't saved until you submit — leaving now will lose them.</p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" id="exitCancel">Stay</button>
+      <button class="btn btn-lime" id="exitProceed">Leave Test</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="../../js/student/test.js"></script>
+</body>
+</html>

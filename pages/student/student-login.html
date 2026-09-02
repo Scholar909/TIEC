@@ -260,7 +260,7 @@ html.light-mode .alert-info{color:#0f62d6;}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 import {
-  getAuth, onAuthStateChanged, signInWithEmailAndPassword, sendPasswordResetEmail
+  getAuth, onAuthStateChanged, signInWithEmailAndPassword, sendPasswordResetEmail, signOut
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 import {
   getFirestore, doc, getDoc, updateDoc, serverTimestamp
@@ -370,7 +370,15 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
     const studentRef = doc(db, 'students', uid);
     const studentSnap = await getDoc(studentRef);
-    const alreadyActivated = studentSnap.exists() && studentSnap.data().passwordActivated === true;
+
+    if (!studentSnap.exists() || studentSnap.data().blocked === true){
+      await signOut(auth);
+      showAlert("This account can't sign in right now. Please contact the club admin.");
+      setLoading(false);
+      return;
+    }
+
+    const alreadyActivated = studentSnap.data().passwordActivated === true;
 
     if (!alreadyActivated){
       // First login on the temporary password: send a reset email and
