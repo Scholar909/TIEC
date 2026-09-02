@@ -8,7 +8,7 @@ import {
   getAuth, onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 import {
-  getFirestore, doc, getDoc, collection, query, orderBy, getDocs, limit, onSnapshot
+  getFirestore, doc, getDoc, collection, query, where, orderBy, getDocs, limit
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 // Your web app's Firebase configuration
@@ -29,15 +29,20 @@ const db = getFirestore(app);
 /* =========================================================
    Assumed Firestore schema this page reads:
 
-   resources/{autoId}   — club-wide, admin-managed, same data
-                           for every student (no per-user copy)
-     title, description, category ('pdf' | 'assignment' |
-     'video' | 'other'), fileURL, uploadDate (Timestamp)
+   tests/{testId}        — club-wide, admin-managed
+     title, description, published (bool),
+     questions (array — used only to count questions here),
+     timeLimitMinutes (number, optional),
+     openFrom / openUntil (Timestamp, optional),
+     showScoreToStudent (bool)
+
+   students/{uid}/testAttempts/{testId}
+     score (number | null — null means awaiting review,
+            e.g. the test included short-answer questions),
+     submittedAt (Timestamp), totalQuestions (number)
    ========================================================= */
 
-let allResources = [];
-let currentFilter = 'all';
-let currentSearch = '';
+let uid = null;
 
 /* ---------- theme (persisted) ---------- */
 const themeToggle = document.getElementById('themeToggle');
@@ -134,86 +139,133 @@ function paintIdentity(data){
   document.getElementById('ddLevel').textContent = data.membershipLevel || 'Member';
 }
 
-/* =========================================================
-   RESOURCES
-   ========================================================= */
-const typeMeta = {
-  pdf:        { icon: 'bx bxs-file-pdf',   label: 'PDF Notes',  action: 'Download', actionIcon: 'bx bx-download' },
-  assignment: { icon: 'bx bx-task',        label: 'Assignment', action: 'Open',     actionIcon: 'bx bx-link-external' },
-  video:      { icon: 'bx bxs-video',      label: 'Video',      action: 'Watch',    actionIcon: 'bx bx-play-circle' },
-  other:      { icon: 'bx bx-folder',      label: 'Resource',   action: 'Open',     actionIcon: 'bx bx-link-external' }
-};
-
-function renderResources(){
-  const grid = document.getElementById('resourceGrid');
-  const emptyState = document.getElementById('emptyState');
-
-  const filtered = allResources.filter(r => {
-    const matchesCat = currentFilter === 'all' || r.category === currentFilter;
-    const matchesSearch = !currentSearch ||
-      (r.title || '').toLowerCase().includes(currentSearch) ||
-      (r.description || '').toLowerCase().includes(currentSearch);
-    return matchesCat && matchesSearch;
+/* ---------- tabs ---------- */
+document.getElementById('lmsTabs').querySelectorAll('.lms-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.lms-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
   });
+});
 
-  if (!filtered.length){
-    grid.innerHTML = '';
-    emptyState.hidden = false;
+/* =========================================================
+   LOAD TESTS + ATTEMPTS
+   ========================================================= */
+async function loadLms(studentUid){
+  const availableList = document.getElementById('availableList');
+  const completedList = document.getElementById('completedList');
+
+  try{
+    const now = new Date();
+
+    const [testsSnap, attemptsSnap] = await Promise.all([
+      getDocs(query(collection(db, 'tests'), where('published', '==', true))),
+      getDocs(collection(db, 'students', studentUid, 'testAttempts'))
+    ]);
+
+    const attemptsById = new Map(attemptsSnap.docs.map(d => [d.id, d.data()]));
+
+    const available = [];
+    const completed = [];
+
+    testsSnap.docs.forEach(d => {
+      const test = { id: d.id, ...d.data() };
+      const attempt = attemptsById.get(d.id);
+
+      if (attempt){
+        completed.push({ test, attempt });
+        return;
+      }
+
+      const openFrom = toDate(test.openFrom);
+      const openUntil = toDate(test.openUntil);
+      const isOpen = (!openFrom || openFrom <= now) && (!openUntil || openUntil >= now);
+      if (isOpen) available.push(test);
+    });
+
+    renderAvailable(available);
+    renderCompleted(completed);
+    paintStats(available.length, completed);
+  } catch (err){
+    console.error('LMS load failed:', err);
+    availableList.innerHTML = '';
+    completedList.innerHTML = '';
+    document.getElementById('availableEmpty').hidden = false;
+    document.getElementById('completedEmpty').hidden = false;
+  }
+}
+
+function renderAvailable(tests){
+  const list = document.getElementById('availableList');
+  const empty = document.getElementById('availableEmpty');
+  if (!tests.length){
+    list.innerHTML = '';
+    empty.hidden = false;
     return;
   }
-  emptyState.hidden = true;
-
-  grid.innerHTML = filtered.map(r => {
-    const meta = typeMeta[r.category] || typeMeta.other;
+  empty.hidden = true;
+  list.innerHTML = tests.map(t => {
+    const questionCount = Array.isArray(t.questions) ? t.questions.length : 0;
+    const until = toDate(t.openUntil);
     return `
-      <div class="resource-card">
-        <div class="resource-icon type-${r.category || 'other'}"><i class="${meta.icon}"></i></div>
-        <div class="resource-body">
-          <div class="resource-title">${r.title || 'Untitled resource'}</div>
-          <div class="resource-desc">${r.description || ''}</div>
-          <div class="resource-meta">
-            <span class="resource-date"><i class="bx bx-calendar"></i> ${formatDate(r._date)}</span>
-            <a class="resource-action" href="${r.fileURL || '#'}" target="_blank" rel="noopener">
-              <i class="${meta.actionIcon}"></i> ${meta.action}
-            </a>
+      <div class="test-card">
+        <div class="test-icon"><i class="bx bx-edit-alt"></i></div>
+        <div class="test-body-info">
+          <div class="test-title">${t.title || 'Untitled test'}</div>
+          <div class="test-desc-line">${t.description || ''}</div>
+          <div class="test-meta-row">
+            <span><i class="bx bx-list-ul"></i> ${questionCount} question${questionCount === 1 ? '' : 's'}</span>
+            ${t.timeLimitMinutes ? `<span><i class="bx bx-time-five"></i> ${t.timeLimitMinutes} min</span>` : ''}
+            ${until ? `<span><i class="bx bx-calendar-x"></i> Open until ${formatDate(until)}</span>` : ''}
           </div>
         </div>
+        <a class="btn btn-lime btn-sm test-action" href="test.html?id=${t.id}">Start Test</a>
       </div>
     `;
   }).join('');
 }
 
-async function loadResources(){
-  try{
-    const q = query(collection(db, 'resources'), orderBy('uploadDate', 'desc'));
-    const snap = await getDocs(q);
-    allResources = snap.docs.map(d => {
-      const r = d.data();
-      return { ...r, _date: toDate(r.uploadDate) };
-    });
-    renderResources();
-  } catch (err){
-    console.error('Resources load failed:', err);
-    allResources = [];
-    renderResources();
+function renderCompleted(items){
+  const list = document.getElementById('completedList');
+  const empty = document.getElementById('completedEmpty');
+  if (!items.length){
+    list.innerHTML = '';
+    empty.hidden = false;
+    return;
   }
+  empty.hidden = true;
+  list.innerHTML = items.map(({ test, attempt }) => {
+    const hasScore = test.showScoreToStudent && typeof attempt.score === 'number';
+    return `
+      <div class="test-card">
+        <div class="test-icon done"><i class="bx bx-check"></i></div>
+        <div class="test-body-info">
+          <div class="test-title">${test.title || 'Untitled test'}</div>
+          <div class="test-meta-row">
+            <span><i class="bx bx-calendar-check"></i> Submitted ${formatDate(toDate(attempt.submittedAt))}</span>
+          </div>
+        </div>
+        <span class="test-score-badge ${hasScore ? '' : 'pending'}">
+          ${hasScore ? Math.round(attempt.score) + '%' : 'Pending review'}
+        </span>
+      </div>
+    `;
+  }).join('');
 }
 
-/* ---------- filter tabs ---------- */
-document.getElementById('filterTabs').querySelectorAll('.filter-tab').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    currentFilter = btn.dataset.cat;
-    renderResources();
-  });
-});
+function paintStats(availableCount, completedItems){
+  document.getElementById('statAvailable').textContent = availableCount;
+  document.getElementById('statCompleted').textContent = completedItems.length;
 
-/* ---------- search ---------- */
-document.getElementById('searchInput').addEventListener('input', (e) => {
-  currentSearch = e.target.value.trim().toLowerCase();
-  renderResources();
-});
+  const scored = completedItems.filter(({ test, attempt }) => test.showScoreToStudent && typeof attempt.score === 'number');
+  if (scored.length){
+    const avg = scored.reduce((sum, { attempt }) => sum + attempt.score, 0) / scored.length;
+    document.getElementById('statAverage').textContent = `${Math.round(avg)}%`;
+  } else {
+    document.getElementById('statAverage').textContent = '–%';
+  }
+}
 
 /* =========================================================
    AUTH GUARD + DATA LOAD
@@ -223,22 +275,23 @@ onAuthStateChanged(auth, async (user) => {
     window.location.href = 'student-login.html';
     return;
   }
+  uid = user.uid;
 
   // Live guard: force sign-out if this account gets blocked or deleted while active.
-  onSnapshot(doc(db, 'students', user.uid), (guardSnap) => {
+  onSnapshot(doc(db, 'students', uid), (guardSnap) => {
     if (!guardSnap.exists() || guardSnap.data().blocked === true){
       signOut(auth).finally(() => { window.location.href = 'student-login.html?blocked=1'; });
     }
   });
 
   try{
-    const studentSnap = await getDoc(doc(db, 'students', user.uid));
+    const studentSnap = await getDoc(doc(db, 'students', uid));
     const data = studentSnap.exists() ? studentSnap.data() : { fullName: user.displayName };
     paintIdentity(data);
 
-    loadResources();
-    loadNotificationsPreview(user.uid);
+    loadLms(uid);
+    loadNotificationsPreview(uid);
   } catch (err){
-    console.error('Resources page load failed:', err);
+    console.error('LMS page load failed:', err);
   }
 });

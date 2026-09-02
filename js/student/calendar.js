@@ -8,7 +8,7 @@ import {
   getAuth, onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 import {
-  getFirestore, doc, getDoc, collection, query, orderBy, getDocs, limit, onSnapshot
+  getFirestore, doc, getDoc, onSnapshot, collection, query, orderBy, getDocs, limit
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 // Your web app's Firebase configuration
@@ -29,23 +29,17 @@ const db = getFirestore(app);
 /* =========================================================
    Assumed Firestore schema this page reads:
 
-   students/{uid}
-     fullName, membershipLevel, totalClasses (number, optional
-     — set by admin; percentage shows as "X/–" until it exists)
-
-   students/{uid}/attendanceLog/{autoId}
-     date (Timestamp), status ('present' | 'absent'), classTitle
-
-   students/{uid}/badges/{autoId}
-     name, icon (a Boxicons class string, e.g. "bx bxs-trophy"),
-     description, awardedAt (Timestamp)
-
-   students/{uid}/achievements/{autoId}
-     title, description, icon, date (Timestamp)
+   calendarEvents/{autoId}   — club-wide, admin-managed
+     title, description, location,
+     type ('class' | 'event' | 'competition' | 'workshop' | 'holiday'),
+     startDate (Timestamp), endDate (Timestamp, optional), allDay (bool)
    ========================================================= */
 
-let uid = null;
-let attendanceLogs = []; // [{ _date: Date, status, classTitle }]
+let allEvents = []; // [{ ...data, _start: Date, _end: Date }]
+let currentFilter = 'all';
+const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const dowLabels = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+let viewYear, viewMonth;
 
 /* ---------- theme (persisted) ---------- */
 const themeToggle = document.getElementById('themeToggle');
@@ -130,67 +124,105 @@ function toDate(value){
   return value.toDate ? value.toDate() : new Date(value);
 }
 function formatDate(d){
-  if (!d) return '—';
-  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-}
-function timeAgo(d){
   if (!d) return '';
-  const diffMs = Date.now() - d.getTime();
-  const days = Math.floor(diffMs / 86400000);
-  if (days < 1) return 'Today';
-  if (days === 1) return 'Yesterday';
-  if (days < 30) return `${days}d ago`;
-  return formatDate(d);
+  return d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
 }
-
-/* ---------- header identity (topbar / avatar) ---------- */
+function formatTime(d){
+  if (!d) return '';
+  return d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+}
 function paintIdentity(data){
   const name = data.fullName || 'Explorer';
-  const level = data.membershipLevel || 'Member';
   const initials = getInitials(name);
   document.getElementById('topAvatar').textContent = initials;
   document.getElementById('ddAvatar').textContent = initials;
   document.getElementById('ddName').textContent = name;
-  document.getElementById('ddLevel').textContent = level;
-  document.getElementById('currentLevel').textContent = level;
+  document.getElementById('ddLevel').textContent = data.membershipLevel || 'Member';
+}
+
+/* ---------- Google Calendar link ---------- */
+function toGCalStamp(date){
+  return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+}
+function googleCalendarLink(ev){
+  const start = ev._start;
+  const end = ev._end || new Date(start.getTime() + 60 * 60 * 1000);
+  const dates = ev.allDay
+    ? `${start.toISOString().slice(0,10).replace(/-/g,'')}/${end.toISOString().slice(0,10).replace(/-/g,'')}`
+    : `${toGCalStamp(start)}/${toGCalStamp(end)}`;
+
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: ev.title || 'Club Event',
+    dates,
+    details: ev.description || '',
+    location: ev.location || ''
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
+/* ---------- type icon (for Next Up list) ---------- */
+const typeIcons = {
+  class: 'bx bx-chalkboard',
+  event: 'bx bx-calendar-star',
+  competition: 'bx bxs-trophy',
+  workshop: 'bx bx-wrench',
+  holiday: 'bx bx-sun'
+};
+
+/* =========================================================
+   FILTER TABS
+   ========================================================= */
+document.getElementById('filterTabs').querySelectorAll('.filter-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.type;
+    renderCalendar();
+    clearDayDetail();
+  });
+});
+
+function filteredEvents(){
+  return currentFilter === 'all' ? allEvents : allEvents.filter(ev => ev.type === currentFilter);
 }
 
 /* =========================================================
-   STATS
+   NEXT UP
    ========================================================= */
-function computeStreak(sortedDescLogs){
-  let streak = 0;
-  for (const entry of sortedDescLogs){
-    if (entry.status === 'present') streak++;
-    else break;
-  }
-  return streak;
-}
-function paintStats(totalClasses){
-  const present = attendanceLogs.filter(l => l.status === 'present').length;
-  const absent = attendanceLogs.filter(l => l.status === 'absent').length;
-  const sortedDesc = [...attendanceLogs].sort((a, b) => b._date - a._date);
+function renderNextUp(){
+  const list = document.getElementById('nextUpList');
+  const empty = document.getElementById('nextUpEmpty');
+  const now = new Date();
 
-  document.getElementById('statPresent').textContent = present;
-  document.getElementById('statAbsent').textContent = absent;
-  document.getElementById('statStreak').textContent = computeStreak(sortedDesc);
+  const upcoming = filteredEvents()
+    .filter(ev => ev._start >= now)
+    .sort((a, b) => a._start - b._start)
+    .slice(0, 4);
 
-  if (typeof totalClasses === 'number' && totalClasses > 0){
-    document.getElementById('statRate').textContent = `${Math.round((present / totalClasses) * 100)}%`;
-    document.getElementById('totalRatio').textContent = `${present}/${totalClasses}`;
-  } else {
-    document.getElementById('statRate').textContent = '–%';
-    document.getElementById('totalRatio').textContent = `${present}/–`;
+  if (!upcoming.length){
+    list.innerHTML = '';
+    empty.hidden = false;
+    return;
   }
+  empty.hidden = true;
+
+  list.innerHTML = upcoming.map(ev => `
+    <div class="list-row">
+      <div class="list-row-icon" style="background:color-mix(in srgb, var(--type-${ev.type || 'event'}) 18%, transparent);color:var(--type-${ev.type || 'event'});">
+        <i class="${typeIcons[ev.type] || 'bx bx-calendar'}"></i>
+      </div>
+      <div class="list-row-body">
+        <div class="list-row-title">${ev.title || 'Untitled'}</div>
+        <div class="list-row-meta">${formatDate(ev._start)}${ev.allDay ? '' : ' · ' + formatTime(ev._start)}</div>
+      </div>
+    </div>
+  `).join('');
 }
 
 /* =========================================================
    CALENDAR
    ========================================================= */
-const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-const dowLabels = ['Su','Mo','Tu','We','Th','Fr','Sa'];
-let viewYear, viewMonth;
-
 function renderCalendar(){
   const monthLabel = document.getElementById('calMonthLabel');
   const grid = document.getElementById('calGrid');
@@ -204,7 +236,14 @@ function renderCalendar(){
     grid.appendChild(el);
   });
 
-  const logByDateKey = new Map(attendanceLogs.map(l => [l._date.toDateString(), l]));
+  const events = filteredEvents();
+  const eventsByDay = new Map();
+  events.forEach(ev => {
+    const key = ev._start.toDateString();
+    if (!eventsByDay.has(key)) eventsByDay.set(key, []);
+    eventsByDay.get(key).push(ev);
+  });
+
   const today = new Date(); today.setHours(0,0,0,0);
   const firstDay = new Date(viewYear, viewMonth, 1).getDay();
   const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
@@ -218,120 +257,95 @@ function renderCalendar(){
   for (let d = 1; d <= daysInMonth; d++){
     const dayDate = new Date(viewYear, viewMonth, d); dayDate.setHours(0,0,0,0);
     const key = dayDate.toDateString();
-    const log = logByDateKey.get(key);
+    const dayEvents = eventsByDay.get(key) || [];
     const isToday = dayDate.getTime() === today.getTime();
-    const isFuture = dayDate.getTime() > today.getTime();
 
     const cell = document.createElement('div');
     cell.className = 'cal-day';
-    cell.textContent = d;
     if (isToday) cell.classList.add('today');
-    if (isFuture) cell.classList.add('future');
-    if (log){
-      cell.classList.add(log.status === 'present' ? 'present' : 'absent');
-      cell.addEventListener('click', () => selectDay(cell, dayDate, log));
+
+    const num = document.createElement('span');
+    num.textContent = d;
+    cell.appendChild(num);
+
+    if (dayEvents.length){
+      cell.classList.add('has-events');
+      const dotsWrap = document.createElement('div');
+      dotsWrap.className = 'cal-day-dots';
+      const uniqueTypes = [...new Set(dayEvents.map(e => e.type || 'event'))].slice(0, 4);
+      uniqueTypes.forEach(t => {
+        const dot = document.createElement('span');
+        dot.className = `type-dot type-${t}`;
+        dotsWrap.appendChild(dot);
+      });
+      cell.appendChild(dotsWrap);
+      cell.addEventListener('click', () => selectDay(cell, dayDate, dayEvents));
     }
     grid.appendChild(cell);
   }
 }
 
-function selectDay(cell, dayDate, log){
+function clearDayDetail(){
+  document.querySelectorAll('.cal-day.selected').forEach(c => c.classList.remove('selected'));
+  document.getElementById('dayDetailTitle').textContent = 'Select a date';
+  document.getElementById('dayDetailEmpty').hidden = false;
+  document.getElementById('dayEventList').innerHTML = '';
+}
+
+function selectDay(cell, dayDate, dayEvents){
   document.querySelectorAll('.cal-day.selected').forEach(c => c.classList.remove('selected'));
   cell.classList.add('selected');
 
-  const detail = document.getElementById('dayDetail');
-  detail.innerHTML = `
-    <h4>${formatDate(dayDate)}</h4>
-    <span class="day-detail-status ${log.status}">
-      <i class="bx ${log.status === 'present' ? 'bx-check-circle' : 'bx-x-circle'}"></i>
-      ${log.status === 'present' ? 'Present' : 'Absent'}
-    </span>
-    <div class="day-detail-class">${log.classTitle || 'Class session'}</div>
-  `;
+  document.getElementById('dayDetailTitle').textContent = formatDate(dayDate);
+  document.getElementById('dayDetailEmpty').hidden = true;
+
+  document.getElementById('dayEventList').innerHTML = dayEvents.map(ev => `
+    <div class="day-event-item">
+      <div class="day-event-top">
+        <span class="type-dot type-${ev.type || 'event'}"></span>
+        <span class="day-event-title">${ev.title || 'Untitled'}</span>
+      </div>
+      ${!ev.allDay ? `<div class="day-event-time"><i class="bx bx-time-five"></i> ${formatTime(ev._start)}${ev._end ? ' – ' + formatTime(ev._end) : ''}</div>` : ''}
+      ${ev.location ? `<div class="day-event-location"><i class="bx bx-map"></i> ${ev.location}</div>` : ''}
+      ${ev.description ? `<div class="day-event-desc">${ev.description}</div>` : ''}
+      <a class="gcal-link" href="${googleCalendarLink(ev)}" target="_blank" rel="noopener">
+        <i class="bx bxl-google"></i> Add to Google Calendar
+      </a>
+    </div>
+  `).join('');
 }
 
 document.getElementById('calPrev').addEventListener('click', () => {
   viewMonth--; if (viewMonth < 0){ viewMonth = 11; viewYear--; }
-  renderCalendar();
+  renderCalendar(); clearDayDetail();
 });
 document.getElementById('calNext').addEventListener('click', () => {
   viewMonth++; if (viewMonth > 11){ viewMonth = 0; viewYear++; }
-  renderCalendar();
+  renderCalendar(); clearDayDetail();
+});
+document.getElementById('calToday').addEventListener('click', () => {
+  const today = new Date();
+  viewYear = today.getFullYear();
+  viewMonth = today.getMonth();
+  renderCalendar(); clearDayDetail();
 });
 
 /* =========================================================
-   BADGES
+   LOAD EVENTS
    ========================================================= */
-async function loadBadges(studentUid){
-  const el = document.getElementById('badgeGrid');
+async function loadEvents(){
   try{
-    const q = query(collection(db, 'students', studentUid, 'badges'), orderBy('awardedAt', 'desc'));
-    const snap = await getDocs(q);
-    if (snap.empty){
-      el.innerHTML = '<p class="list-empty">No badges yet — keep showing up and building to earn your first one!</p>';
-      return;
-    }
-    el.innerHTML = snap.docs.map(d => {
-      const b = d.data();
-      return `
-        <div class="badge-item">
-          <div class="badge-icon"><i class="${b.icon || 'bx bxs-medal'}"></i></div>
-          <span class="badge-name">${b.name || 'Badge'}</span>
-          <span class="badge-date">${formatDate(toDate(b.awardedAt))}</span>
-        </div>
-      `;
-    }).join('');
+    const snap = await getDocs(query(collection(db, 'calendarEvents'), orderBy('startDate', 'asc')));
+    allEvents = snap.docs.map(d => {
+      const ev = d.data();
+      return { ...ev, _start: toDate(ev.startDate), _end: toDate(ev.endDate) };
+    }).filter(ev => ev._start);
   } catch (err){
-    console.error('Badges load failed:', err);
-    el.innerHTML = '<p class="list-empty">Couldn\u2019t load badges right now.</p>';
+    console.error('Calendar events load failed:', err);
+    allEvents = [];
   }
-}
-
-/* =========================================================
-   ACHIEVEMENT TIMELINE
-   ========================================================= */
-async function loadTimeline(studentUid){
-  const el = document.getElementById('timelineList');
-  try{
-    const q = query(collection(db, 'students', studentUid, 'achievements'), orderBy('date', 'desc'));
-    const snap = await getDocs(q);
-    if (snap.empty){
-      el.innerHTML = '<p class="list-empty">Your achievements will show up here as you progress.</p>';
-      return;
-    }
-    el.innerHTML = snap.docs.map(d => {
-      const a = d.data();
-      const date = toDate(a.date);
-      return `
-        <div class="timeline-item">
-          <div class="timeline-dot"><i class="${a.icon || 'bx bx-star'}"></i></div>
-          <div class="timeline-body">
-            <div class="timeline-title">${a.title || 'Milestone'}</div>
-            ${a.description ? `<div class="timeline-desc">${a.description}</div>` : ''}
-            <span class="timeline-date">${timeAgo(date)}</span>
-          </div>
-        </div>
-      `;
-    }).join('');
-  } catch (err){
-    console.error('Timeline load failed:', err);
-    el.innerHTML = '<p class="list-empty">Couldn\u2019t load your timeline right now.</p>';
-  }
-}
-
-/* =========================================================
-   ATTENDANCE LOG (drives calendar + stats)
-   ========================================================= */
-async function loadAttendanceLog(studentUid){
-  try{
-    const snap = await getDocs(collection(db, 'students', studentUid, 'attendanceLog'));
-    attendanceLogs = snap.docs
-      .map(d => ({ ...d.data(), _date: toDate(d.data().date) }))
-      .filter(l => l._date);
-  } catch (err){
-    console.error('Attendance log load failed:', err);
-    attendanceLogs = [];
-  }
+  renderNextUp();
+  renderCalendar();
 }
 
 /* =========================================================
@@ -342,7 +356,7 @@ onAuthStateChanged(auth, async (user) => {
     window.location.href = 'student-login.html';
     return;
   }
-  uid = user.uid;
+  const uid = user.uid;
 
   // Live guard: force sign-out if this account gets blocked or deleted while active.
   onSnapshot(doc(db, 'students', uid), (guardSnap) => {
@@ -360,14 +374,9 @@ onAuthStateChanged(auth, async (user) => {
     const data = studentSnap.exists() ? studentSnap.data() : { fullName: user.displayName };
     paintIdentity(data);
 
-    await loadAttendanceLog(uid);
-    renderCalendar();
-    paintStats(data.totalClasses);
-
-    loadBadges(uid);
-    loadTimeline(uid);
+    loadEvents();
     loadNotificationsPreview(uid);
   } catch (err){
-    console.error('Attendance page load failed:', err);
+    console.error('Calendar page load failed:', err);
   }
 });

@@ -3,7 +3,7 @@ import {
   getAuth, onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 import {
-  getFirestore, doc, getDoc, updateDoc, increment, collection, query, orderBy, limit, getDocs
+  getFirestore, doc, getDoc, updateDoc, increment, collection, query, orderBy, limit, getDocs, onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 import {
   getStorage, ref, uploadBytes, getDownloadURL
@@ -313,6 +313,13 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
   uid = user.uid;
+
+  // Live guard: force sign-out if this account gets blocked or deleted while active.
+  onSnapshot(doc(db, 'students', uid), (guardSnap) => {
+    if (!guardSnap.exists() || guardSnap.data().blocked === true){
+      signOut(auth).finally(() => { window.location.href = 'student-login.html?blocked=1'; });
+    }
+  });
 
   try{
     const snap = await getDoc(doc(db, 'students', uid));
