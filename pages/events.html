@@ -902,14 +902,32 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     <div class="footer-map">
       <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3939.9483490731654!2d7.4445455775889355!3d9.068470288364598!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x104ddf81cc7ccb07%3A0xc50e6cfe01a43fac!2sCoderina%20Education%20and%20Technology%20Foundation!5e0!3m2!1sen!2sng!4v1785316511093!5m2!1sen!2sng" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
     </div>
-    <div class="footer-col">
-      <h4>Newsletter</h4>
-      <p style="font-size:.84rem;margin-bottom:8px;">Get updates on events and programs.</p>
-      <div class="newsletter-form">
-        <input type="email" placeholder="you@email.com">
-        <button class="btn btn-lime" style="padding:10px 16px;font-size:.78rem;">Join</button>
-      </div>
-    </div>
+
+<div class="footer-col" id="sib-container">
+  <h4>Newsletter</h4>
+  <p style="font-size:.84rem;margin-bottom:8px;">Get updates on events and programs.</p>
+
+  <!-- Brevo Status Messages -->
+  <div id="success-message" class="sib-form-message-panel" style="display:none; color:var(--lime); font-size:.84rem; margin-bottom:8px;">
+    Your subscription has been successful.
+  </div>
+  <div id="error-message" class="sib-form-message-panel" style="display:none; color:var(--danger); font-size:.84rem; margin-bottom:8px;">
+    Your subscription could not be saved. Please try again.
+  </div>
+
+  <!-- Brevo Form wrapper using your existing CSS class -->
+  <form id="sib-form" method="POST" action="https://0bf91517.sibforms.com/serve/MUIFAI48eUMP80jHOk2y_5v-XFGBR_Nt3B3aFWPJMe2Q-Oy663fNeRE_iqhpZgshXCAIObz-qOGq-G_23g9D0KjEp6Hs0KkrETaGMP81Nee_t-a7kcvVvcg3ThSZkzB_-6qmN2gZ1fKUbVdCELMBHSRSDEBZeWZne-30dzaL7QGgt5uSt-wtDLjbJ3apeD16_QgRubGA8Mu-6oAnrg==" data-type="subscription" class="newsletter-form">
+    <input type="email" id="EMAIL" name="EMAIL" autocomplete="off" placeholder="you@email.com" data-required="true" required>
+    
+    <!-- Spam check and locale fields required by Brevo -->
+    <input type="text" name="email_address_check" value="" style="display:none;">
+    <input type="hidden" name="locale" value="en">
+    
+    <button type="submit" class="btn btn-lime" style="padding:10px 16px;font-size:.78rem;">Join</button>
+  </form>
+</div>
+
+    
   </div>
   <div class="footer-bottom">
     <span>&copy; <span id="year"></span> Innovative Explorer Club. All rights reserved.</span>
@@ -1205,5 +1223,28 @@ document.querySelectorAll('#compTabs .tab-btn').forEach(btn => {
 
 document.getElementById("year").textContent = new Date().getFullYear();
 </script>
+
+  <!-- Brevo Integration Script -->
+<script>
+  window.REQUIRED_CODE_ERROR_MESSAGE = 'Please choose a country code';
+  window.LOCALE = 'en';
+  window.EMAIL_INVALID_MESSAGE = window.SMS_INVALID_MESSAGE = "The information provided is invalid. Please review the field format and try again.";
+  window.REQUIRED_ERROR_MESSAGE = "This field cannot be left blank.";
+  window.GENERIC_INVALID_MESSAGE = "The information provided is invalid. Please review the field format and try again.";
+  window.INVALID_NUMBER = "The information provided is invalid. Please review the field format and try again.";
+  window.INVALID_DATE = "Please enter a valid date";
+  window.REQUIRED_MULTISELECT_MESSAGE = 'Please select at least 1 option';
+  window.translation = {
+    common: {
+      selectedList: '{quantity} list selected',
+      selectedLists: '{quantity} lists selected',
+      selectedOption: '{quantity} selected',
+      selectedOptions: '{quantity} selected',
+    }
+  };
+  var AUTOHIDE = Boolean(0);
+</script>
+<script defer src="https://sibforms.com/forms/end-form/build/main.js"></script>
+
 </body>
 </html>
