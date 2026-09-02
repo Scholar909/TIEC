@@ -287,7 +287,8 @@ async function loadHistory(){
   const empty = document.getElementById('historyEmpty');
 
   try{
-    const q = query(collection(db, 'students', uid, 'sentMessages'), orderBy('sentAt', 'desc'));
+    // 1. Added limit(5) to fetch only the 5 most recent messages
+    const q = query(collection(db, 'students', uid, 'sentMessages'), orderBy('sentAt', 'desc'), limit(5));
     const snap = await getDocs(q);
 
     if (snap.empty){
@@ -300,29 +301,39 @@ async function loadHistory(){
     list.innerHTML = snap.docs.map(d => {
       const m = d.data();
       const date = toDate(m.sentAt);
-      const snippet = (m.message || '').slice(0, 90) + ((m.message || '').length > 90 ? '…' : '');
+      const fullMessage = m.message || '';
+      
+      // 2. Only enable reveal/chevron if message is longer than 90 characters
+      const isLong = fullMessage.length > 90;
+      const snippet = isLong ? fullMessage.slice(0, 90) + '…' : fullMessage;
+
       return `
-        <button class="history-item" data-id="${d.id}">
+        <div class="history-item ${isLong ? 'expandable' : ''}" data-id="${d.id}" style="${!isLong ? 'cursor:default;' : ''}">
           <div class="history-top">
             <span class="history-subject">${m.subject || 'Message'}</span>
-            <i class="bx bx-chevron-down history-chevron"></i>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="history-time">${timeAgo(date)}</span>
+              ${isLong ? '<i class="bx bx-chevron-down history-chevron"></i>' : ''}
+            </div>
           </div>
           <div class="history-snippet">${snippet}</div>
-          <div class="history-time">${timeAgo(date)}</div>
-          <div class="history-full">${m.message || ''}</div>
-        </button>
+          ${isLong ? `<div class="history-full">${fullMessage}</div>` : ''}
+        </div>
       `;
     }).join('');
 
-    list.querySelectorAll('.history-item').forEach(item => {
+    // Only attach click listeners to messages that actually need expansion
+    list.querySelectorAll('.history-item.expandable').forEach(item => {
       item.addEventListener('click', () => item.classList.toggle('open'));
     });
   } catch (err){
     console.error('History load failed:', err);
     list.innerHTML = '';
-    empty.hidden = false;
+    // 3. Prevent the empty state message from incorrectly showing on query errors
+    empty.hidden = true; 
   }
 }
+
 
 /* =========================================================
    AUTH GUARD + DATA LOAD
