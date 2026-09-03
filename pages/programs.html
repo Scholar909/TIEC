@@ -424,6 +424,34 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   outline-offset: 3px;
 }
 
+/* Override Brevo Form Container Defaults */
+#sib-form-container,
+#sib-container,
+#sib-form,
+.sib-form,
+.sib-form-block,
+.sib-input {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* Style Email Input to Match Theme */
+#sib-container input#EMAIL {
+  background: rgba(120, 140, 160, 0.08) !important;
+  color: var(--white) !important;
+  border: 1px solid var(--card-border) !important;
+  border-radius: 10px !important;
+  padding: 10px 12px !important;
+}
+
+/* Input Placeholder Text Styling */
+#sib-container input#EMAIL::placeholder {
+  color: var(--gray) !important;
+  opacity: 0.7;
+}
+
                
 /* Fade-up reveal on scroll */
 .reveal{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease), transform .8s var(--ease);}

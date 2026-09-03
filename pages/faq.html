@@ -27,7 +27,9 @@
 <link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
 <link href="https://cdn.boxicons.com/3.0.8/fonts/filled/boxicons-filled.min.css" rel="stylesheet">
 <link href="https://cdn.boxicons.com/3.0.8/fonts/brands/boxicons-brands.min.css" rel="stylesheet">
-<style>
+<link rel="stylesheet" href="https://sibforms.com/forms/end-form/build/sib-styles.css">
+
+  <style>
 /* =========================================================
    DESIGN TOKENS — identical to home page
    ========================================================= */
@@ -412,6 +414,35 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   outline-offset: 3px;
 }
 
+/* Override Brevo Form Container Defaults */
+#sib-form-container,
+#sib-container,
+#sib-form,
+.sib-form,
+.sib-form-block,
+.sib-input {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* Style Email Input to Match Theme */
+#sib-container input#EMAIL {
+  background: rgba(120, 140, 160, 0.08) !important;
+  color: var(--white) !important;
+  border: 1px solid var(--card-border) !important;
+  border-radius: 10px !important;
+  padding: 10px 12px !important;
+}
+
+/* Input Placeholder Text Styling */
+#sib-container input#EMAIL::placeholder {
+  color: var(--gray) !important;
+  opacity: 0.7;
+}
+
+
   
 /* Fade-up reveal on scroll */
 .reveal{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease), transform .8s var(--ease);}
@@ -682,42 +713,55 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       <h4>Newsletter</h4>
       <p style="font-size:.84rem;margin-bottom:8px;">Get updates on events and programs.</p>
 <!-- Footer Newsletter Form -->
-<div class="newsletter-form">
-  <form id="sib-form" method="POST" action="https://0bf91517.sibforms.com/serve/MUIFAI48eUMP80jHOk2y_5v-XFGBR_Nt3B3aFWPJMe2Q-Oy663fNeRE_iqhpZgshXCAIObz-qOGq-G_23g9D0KjEp6Hs0KkrETaGMP81Nee_t-a7kcvVvcg3ThSZkzB_-6qmN2gZ1fKUbVdCELMBHSRSDEBZeWZne-30dzaL7QGgt5uSt-wtDLjbJ3apeD16_QgRubGA8Mu-6oAnrg==" data-type="subscription">
-    
-    <!-- Status Messages Displayed Above Input -->
-    <div id="error-message" class="sib-form-message-panel" style="display:none; font-size:14px; color:#ff4949; margin-bottom:8px;">
-      <span class="sib-form-message-panel__inner-text">Your subscription could not be saved. Please try again.</span>
-    </div>
-    
-    <div id="success-message" class="sib-form-message-panel" style="display:none; font-size:14px; color:#13ce66; margin-bottom:8px;">
-      <span class="sib-form-message-panel__inner-text">Your subscription has been successful.</span>
-    </div>
+<div class="newsletter-form" id="sib-form-container">
+  
+  <!-- Brevo Status Messages -->
+  <div id="error-message" class="sib-form-message-panel" style="display:none; font-size:14px; color:#ff4949; margin-bottom:8px;">
+    <span class="sib-form-message-panel__inner-text">Your subscription could not be saved. Please try again.</span>
+  </div>
+  
+  <div id="success-message" class="sib-form-message-panel" style="display:none; font-size:14px; color:#13ce66; margin-bottom:8px;">
+    <span class="sib-form-message-panel__inner-text">Your subscription has been successful.</span>
+  </div>
 
-    <!-- Email Field -->
-    <input 
-      type="email" 
-      id="EMAIL" 
-      name="EMAIL" 
-      placeholder="you@gmail.com" 
-      data-required="true" 
-      required 
-    />
+  <div id="sib-container">
+    <form id="sib-form" method="POST" action="https://0bf91517.sibforms.com/serve/MUIFAI48eUMP80jHOk2y_5v-XFGBR_Nt3B3aFWPJMe2Q-Oy663fNeRE_iqhpZgshXCAIObz-qOGq-G_23g9D0KjEp6Hs0KkrETaGMP81Nee_t-a7kcvVvcg3ThSZkzB_-6qmN2gZ1fKUbVdCELMBHSRSDEBZeWZne-30dzaL7QGgt5uSt-wtDLjbJ3apeD16_QgRubGA8Mu-6oAnrg==" data-type="subscription">
+      
+      <!-- Email Input Wrapper -->
+      <div class="sib-input sib-form-block">
+        <div class="form__entry entry_block">
+          <div class="form__label-row">
+            <div class="entry__field">
+              <input 
+                type="email" 
+                id="EMAIL" 
+                name="EMAIL" 
+                placeholder="you@gmail.com" 
+                data-required="true" 
+                required 
+              />
+            </div>
+          </div>
+          <label class="entry__error entry__error--primary" style="display:none; font-size:12px; color:#ff4949;"></label>
+        </div>
+      </div>
 
-    <!-- Submit Button -->
-    <button 
-      class="sib-form-block__button" 
-      form="sib-form" 
-      type="submit"
-    >
-      Join
-    </button>
+      <!-- Submit Button -->
+      <div class="sib-form-block">
+        <button class="sib-form-block__button sib-form-block__button-with-loader" form="sib-form" type="submit">
+          <svg class="icon clickable__icon progress-indicator__icon sib-hide-loader-icon" viewBox="0 0 512 512" style="width:16px; height:16px; fill:currentColor; display:none;">
+            <path d="M460.116 373.846l-20.823-12.022c-5.541-3.199-7.54-10.159-4.663-15.874 30.137-59.886 28.343-131.652-5.386-189.946-33.641-58.394-94.896-95.833-161.827-99.676C261.028 55.961 256 50.751 256 44.352V20.309c0-6.904 5.808-12.337 12.703-11.982 83.556 4.306 160.163 50.864 202.11 123.677 42.063 72.696 44.079 162.316 6.031 236.832-3.14 6.148-10.75 8.461-16.728 5.01z" />
+          </svg>
+          Join
+        </button>
+      </div>
 
-    <!-- Brevo Security and Locale Requirements -->
-    <input type="text" name="email_address_check" value="" style="display:none !important;">
-    <input type="hidden" name="locale" value="en">
+      <!-- Security and Locale Checks -->
+      <input type="text" name="email_address_check" value="" style="display:none !important;">
+      <input type="hidden" name="locale" value="en">
 
-  </form>
+    </form>
+  </div>
 </div>
 
     </div>
