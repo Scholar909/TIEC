@@ -1065,5 +1065,33 @@ document.getElementById("year").textContent = new Date().getFullYear();
 </script>
 <script defer src="https://sibforms.com/forms/end-form/build/main.js"></script>
 
+<script>
+  document.getElementById('sib-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    
+    const form = this;
+    const formData = new FormData(form);
+    const successMsg = document.getElementById('success-message');
+    const errorMsg = document.getElementById('error-message');
+
+    fetch(form.action, {
+      method: 'POST',
+      body: formData,
+      mode: 'no-cors'
+    })
+    .then(() => {
+      if (errorMsg) errorMsg.style.display = 'none';
+      if (successMsg) {
+        successMsg.style.display = 'block';
+        successMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+      form.reset();
+    })
+    .catch(() => {
+      if (errorMsg) errorMsg.style.display = 'block';
+    });
+  });
+</script>
+
 </body>
 </html>
