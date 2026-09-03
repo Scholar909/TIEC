@@ -1,9 +1,5 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Additional SDKs used on this page (Auth + Firestore)
 import {
   getAuth, onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
@@ -11,7 +7,6 @@ import {
   getFirestore, doc, getDoc, onSnapshot, collection, query, orderBy, getDocs, limit
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDBRvD87vNdWMS1wvufAd_RNZhuCf2CN4g",
   authDomain: "the-innovative-explorer-club.firebaseapp.com",
@@ -21,22 +16,28 @@ const firebaseConfig = {
   appId: "1:421600505981:web:6a633ef8b98b4a6f990114"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
 /* =========================================================
-   Assumed Firestore schema this page reads:
+   NEW SCHEMA (replaces the old calendarEvents model)
 
-   calendarEvents/{autoId}   — club-wide, admin-managed
-     title, description, location,
-     type ('class' | 'event' | 'competition' | 'workshop' | 'holiday'),
-     startDate (Timestamp), endDate (Timestamp, optional), allDay (bool)
+   occurrences/{occurrenceId}
+     activityId, type ('class'|'event'|'competition'|'workshop'|'holiday'),
+     title, description, level ('Young Explorers'|'Junior Innovators'|
+     'Teen Innovators'|'All'), date ('YYYY-MM-DD'), startTime, endTime
+     (optional 'HH:MM'), attendanceRequired, attendanceOverridden
+
+   This is the EVERYTHING calendar — it shows every occurrence the
+   student is eligible for by level, regardless of attendanceRequired.
+   No Present/Absent information appears here at all (that's the
+   separate Attendance page).
    ========================================================= */
 
 let allEvents = []; // [{ ...data, _start: Date, _end: Date }]
 let currentFilter = 'all';
+let studentLevel = 'All';
 const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const dowLabels = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 let viewYear, viewMonth;
@@ -119,10 +120,6 @@ function getInitials(name){
   const parts = name.trim().split(/\s+/);
   return ((parts[0]?.[0] || '') + (parts[1]?.[0] || '')).toUpperCase() || '--';
 }
-function toDate(value){
-  if (!value) return null;
-  return value.toDate ? value.toDate() : new Date(value);
-}
 function formatDate(d){
   if (!d) return '';
   return d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
@@ -133,11 +130,20 @@ function formatTime(d){
 }
 function paintIdentity(data){
   const name = data.fullName || 'Explorer';
+  studentLevel = data.membershipLevel || 'All';
   const initials = getInitials(name);
   document.getElementById('topAvatar').textContent = initials;
   document.getElementById('ddAvatar').textContent = initials;
   document.getElementById('ddName').textContent = name;
   document.getElementById('ddLevel').textContent = data.membershipLevel || 'Member';
+}
+
+/* ---------- turn an occurrence's date+time strings into Date objects ---------- */
+function occDateTime(occ, timeStr){
+  const [y,m,d] = occ.date.split('-').map(Number);
+  if (!timeStr) return new Date(y, m-1, d);
+  const [h,min] = timeStr.split(':').map(Number);
+  return new Date(y, m-1, d, h, min);
 }
 
 /* ---------- Google Calendar link ---------- */
@@ -306,7 +312,7 @@ function selectDay(cell, dayDate, dayEvents){
         <span class="day-event-title">${ev.title || 'Untitled'}</span>
       </div>
       ${!ev.allDay ? `<div class="day-event-time"><i class="bx bx-time-five"></i> ${formatTime(ev._start)}${ev._end ? ' – ' + formatTime(ev._end) : ''}</div>` : ''}
-      ${ev.location ? `<div class="day-event-location"><i class="bx bx-map"></i> ${ev.location}</div>` : ''}
+      ${ev.level && ev.level !== 'All' ? `<div class="day-event-location"><i class="bx bx-group"></i> ${ev.level}</div>` : ''}
       ${ev.description ? `<div class="day-event-desc">${ev.description}</div>` : ''}
       <a class="gcal-link" href="${googleCalendarLink(ev)}" target="_blank" rel="noopener">
         <i class="bx bxl-google"></i> Add to Google Calendar
@@ -331,17 +337,23 @@ document.getElementById('calToday').addEventListener('click', () => {
 });
 
 /* =========================================================
-   LOAD EVENTS
+   LOAD EVENTS — every occurrence this student is eligible for
+   by level, regardless of attendance requirement.
    ========================================================= */
 async function loadEvents(){
   try{
-    const snap = await getDocs(query(collection(db, 'calendarEvents'), orderBy('startDate', 'asc')));
-    allEvents = snap.docs.map(d => {
-      const ev = d.data();
-      return { ...ev, _start: toDate(ev.startDate), _end: toDate(ev.endDate) };
-    }).filter(ev => ev._start);
+    const snap = await getDocs(query(collection(db, 'occurrences'), orderBy('date', 'asc')));
+    allEvents = snap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .filter(ev => ev.level === 'All' || ev.level === studentLevel)
+      .map(ev => ({
+        ...ev,
+        allDay: !ev.startTime,
+        _start: occDateTime(ev, ev.startTime),
+        _end: ev.endTime ? occDateTime(ev, ev.endTime) : null
+      }));
   } catch (err){
-    console.error('Calendar events load failed:', err);
+    console.error('Occurrences load failed:', err);
     allEvents = [];
   }
   renderNextUp();

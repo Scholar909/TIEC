@@ -19,21 +19,27 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 /* =========================================================
-   Assumed Firestore schema (adjust names to match the admin
-   portal once it's built — this is what the dashboard reads):
+   Firestore schema this dashboard reads (matches the admin
+   Calendar & Attendance system — replaces the old
+   students/{uid}/attendanceLog + top-level events model):
 
-   students/{uid}
-     fullName, username, email, phone, membershipLevel,
-     dateJoined, totalClasses (number, optional — set by admin)
+   occurrences/{occurrenceId}
+     activityId, type ('class'|'event'|'competition'|'workshop'|
+     'holiday'), title, description, level ('Young Explorers'|
+     'Junior Innovators'|'Teen Innovators'|'All'), date
+     ('YYYY-MM-DD'), startTime, endTime, attendanceRequired,
+     attendanceOverridden
 
-   students/{uid}/attendanceLog/{autoId}
-     date (Timestamp), status ('present' | 'absent'), classTitle
+   attendanceRecords/{occurrenceId_studentUid}
+     occurrenceId, studentId, date, status ('present'|'absent'),
+     markedAt, markedBy
+
+   "Upcoming Events" on this dashboard = occurrences whose
+   type is exactly 'event' (not class/competition/workshop/
+   holiday), per the club's own definition.
 
    students/{uid}/notifications/{autoId}
      title, message, type, read (bool), createdAt (Timestamp)
-
-   events/{autoId}          — club-wide, admin-managed
-     title, date (Timestamp), location, type
 
    announcements/{autoId}   — club-wide, admin-managed
      title, message, createdAt (Timestamp)
@@ -187,52 +193,98 @@ function buildWeekStrip(logByDateKey){
     strip.appendChild(dot);
   }
 }
-function computeStreak(sortedDescLogs){
-  let streak = 0;
-  for (const entry of sortedDescLogs){
-    if (entry.status === 'present') streak++;
-    else break;
-  }
-  return streak;
+/* ---------- per-occurrence status (mirrors attendance.js exactly) ---------- */
+function computeOccStatus(occ, recordsByOccId, todayStr){
+  if (occ.attendanceRequired === false) return 'no-attendance';
+  const record = recordsByOccId.get(occ.id);
+  if (record) return record.status;
+  if (occ.date > todayStr) return 'future';
+  // Attendance can still be taken any time before the day itself ends —
+  // today's occurrences stay "not yet held" regardless of scheduled end time.
+  if (occ.date === todayStr) return 'future';
+  return 'absent';
 }
 
-async function loadAttendance(uid){
+async function loadAttendance(uid, level){
+  const todayStr = dateKeyStr(new Date());
   try{
-    const snap = await getDocs(collection(db, 'students', uid, 'attendanceLog'));
-    const logs = snap.docs
-      .map(d => ({ ...d.data(), _date: toDate(d.data().date) }))
-      .filter(l => l._date)
-      .sort((a, b) => b._date - a._date);
+    // Occurrences that are (or were) attendance-eligible for this student's level.
+    const [reqSnap, overriddenSnap] = await Promise.all([
+      getDocs(query(collection(db, 'occurrences'), where('attendanceRequired', '==', true))),
+      getDocs(query(collection(db, 'occurrences'), where('attendanceOverridden', '==', true)))
+    ]);
+    const byId = new Map();
+    [...reqSnap.docs, ...overriddenSnap.docs].forEach(d => byId.set(d.id, { id: d.id, ...d.data() }));
+    const occurrences = [...byId.values()].filter(o => o.level === 'All' || o.level === level);
 
-    const logByDateKey = new Map(logs.map(l => [l._date.toDateString(), l.status]));
+    let recordsByOccId = new Map();
+    if (occurrences.length){
+      const recSnap = await getDocs(query(collection(db, 'attendanceRecords'), where('studentId', '==', uid)));
+      recSnap.forEach(d => { const r = d.data(); recordsByOccId.set(r.occurrenceId, r); });
+    }
+
+    const required = occurrences.filter(o => o.attendanceRequired !== false);
+    const withStatus = required.map(o => ({ occ: o, status: computeOccStatus(o, recordsByOccId, todayStr) }));
+    const decided = withStatus.filter(x => x.status === 'present' || x.status === 'absent');
+    const presentCount = decided.filter(x => x.status === 'present').length;
+
+    // week strip: one status per day, priority absent > present > neutral
+    const byDate = new Map();
+    withStatus.forEach(x => {
+      const arr = byDate.get(x.occ.date) || [];
+      arr.push(x.status);
+      byDate.set(x.occ.date, arr);
+    });
+    const logByDateKey = new Map();
+    byDate.forEach((statuses, dateStr) => {
+      const jsDate = new Date(dateStr + 'T00:00:00');
+      let s = null;
+      if (statuses.includes('absent')) s = 'absent';
+      else if (statuses.includes('present')) s = 'present';
+      logByDateKey.set(jsDate.toDateString(), s);
+    });
     buildWeekStrip(logByDateKey);
 
-    const presentCount = logs.filter(l => l.status === 'present').length;
-    document.getElementById('streakCount').textContent = computeStreak(logs);
+    // streak: walk most-recent-first through decided occurrences
+    const sortedDesc = [...decided].sort((a, b) => b.occ.date.localeCompare(a.occ.date));
+    let streak = 0;
+    for (const x of sortedDesc){
+      if (x.status === 'present') streak++;
+      else break;
+    }
+    document.getElementById('streakCount').textContent = streak;
 
-    return presentCount;
+    return { presentCount, decidedCount: decided.length };
   } catch (err){
     console.error('Attendance load failed:', err);
     buildWeekStrip(new Map());
-    return 0;
+    return { presentCount: 0, decidedCount: 0 };
   }
 }
 
-/* ---------- events ---------- */
-async function loadEvents(){
+/* ---------- events (activities whose type is exactly 'event') ---------- */
+function dateKeyStr(d){
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+async function loadEvents(level){
   try{
+    const todayStr = dateKeyStr(new Date());
     const q = query(
-      collection(db, 'events'),
-      where('date', '>=', Timestamp.fromDate(new Date())),
+      collection(db, 'occurrences'),
+      where('type', '==', 'event'),
+      where('date', '>=', todayStr),
       orderBy('date', 'asc'),
-      limit(3)
+      limit(6)
     );
     const snap = await getDocs(q);
-    const rows = snap.docs.map(d => {
-      const ev = d.data();
-      const date = toDate(ev.date);
-      return { icon: 'bx bx-calendar-event', title: ev.title || 'Untitled event', meta: `${formatDate(date)}${ev.location ? ' · ' + ev.location : ''}` };
-    });
+    const rows = snap.docs
+      .map(d => d.data())
+      .filter(ev => ev.level === 'All' || ev.level === level)
+      .slice(0, 3)
+      .map(ev => {
+        const date = new Date(ev.date + 'T00:00:00');
+        return { icon: 'bx bx-calendar-star', title: ev.title || 'Untitled event', meta: `${formatDate(date)}${ev.level && ev.level !== 'All' ? ' · ' + ev.level : ''}` };
+      });
     renderRows('eventsList', rows, 'No upcoming events right now — check back soon.');
   } catch (err){
     console.error('Events load failed:', err);
@@ -286,13 +338,15 @@ async function loadNotifications(uid){
   }
 }
 
-/* ---------- attendance ratio / percentage ---------- */
-function paintAttendanceSummary(presentCount, totalClasses){
+/* ---------- attendance ratio / percentage ----------
+   Denominator excludes "No Attendance" occurrences and future
+   ones entirely — only present+absent ("decided") occurrences count. */
+function paintAttendanceSummary(presentCount, decidedCount){
   const ratioEl = document.getElementById('attendanceRatio');
   const pctEl = document.getElementById('attendancePct');
-  if (typeof totalClasses === 'number' && totalClasses > 0){
-    ratioEl.textContent = `${presentCount}/${totalClasses}`;
-    pctEl.textContent = `${Math.round((presentCount / totalClasses) * 100)}%`;
+  if (decidedCount > 0){
+    ratioEl.textContent = `${presentCount}/${decidedCount}`;
+    pctEl.textContent = `${Math.round((presentCount / decidedCount) * 100)}%`;
   } else {
     ratioEl.textContent = `${presentCount}/–`;
     pctEl.textContent = '–%';
@@ -320,14 +374,15 @@ onAuthStateChanged(auth, async (user) => {
     const data = studentSnap.exists() ? studentSnap.data() : { fullName: user.displayName };
     paintProfile(data);
 
-    const [presentCount] = await Promise.all([
-      loadAttendance(user.uid),
-      loadEvents(),
+    const level = data.membershipLevel || 'All';
+    const [attendance] = await Promise.all([
+      loadAttendance(user.uid, level),
+      loadEvents(level),
       loadAnnouncements(),
       loadNotifications(user.uid)
     ]);
 
-    paintAttendanceSummary(presentCount, data.totalClasses);
+    paintAttendanceSummary(attendance.presentCount, attendance.decidedCount);
   } catch (err){
     console.error('Dashboard load failed:', err);
   }

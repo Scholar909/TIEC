@@ -1,17 +1,12 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Additional SDKs used on this page (Auth + Firestore)
 import {
   getAuth, onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 import {
-  getFirestore, doc, getDoc, collection, query, orderBy, getDocs, limit, onSnapshot
+  getFirestore, doc, getDoc, collection, query, where, orderBy, getDocs, limit, onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDBRvD87vNdWMS1wvufAd_RNZhuCf2CN4g",
   authDomain: "the-innovative-explorer-club.firebaseapp.com",
@@ -21,31 +16,45 @@ const firebaseConfig = {
   appId: "1:421600505981:web:6a633ef8b98b4a6f990114"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
 /* =========================================================
-   Assumed Firestore schema this page reads:
+   NEW SCHEMA (replaces the old students/{uid}/attendanceLog model)
 
-   students/{uid}
-     fullName, membershipLevel, totalClasses (number, optional
-     — set by admin; percentage shows as "X/–" until it exists)
+   occurrences/{occurrenceId}
+     activityId, type ('class'|'event'|'competition'|'workshop'|'holiday'),
+     title, description, level ('Young Explorers'|'Junior Innovators'|
+     'Teen Innovators'|'All'), date ('YYYY-MM-DD'), startTime, endTime
+     (optional 'HH:MM'), attendanceRequired (bool — current effective
+     flag), attendanceOverridden (bool — true once an admin has toggled
+     it via the Admin Attendance page)
 
-   students/{uid}/attendanceLog/{autoId}
-     date (Timestamp), status ('present' | 'absent'), classTitle
+   attendanceRecords/{occurrenceId_studentUid}
+     occurrenceId, studentId, date ('YYYY-MM-DD'), status
+     ('present'|'absent'), markedAt, markedBy
 
-   students/{uid}/badges/{autoId}
-     name, icon (a Boxicons class string, e.g. "bx bxs-trophy"),
-     description, awardedAt (Timestamp)
+   A student is "eligible" for an occurrence when
+   occurrence.level === 'All' OR occurrence.level === student.membershipLevel.
 
-   students/{uid}/achievements/{autoId}
-     title, description, icon, date (Timestamp)
+   Status shown for an occurrence (see computeStatus()):
+     - attendanceRequired === false            -> 'no-attendance'
+     - a record exists                          -> record.status
+     - date is in the future                    -> 'future'
+     - date is today and endTime hasn't passed   -> 'future'
+     - otherwise (date has passed, unmarked)     -> 'absent'
+   No real "auto-absent" write happens here (no serverless scheduler
+   is set up) — this is a live computed display only. Percentage and
+   streak below use the same computed status, so they stay accurate
+   regardless.
    ========================================================= */
 
 let uid = null;
-let attendanceLogs = []; // [{ _date: Date, status, classTitle }]
+let studentLevel = 'All';
+let occurrences = [];       // this student's eligible, attendance-required-or-was occurrences
+let recordsByOccId = new Map();
+let todayStr = '';
 
 /* ---------- theme (persisted) ---------- */
 const themeToggle = document.getElementById('themeToggle');
@@ -125,13 +134,20 @@ function getInitials(name){
   const parts = name.trim().split(/\s+/);
   return ((parts[0]?.[0] || '') + (parts[1]?.[0] || '')).toUpperCase() || '--';
 }
-function toDate(value){
-  if (!value) return null;
-  return value.toDate ? value.toDate() : new Date(value);
+function toDateFromKey(key){
+  const [y,m,d] = key.split('-').map(Number);
+  return new Date(y, m-1, d);
+}
+function dateKey(d){
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 function formatDate(d){
   if (!d) return '—';
   return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+}
+function formatTimeRange(occ){
+  if (!occ.startTime) return '';
+  return occ.endTime ? `${occ.startTime} – ${occ.endTime}` : occ.startTime;
 }
 function timeAgo(d){
   if (!d) return '';
@@ -147,6 +163,7 @@ function timeAgo(d){
 function paintIdentity(data){
   const name = data.fullName || 'Explorer';
   const level = data.membershipLevel || 'Member';
+  studentLevel = level;
   const initials = getInitials(name);
   document.getElementById('topAvatar').textContent = initials;
   document.getElementById('ddAvatar').textContent = initials;
@@ -156,32 +173,54 @@ function paintIdentity(data){
 }
 
 /* =========================================================
-   STATS
+   STATUS COMPUTATION
    ========================================================= */
-function computeStreak(sortedDescLogs){
-  let streak = 0;
-  for (const entry of sortedDescLogs){
-    if (entry.status === 'present') streak++;
-    else break;
-  }
-  return streak;
+function computeStatus(occ){
+  if (occ.attendanceRequired === false) return 'no-attendance';
+  const record = recordsByOccId.get(occ.id);
+  if (record) return record.status;
+  if (occ.date > todayStr) return 'future';
+  // Attendance can still be taken any time before the day itself ends, so
+  // today's occurrences stay "not yet held" all day regardless of their
+  // scheduled end time — only once the calendar date has actually passed
+  // does an unmarked occurrence read as absent.
+  if (occ.date === todayStr) return 'future';
+  return 'absent';
 }
-function paintStats(totalClasses){
-  const present = attendanceLogs.filter(l => l.status === 'present').length;
-  const absent = attendanceLogs.filter(l => l.status === 'absent').length;
-  const sortedDesc = [...attendanceLogs].sort((a, b) => b._date - a._date);
+
+/* =========================================================
+   STATS (percentage, classes attended, streak)
+   ========================================================= */
+function paintStats(){
+  // Only occurrences currently requiring attendance count toward these numbers —
+  // "No Attendance" ones are excluded from the denominator entirely.
+  const required = occurrences.filter(o => o.attendanceRequired !== false);
+  const withStatus = required.map(o => ({ occ: o, status: computeStatus(o) }));
+  const decided = withStatus.filter(x => x.status === 'present' || x.status === 'absent');
+
+  const present = decided.filter(x => x.status === 'present').length;
+  const absent = decided.filter(x => x.status === 'absent').length;
 
   document.getElementById('statPresent').textContent = present;
   document.getElementById('statAbsent').textContent = absent;
-  document.getElementById('statStreak').textContent = computeStreak(sortedDesc);
 
-  if (typeof totalClasses === 'number' && totalClasses > 0){
-    document.getElementById('statRate').textContent = `${Math.round((present / totalClasses) * 100)}%`;
-    document.getElementById('totalRatio').textContent = `${present}/${totalClasses}`;
+  if (decided.length > 0){
+    document.getElementById('statRate').textContent = `${Math.round((present / decided.length) * 100)}%`;
+    document.getElementById('totalRatio').textContent = `${present}/${decided.length}`;
   } else {
     document.getElementById('statRate').textContent = '–%';
     document.getElementById('totalRatio').textContent = `${present}/–`;
   }
+
+  // Streak: walk decided occurrences most-recent-first; present continues,
+  // absent breaks, future/no-attendance are excluded from this list already.
+  const sortedDesc = [...decided].sort((a,b) => b.occ.date.localeCompare(a.occ.date));
+  let streak = 0;
+  for (const x of sortedDesc){
+    if (x.status === 'present') streak++;
+    else break;
+  }
+  document.getElementById('statStreak').textContent = streak;
 }
 
 /* =========================================================
@@ -190,6 +229,10 @@ function paintStats(totalClasses){
 const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const dowLabels = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 let viewYear, viewMonth;
+
+function occurrencesForDate(key){
+  return occurrences.filter(o => o.date === key);
+}
 
 function renderCalendar(){
   const monthLabel = document.getElementById('calMonthLabel');
@@ -204,8 +247,6 @@ function renderCalendar(){
     grid.appendChild(el);
   });
 
-  const logByDateKey = new Map(attendanceLogs.map(l => [l._date.toDateString(), l]));
-  const today = new Date(); today.setHours(0,0,0,0);
   const firstDay = new Date(viewYear, viewMonth, 1).getDay();
   const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
 
@@ -216,37 +257,75 @@ function renderCalendar(){
   }
 
   for (let d = 1; d <= daysInMonth; d++){
-    const dayDate = new Date(viewYear, viewMonth, d); dayDate.setHours(0,0,0,0);
-    const key = dayDate.toDateString();
-    const log = logByDateKey.get(key);
-    const isToday = dayDate.getTime() === today.getTime();
-    const isFuture = dayDate.getTime() > today.getTime();
+    const dayDate = new Date(viewYear, viewMonth, d);
+    const key = dateKey(dayDate);
+    const dayOccs = occurrencesForDate(key);
+    const isToday = key === todayStr;
 
     const cell = document.createElement('div');
     cell.className = 'cal-day';
-    cell.textContent = d;
     if (isToday) cell.classList.add('today');
-    if (isFuture) cell.classList.add('future');
-    if (log){
-      cell.classList.add(log.status === 'present' ? 'present' : 'absent');
-      cell.addEventListener('click', () => selectDay(cell, dayDate, log));
+
+    const num = document.createElement('span');
+    num.textContent = d;
+    cell.appendChild(num);
+
+    if (dayOccs.length){
+      cell.classList.add('has-marks');
+      const statuses = [...new Set(dayOccs.map(computeStatus))];
+      // present and absent both get their own dot (e.g. a day with one present
+      // and one absent activity shows a green dot AND a red dot); no-attendance
+      // and future occurrences don't add a dot — the day just looks normal.
+      const dotStatuses = statuses.filter(s => s === 'present' || s === 'absent');
+      if (dotStatuses.length){
+        const dotsWrap = document.createElement('div');
+        dotsWrap.className = 'cal-day-dots';
+        dotStatuses.forEach(s => {
+          const dot = document.createElement('span');
+          dot.className = `status-dot ${s}`;
+          dotsWrap.appendChild(dot);
+        });
+        cell.appendChild(dotsWrap);
+      }
+      cell.addEventListener('click', () => selectDay(cell, dayDate, dayOccs));
     }
     grid.appendChild(cell);
   }
 }
 
-function selectDay(cell, dayDate, log){
+function statusLabel(status){
+  switch(status){
+    case 'present': return 'Present';
+    case 'absent': return 'Absent';
+    case 'no-attendance': return 'No Attendance';
+    default: return 'Not yet held';
+  }
+}
+function statusIcon(status){
+  switch(status){
+    case 'present': return 'bx-check-circle';
+    case 'absent': return 'bx-x-circle';
+    case 'no-attendance': return 'bx-minus-circle';
+    default: return 'bx-time-five';
+  }
+}
+
+function selectDay(cell, dayDate, dayOccs){
   document.querySelectorAll('.cal-day.selected').forEach(c => c.classList.remove('selected'));
   cell.classList.add('selected');
 
   const detail = document.getElementById('dayDetail');
   detail.innerHTML = `
     <h4>${formatDate(dayDate)}</h4>
-    <span class="day-detail-status ${log.status}">
-      <i class="bx ${log.status === 'present' ? 'bx-check-circle' : 'bx-x-circle'}"></i>
-      ${log.status === 'present' ? 'Present' : 'Absent'}
-    </span>
-    <div class="day-detail-class">${log.classTitle || 'Class session'}</div>
+    ${dayOccs.map(o => {
+      const status = computeStatus(o);
+      return `
+        <span class="day-detail-status ${status}">
+          <i class="bx ${statusIcon(status)}"></i> ${statusLabel(status)}
+        </span>
+        <div class="day-detail-class">${o.title || 'Session'}${formatTimeRange(o) ? ' · ' + formatTimeRange(o) : ''}</div>
+      `;
+    }).join('<div style="height:10px"></div>')}
   `;
 }
 
@@ -277,7 +356,7 @@ async function loadBadges(studentUid){
         <div class="badge-item">
           <div class="badge-icon"><i class="${b.icon || 'bx bxs-medal'}"></i></div>
           <span class="badge-name">${b.name || 'Badge'}</span>
-          <span class="badge-date">${formatDate(toDate(b.awardedAt))}</span>
+          <span class="badge-date">${formatDate(b.awardedAt && b.awardedAt.toDate ? b.awardedAt.toDate() : null)}</span>
         </div>
       `;
     }).join('');
@@ -301,7 +380,7 @@ async function loadTimeline(studentUid){
     }
     el.innerHTML = snap.docs.map(d => {
       const a = d.data();
-      const date = toDate(a.date);
+      const date = a.date && a.date.toDate ? a.date.toDate() : null;
       return `
         <div class="timeline-item">
           <div class="timeline-dot"><i class="${a.icon || 'bx bx-star'}"></i></div>
@@ -320,17 +399,36 @@ async function loadTimeline(studentUid){
 }
 
 /* =========================================================
-   ATTENDANCE LOG (drives calendar + stats)
+   OCCURRENCES + RECORDS (drives calendar + stats)
    ========================================================= */
-async function loadAttendanceLog(studentUid){
+async function loadOccurrencesAndRecords(studentUid, level){
   try{
-    const snap = await getDocs(collection(db, 'students', studentUid, 'attendanceLog'));
-    attendanceLogs = snap.docs
-      .map(d => ({ ...d.data(), _date: toDate(d.data().date) }))
-      .filter(l => l._date);
+    // All occurrences that are (or were) attendance-eligible.
+    // Firestore can't OR two field filters in one query, so run both and merge.
+    const [reqSnap, overriddenSnap] = await Promise.all([
+      getDocs(query(collection(db, 'occurrences'), where('attendanceRequired', '==', true))),
+      getDocs(query(collection(db, 'occurrences'), where('attendanceOverridden', '==', true)))
+    ]);
+    const byId = new Map();
+    [...reqSnap.docs, ...overriddenSnap.docs].forEach(d => byId.set(d.id, { id: d.id, ...d.data() }));
+
+    occurrences = [...byId.values()].filter(o => o.level === 'All' || o.level === level);
+
+    if (occurrences.length === 0){
+      recordsByOccId = new Map();
+      return;
+    }
+
+    const recSnap = await getDocs(query(collection(db, 'attendanceRecords'), where('studentId', '==', studentUid)));
+    recordsByOccId = new Map();
+    recSnap.forEach(d => {
+      const r = d.data();
+      recordsByOccId.set(r.occurrenceId, r);
+    });
   } catch (err){
-    console.error('Attendance log load failed:', err);
-    attendanceLogs = [];
+    console.error('Occurrences/records load failed:', err);
+    occurrences = [];
+    recordsByOccId = new Map();
   }
 }
 
@@ -354,15 +452,16 @@ onAuthStateChanged(auth, async (user) => {
   const today = new Date();
   viewYear = today.getFullYear();
   viewMonth = today.getMonth();
+  todayStr = dateKey(today);
 
   try{
     const studentSnap = await getDoc(doc(db, 'students', uid));
     const data = studentSnap.exists() ? studentSnap.data() : { fullName: user.displayName };
     paintIdentity(data);
 
-    await loadAttendanceLog(uid);
+    await loadOccurrencesAndRecords(uid, data.membershipLevel || 'All');
     renderCalendar();
-    paintStats(data.totalClasses);
+    paintStats();
 
     loadBadges(uid);
     loadTimeline(uid);
