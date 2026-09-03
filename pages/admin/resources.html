@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){try{if(localStorage.getItem('iec-theme')==='light'){document.documentElement.classList.add('light-mode');}}catch(e){}})();</script>
+<title>Resources — Admin Portal — Innovative Explorer Club</title>
+<link rel="icon" type="image/png" href="../../assets/images/icon.png">
+<link rel="apple-touch-icon" href="../../assets/images/icon.png">
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/filled/boxicons-filled.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/brands/boxicons-brands.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="../../css/admin/resources.css">
+</head>
+<body>
+
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+<aside class="sidebar" id="sidebar">
+  <a href="dashboard.html" class="side-logo">
+    <img src="../../assets/images/logo-icon-footer.png" alt="Innovative Explorer Club logo">
+    <span>TIEC Admin</span>
+  </a>
+  <nav class="side-nav">
+    <a href="dashboard.html" class="side-link" data-page="dashboard"><i class="bx bxs-dashboard"></i><span>Dashboard</span></a>
+    <a href="membership-applications.html" class="side-link" data-page="applications"><i class="bx bx-clipboard"></i><span>Membership Applications</span><span class="nav-badge" id="navBadgeApplications" hidden></span></a>
+    <a href="students.html" class="side-link" data-page="students"><i class="bx bx-group"></i><span>Students</span></a>
+    <a href="attendance.html" class="side-link" data-page="attendance"><i class="bx bx-calendar-check"></i><span>Attendance</span></a>
+    <a href="achievements.html" class="side-link" data-page="achievements"><i class="bx bx-trophy"></i><span>Achievements</span></a>
+    <a href="resources.html" class="side-link active" data-page="resources"><i class="bx bx-folder-open"></i><span>Resources</span></a>
+    <a href="lms.html" class="side-link" data-page="lms"><i class="bx bx-edit-alt"></i><span>LMS</span></a>
+    <a href="calendar-events.html" class="side-link" data-page="calendar-events"><i class="bx bx-calendar-event"></i><span>Calendar &amp; Events</span></a>
+    <a href="announcements.html" class="side-link" data-page="announcements"><i class="bx bx-megaphone"></i><span>Announcements</span></a>
+    <a href="messages.html" class="side-link" data-page="messages"><i class="bx bx-envelope"></i><span>Messages</span></a>
+    <a href="notifications.html" class="side-link" data-page="notifications"><i class="bx bx-bell"></i><span>Notifications</span><span class="nav-badge" id="navBadgeNotifications" hidden></span></a>
+    <a href="settings.html" class="side-link" data-page="settings"><i class="bx bx-cog"></i><span>Settings</span></a>
+  </nav>
+  <button class="side-logout" id="logoutBtnSide"><i class="bx bx-log-out"></i><span>Sign Out</span></button>
+</aside>
+
+<header class="topbar" id="topbar">
+  <div class="topbar-left">
+    <button class="icon-btn" id="hamburger" aria-label="Toggle menu"><i class="bx bx-menu"></i></button>
+    <span class="topbar-title">Resources</span>
+  </div>
+  <div class="topbar-right">
+    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="bx bx-moon"></i></button>
+    <div class="dropdown-wrap">
+      <button class="icon-btn" id="bellBtn" aria-label="Notifications">
+        <i class="bx bx-bell"></i><span class="badge-dot" id="bellBadge" hidden></span>
+      </button>
+      <div class="dropdown-panel" id="bellDropdown">
+        <div class="dropdown-head"><span>Notifications</span><a href="notifications.html">View all</a></div>
+        <div class="dropdown-list" id="bellList"><p class="dropdown-empty">No notifications yet.</p></div>
+      </div>
+    </div>
+    <div class="dropdown-wrap">
+      <button class="avatar-btn" id="avatarBtn" aria-label="Account menu">
+        <span class="avatar-circle" id="topAvatar">--</span>
+      </button>
+      <div class="dropdown-panel dropdown-panel-right" id="avatarDropdown">
+        <div class="dropdown-profile">
+          <span class="avatar-circle" id="ddAvatar">--</span>
+          <div><div class="dd-name" id="ddName">Loading…</div><div class="dd-level" id="ddRole">—</div></div>
+        </div>
+        <a href="settings.html" class="dropdown-item"><i class="bx bx-cog"></i> Settings</a>
+        <button class="dropdown-item dropdown-item-danger" id="logoutBtnTop"><i class="bx bx-log-out"></i> Sign Out</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="dash-main">
+
+  <section class="card glass toolbar-card">
+    <div class="tabs" id="filterTabs">
+      <button class="tab-btn active" data-cat="all">All</button>
+      <button class="tab-btn" data-cat="pdf"><i class="bx bxs-file-pdf"></i> PDF</button>
+      <button class="tab-btn" data-cat="assignment"><i class="bx bx-task"></i> Assignment</button>
+      <button class="tab-btn" data-cat="video"><i class="bx bxs-video"></i> Video</button>
+      <button class="tab-btn" data-cat="other"><i class="bx bx-folder"></i> Other</button>
+    </div>
+    <div class="search-wrap">
+      <i class="bx bx-search"></i>
+      <input type="text" id="searchInput" placeholder="Search resources…">
+    </div>
+  </section>
+
+  <div id="resourceGrid" class="resource-grid">
+    <div class="list-skeleton"></div>
+    <div class="list-skeleton"></div>
+    <div class="list-skeleton"></div>
+  </div>
+
+  <div class="dash-bottom-spacer"></div>
+</main>
+
+<button class="fab" id="fabAdd" aria-label="Add resource"><i class="bx bx-plus"></i></button>
+
+<nav class="bottom-nav" id="bottomNav">
+  <a href="dashboard.html" class="bottom-link" data-page="dashboard"><i class="bx bxs-dashboard"></i><span>Home</span></a>
+  <a href="membership-applications.html" class="bottom-link" data-page="applications"><i class="bx bx-clipboard"></i><span>Apps</span></a>
+  <a href="students.html" class="bottom-link" data-page="students"><i class="bx bx-group"></i><span>Students</span></a>
+  <a href="attendance.html" class="bottom-link" data-page="attendance"><i class="bx bx-calendar-check"></i><span>Attend.</span></a>
+  <a href="settings.html" class="bottom-link" data-page="settings"><i class="bx bx-cog"></i><span>Settings</span></a>
+</nav>
+
+<!-- ============ UPLOAD / EDIT FORM MODAL ============ -->
+<div class="modal-overlay" id="formModal">
+  <div class="modal-sheet glass">
+    <div class="modal-sheet-head">
+      <h3 id="formTitle">Add Resource</h3>
+      <button class="icon-btn" id="formClose" aria-label="Close"><i class="bx bx-x"></i></button>
+    </div>
+    <div class="modal-sheet-body">
+      <form id="resourceForm" novalidate>
+
+        <div class="form-group">
+          <label>Resource Type</label>
+          <select id="fCategory">
+            <option value="pdf">PDF Notes</option>
+            <option value="assignment">Assignment</option>
+            <option value="video">Video</option>
+            <option value="other">Other Learning Material</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" id="fTitle" placeholder="e.g. Week 3 — Sensors Handout">
+          <span class="field-err hidden" id="fTitleErr">A name is required.</span>
+        </div>
+
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="fDescription" rows="3" placeholder="What's in this resource… (optional)"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Content</label>
+          <div class="radio-row">
+            <label class="radio-pill"><input type="radio" name="fSourceMode" value="file" checked> Upload a file</label>
+            <label class="radio-pill"><input type="radio" name="fSourceMode" value="link"> Paste a link</label>
+          </div>
+        </div>
+
+        <div class="form-group" id="fileSourceGroup">
+          <label>File</label>
+          <div class="file-drop" id="fileDrop">
+            <input type="file" id="fFile">
+            <div class="file-drop-empty" id="fileDropEmpty">
+              <i class="bx bx-cloud-upload"></i>
+              <span>Tap to choose a file — any type</span>
+            </div>
+            <div class="file-drop-chosen hidden" id="fileDropChosen">
+              <i class="bx bx-file"></i>
+              <span id="fileChosenName">—</span>
+              <button type="button" id="fileClear" aria-label="Remove file"><i class="bx bx-x"></i></button>
+            </div>
+          </div>
+          <p class="field-hint" id="cloudinaryHint">Cloudinary isn't connected yet — uploads will fail until that's set up. Use "Paste a link" for now if you need this live today.</p>
+        </div>
+
+        <div class="form-group hidden" id="linkSourceGroup">
+          <label>Link</label>
+          <input type="url" id="fLink" placeholder="https://…">
+          <span class="field-err hidden" id="fLinkErr">Paste a valid link.</span>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline-danger hidden" id="formDeleteBtn"><i class="bx bx-trash"></i> Delete</button>
+          <button type="submit" class="btn btn-lime" id="formSaveBtn"><span class="spinner"></span><span>Save Resource</span></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-card glass">
+    <div class="modal-icon"><i class="bx bx-trash"></i></div>
+    <h3>Delete this resource?</h3>
+    <p>Students will no longer see it in their Resources tab. This can't be undone.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="deleteCancel">Cancel</button>
+      <button class="btn btn-danger" id="deleteConfirm">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module" src="../../js/admin/resources.js"></script>
+</body>
+</html>
