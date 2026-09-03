@@ -238,17 +238,21 @@ button{font-family:inherit;cursor:pointer;}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
 .cal-dow{text-align:center;font-size:.68rem;color:var(--gray);font-weight:600;text-transform:uppercase;padding-bottom:6px;}
 .cal-day{
-  aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:10px;
-  font-size:.82rem;color:var(--white);border:2px solid transparent;cursor:default;
-  transition:transform .25s var(--ease);
+  aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:10px;
+  font-size:.8rem;color:var(--white);border:2px solid transparent;cursor:default;
+  transition:background .25s var(--ease), transform .25s var(--ease);
 }
 .cal-day.empty{visibility:hidden;}
-.cal-day.present{background:var(--success);color:#052a15;cursor:pointer;font-weight:600;}
-.cal-day.absent{background:rgba(255,75,85,.16);color:var(--danger);cursor:pointer;font-weight:600;border-color:rgba(255,75,85,.4);}
-.cal-day.present:hover,.cal-day.absent:hover{transform:scale(1.08);}
+.cal-day.has-marks{cursor:pointer;background:rgba(120,140,160,.06);}
+.cal-day.has-marks:hover{background:rgba(120,140,160,.14);transform:scale(1.05);}
 .cal-day.today{border-color:var(--accent-text);}
-.cal-day.selected{box-shadow:0 0 0 2px var(--white);}
-.cal-day.future{opacity:.35;}
+.cal-day.selected{background:rgba(154,230,0,.16);border-color:var(--lime);}
+.cal-day-dots{display:flex;gap:3px;}
+.cal-day-dots .status-dot{width:5px;height:5px;border-radius:50%;display:inline-block;}
+.status-dot.present{background:var(--success);}
+.status-dot.absent{background:var(--danger);}
+.status-dot.no-attendance{background:var(--gray);}
+@media (max-width:480px){.cal-day{font-size:.72rem;}}
 .cal-legend{display:flex;gap:16px;margin-top:16px;font-size:.76rem;color:var(--gray);flex-wrap:wrap;}
 .cal-legend span{display:inline-flex;align-items:center;gap:6px;}
 .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
@@ -262,6 +266,7 @@ button{font-family:inherit;cursor:pointer;}
 .day-detail-status{display:inline-flex;align-items:center;gap:6px;font-size:.76rem;font-weight:700;padding:5px 12px;border-radius:999px;margin-top:10px;}
 .day-detail-status.present{background:rgba(43,214,123,.15);color:var(--success);}
 .day-detail-status.absent{background:rgba(255,75,85,.15);color:var(--danger);}
+.day-detail-status.no-attendance, .day-detail-status.future{background:rgba(120,140,160,.14);color:var(--gray);}
 .day-detail-class{font-size:.86rem;margin-top:12px;color:var(--white);}
 @media (max-width:860px){.calendar-wrap{grid-template-columns:1fr;}}
 
