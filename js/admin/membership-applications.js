@@ -428,6 +428,7 @@ async function approveApplication(a){
       parentPhone: a.parentPhone || '',
       username,
       applicationId: a.id,
+      photoChangesRemaining: 2,
       approvedAt: serverTimestamp(),
       passwordActivated: false
     });
