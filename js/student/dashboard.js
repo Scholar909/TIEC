@@ -3,7 +3,7 @@ import {
   getAuth, onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 import {
-  getFirestore, doc, getDoc, collection, query, where, orderBy, limit, getDocs, Timestamp, onSnapshot
+  getFirestore, doc, getDoc, updateDoc, collection, query, where, orderBy, limit, getDocs, Timestamp, onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -292,19 +292,52 @@ async function loadEvents(level){
   }
 }
 
-/* ---------- announcements ---------- */
-async function loadAnnouncements(){
+/* ---------- announcement (single, club-wide — glows until seen) ---------- */
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str == null ? '' : String(str);
+  return d.innerHTML;
+}
+async function loadAnnouncement(uid){
+  const el = document.getElementById('announcementsList');
   try{
-    const q = query(collection(db, 'announcements'), orderBy('createdAt', 'desc'), limit(3));
-    const snap = await getDocs(q);
-    const rows = snap.docs.map(d => {
-      const a = d.data();
-      return { icon: 'bx bx-megaphone', title: a.title || 'Announcement', meta: timeAgo(toDate(a.createdAt)) };
-    });
-    renderRows('announcementsList', rows, 'No announcements yet.');
+    const snap = await getDoc(doc(db, 'announcements', 'current'));
+    if (!snap.exists()){
+      el.innerHTML = '<p class="list-empty">No announcements yet.</p>';
+      return;
+    }
+    const a = snap.data();
+    const studentSnap = await getDoc(doc(db, 'students', uid));
+    const lastSeen = studentSnap.exists() ? studentSnap.data().lastSeenAnnouncementId : null;
+    const isNew = a.postId && a.postId !== lastSeen;
+
+    el.innerHTML = `
+      <div class="announcement-card ${isNew ? 'is-new' : ''}" id="announcementCard">
+        <div class="announcement-icon"><i class="bx bxs-megaphone"></i></div>
+        <div class="announcement-body">
+          <div class="announcement-title">${escapeHtml(a.title || 'Announcement')}</div>
+          <div class="announcement-message">${escapeHtml(a.message || '')}</div>
+          <div class="announcement-time">${timeAgo(toDate(a.postedAt))}</div>
+        </div>
+        ${isNew ? `<button class="announcement-seen-btn" id="announcementSeenBtn" title="Mark as seen"><i class="bx bx-check"></i></button>` : ''}
+      </div>
+    `;
+
+    if (isNew){
+      document.getElementById('announcementSeenBtn').addEventListener('click', async () => {
+        const card = document.getElementById('announcementCard');
+        card.classList.remove('is-new');
+        card.querySelector('.announcement-seen-btn')?.remove();
+        try{
+          await updateDoc(doc(db, 'students', uid), { lastSeenAnnouncementId: a.postId });
+        } catch (err){
+          console.error('Marking announcement seen failed:', err);
+        }
+      });
+    }
   } catch (err){
-    console.error('Announcements load failed:', err);
-    renderRows('announcementsList', [], 'Couldn\u2019t load announcements right now.');
+    console.error('Announcement load failed:', err);
+    el.innerHTML = '<p class="list-empty">Couldn\u2019t load the announcement right now.</p>';
   }
 }
 
@@ -378,7 +411,7 @@ onAuthStateChanged(auth, async (user) => {
     const [attendance] = await Promise.all([
       loadAttendance(user.uid, level),
       loadEvents(level),
-      loadAnnouncements(),
+      loadAnnouncement(user.uid),
       loadNotifications(user.uid)
     ]);
 
