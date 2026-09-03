@@ -120,13 +120,16 @@ html.light-mode .topbar.scrolled{background:rgba(238,243,248,.75);}
 
 /* ===== auth shell ===== */
 .auth-shell{
-  position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;
+  position:relative;min-height:100vh;width:100%;display:flex;align-items:center;justify-content:center;
   padding:calc(var(--nav-h) + 40px) 6vw 60px;
   background:radial-gradient(ellipse at 50% -10%, var(--hero-fade) 0%, var(--bg-primary) 60%);
   transition:background .4s var(--ease);
+  box-sizing:border-box;
 }
-.auth-card{width:100%;max-width:520px;padding:44px 40px 40px;position:relative;}
+@media (max-width:380px){ .auth-shell{padding:calc(var(--nav-h) + 24px) 4vw 40px;} }
+.auth-card{width:100%;max-width:520px;padding:44px 40px 40px;position:relative;box-sizing:border-box;}
 @media (max-width:560px){ .auth-card{padding:34px 24px 30px;} }
+@media (max-width:380px){ .auth-card{padding:28px 18px 26px;} }
 
 .auth-head{text-align:center;margin-bottom:30px;}
 .auth-head .icon-badge{
@@ -136,20 +139,24 @@ html.light-mode .topbar.scrolled{background:rgba(238,243,248,.75);}
 }
 .auth-head h1{font-size:1.5rem;}
 .auth-head p{margin-top:8px;font-size:.9rem;}
+@media (max-width:380px){
+  .auth-head .icon-badge{width:44px;height:44px;font-size:1.2rem;margin-bottom:14px;}
+  .auth-head h1{font-size:1.25rem;}
+}
 
 .cred-group{margin-bottom:8px;}
-.cred-label-row{display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+.cred-label-row{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
 .cred-label-row .num{
   width:22px;height:22px;border-radius:50%;flex-shrink:0;
   background:rgba(74,166,255,.15);color:var(--accent-text);
   display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;
 }
-.cred-label-row h3{font-size:.86rem;font-weight:600;color:var(--white);}
-.cred-label-row .hint{font-size:.74rem;color:var(--gray);margin-left:auto;}
+.cred-label-row h3{font-size:.86rem;font-weight:600;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+.cred-label-row .hint{font-size:.74rem;color:var(--gray);margin-left:auto;flex-shrink:0;white-space:nowrap;}
 
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 @media (max-width:480px){ .form-row{grid-template-columns:1fr;} }
-.form-group{margin-bottom:18px;position:relative;min-width:0;}
+.form-group{margin-bottom:18px;position:relative;min-width:0;max-width:100%;}
 .form-group label{display:block;font-size:.8rem;font-weight:600;margin-bottom:7px;color:var(--white);}
 .form-group input{
   width:100%;padding:12px 14px;border-radius:10px;font-size:.92rem;font-family:var(--font-body);
@@ -189,13 +196,18 @@ html.light-mode .alert-error{color:#a3131f;}
   padding:24px;background:rgba(2,8,14,.6);backdrop-filter:blur(4px);
 }
 .modal-overlay.show{display:flex;}
-.modal-card{width:100%;max-width:400px;padding:30px 28px;text-align:center;}
+.modal-card{width:100%;max-width:400px;padding:30px 28px;text-align:center;box-sizing:border-box;}
 .modal-card .icon-badge{width:48px;height:48px;border-radius:12px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;background:rgba(255,75,85,.14);color:var(--danger);}
 .modal-card h3{font-size:1.05rem;margin-bottom:10px;}
 .modal-card p{font-size:.86rem;}
 .modal-card p strong{color:var(--white);}
 .modal-actions{display:flex;gap:12px;margin-top:24px;}
-.modal-actions .btn{flex:1;}
+.modal-actions .btn{flex:1;min-width:0;white-space:normal;line-height:1.25;}
+@media (max-width:480px){
+  .modal-card{padding:26px 20px;}
+  .modal-actions{flex-direction:column-reverse;gap:10px;}
+  .modal-actions .btn{width:100%;}
+}
 </style>
 </head>
 <body>
@@ -262,7 +274,7 @@ html.light-mode .alert-error{color:#a3131f;}
             <input type="password" id="userPassword" name="userPassword" placeholder="••••••••" autocomplete="off">
             <button type="button" class="pw-toggle" data-target="userPassword" aria-label="Show password"><i class='bx bx-show'></i></button>
           </div>
-          <span class="form-error-msg"><i class=class='bx bx-error-circle'></i> Enter your password</span>
+          <span class="form-error-msg"><i class='bx bx-error-circle'></i> Enter your password</span>
         </div>
       </div>
 
