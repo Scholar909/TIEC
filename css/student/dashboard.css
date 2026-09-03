@@ -244,6 +244,46 @@ button{font-family:inherit;cursor:pointer;}
 .list-row-title{font-size:.86rem;font-weight:600;color:var(--white);}
 .list-row-meta{font-size:.76rem;color:var(--gray);margin-top:3px;}
 .list-empty{font-size:.84rem;color:var(--gray);text-align:center;padding:24px 10px;}
+
+/* =========================================================
+   ANNOUNCEMENT CARD — glows until the student taps "seen"
+   ========================================================= */
+.announcement-card{
+  display:flex;gap:14px;align-items:flex-start;padding:14px;border-radius:14px;
+  background:rgba(120,140,160,.06);border:1px solid var(--card-border);
+  transition:background .3s var(--ease), border-color .3s var(--ease);
+}
+.announcement-icon{
+  width:38px;height:38px;border-radius:11px;flex-shrink:0;
+  background:rgba(154,230,0,.14);color:var(--accent-lime-text);
+  display:flex;align-items:center;justify-content:center;font-size:1.05rem;
+}
+.announcement-body{flex:1;min-width:0;}
+.announcement-title{font-size:.9rem;font-weight:700;color:var(--white);}
+.announcement-message{font-size:.82rem;color:var(--gray);margin-top:5px;line-height:1.55;white-space:pre-line;}
+.announcement-time{font-size:.72rem;color:var(--gray);margin-top:8px;}
+
+.announcement-seen-btn{
+  flex-shrink:0;width:34px;height:34px;border-radius:50%;border:none;cursor:pointer;
+  background:var(--lime);color:#08130A;font-size:1.1rem;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .25s var(--ease), box-shadow .25s var(--ease);
+}
+.announcement-seen-btn:hover{transform:scale(1.1);box-shadow:0 0 16px rgba(154,230,0,.6);}
+
+.announcement-card.is-new{
+  border-color:rgba(154,230,0,.6);
+  background:rgba(154,230,0,.08);
+  animation:announce-glow 1.6s ease-in-out infinite;
+}
+.announcement-card.is-new .announcement-title{color:var(--accent-lime-text);}
+@keyframes announce-glow{
+  0%, 100%{ box-shadow:0 0 0 rgba(154,230,0,0); }
+  50%{ box-shadow:0 0 22px rgba(154,230,0,.45); }
+}
+@media (prefers-reduced-motion: reduce){
+  .announcement-card.is-new{ animation:none; box-shadow:0 0 14px rgba(154,230,0,.4); }
+}
 .list-skeleton{height:52px;border-radius:12px;background:linear-gradient(90deg, rgba(120,140,160,.06), rgba(120,140,160,.14), rgba(120,140,160,.06));background-size:200% 100%;animation:shimmer 1.4s infinite;}
 @keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
 
