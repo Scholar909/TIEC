@@ -1,4 +1,4 @@
-dejkcjvwtiec uploadsimport { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 import {
   getAuth, onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
@@ -33,7 +33,7 @@ const CLOUDINARY_UPLOAD_PRESET = 'tiec uploads'; // TODO: e.g. 'iec_resources_un
 
 async function uploadToCloudinary(file){
   if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET){
-    throw new Error('cloudinarytiec uploads-not-configured');
+    throw new Error('cloudinary-not-configured');
   }
   const formData = new FormData();
   formData.append('file', file);
