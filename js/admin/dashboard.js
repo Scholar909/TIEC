@@ -4,7 +4,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 import {
   getFirestore, doc, getDoc, setDoc, deleteField, onSnapshot,
-  collection, query, where, orderBy, limit, getDocs, getCountFromServer, Timestamp
+  collection, query, where, orderBy, limit, getDocs, getCountFromServer
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -151,7 +151,7 @@ document.getElementById('logoutBtnTop').addEventListener('click', doSignOut);
    - students/{uid}                    → count = Total Students
    - applications/{id}.status          → 'pending' | 'approved' | 'rejected'
    - attendanceRecords/{id}: { date: 'YYYY-MM-DD', status: 'present'|'absent' }
-   - events/{id}: { title, date: Timestamp }
+   - events/{id}: activities of type 'event' in the `occurrences` collection (date >= today, string 'YYYY-MM-DD')
    - notifications/{id}: { title, type, createdAt: Timestamp, readBy?: [usernames] }
    ========================================================= */
 async function loadStudentsCount(){
@@ -176,8 +176,16 @@ async function loadAttendanceToday(){
 async function loadUpcomingEvents(){
   const listEl = document.getElementById('eventsList');
   try{
-    const now = Timestamp.fromDate(new Date());
-    const q = query(collection(db, 'events'), where('date', '>=', now), orderBy('date', 'asc'), limit(5));
+    const todayStr = new Date().toISOString().slice(0,10);
+    // "Upcoming Events" here means activities of type 'event' exactly —
+    // classes/competitions/workshops/holidays don't count toward this card.
+    const q = query(
+      collection(db, 'occurrences'),
+      where('type', '==', 'event'),
+      where('date', '>=', todayStr),
+      orderBy('date', 'asc'),
+      limit(5)
+    );
     const snap = await getDocs(q);
     document.getElementById('statEvents').textContent = snap.size;
 
@@ -188,12 +196,12 @@ async function loadUpcomingEvents(){
     listEl.innerHTML = '';
     snap.forEach(d => {
       const ev = d.data();
-      const when = ev.date && ev.date.toDate ? ev.date.toDate().toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' }) : '';
+      const when = ev.date ? new Date(ev.date + 'T00:00:00').toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' }) : '';
       const row = document.createElement('div');
       row.className = 'list-row';
       row.innerHTML = `<span class="list-row-icon"><i class="bx bx-calendar-event"></i></span>
         <span class="list-row-body"><span class="list-row-title">${escapeHtml(ev.title || 'Untitled event')}</span>
-        <span class="list-row-meta">${when}</span></span>`;
+        <span class="list-row-meta">${when}${ev.level && ev.level !== 'All' ? ' · ' + escapeHtml(ev.level) : ''}</span></span>`;
       listEl.appendChild(row);
     });
   }catch(e){
