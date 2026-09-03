@@ -290,3 +290,134 @@ button{font-family:inherit;cursor:pointer;}
 .modal-card p{font-size:.86rem;}
 .modal-actions{display:flex;gap:12px;margin-top:24px;}
 .modal-actions .btn{flex:1;}
+
+/* =========================================================
+   PHOTO UPLOAD BUTTONS
+   ========================================================= */
+
+#chooseFileBtn,
+#savePhotoBtn,
+#confirmCancel,
+#confirmProceed {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  min-height:42px;
+  padding:11px 20px;
+  border-radius:11px;
+  font-family:var(--font-body);
+  font-size:.85rem;
+  font-weight:600;
+  border:1px solid transparent;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:
+    transform .3s var(--ease),
+    box-shadow .3s var(--ease),
+    background .3s var(--ease),
+    border-color .3s var(--ease),
+    opacity .3s var(--ease);
+}
+
+/* Choose file */
+#chooseFileBtn {
+  background:transparent;
+  border-color:var(--blue);
+  color:var(--accent-text);
+}
+
+#chooseFileBtn:hover:not(:disabled) {
+  border-color:var(--blue-2);
+  box-shadow:0 0 18px rgba(21,123,255,.3);
+  transform:translateY(-1px);
+}
+
+/* Save */
+#savePhotoBtn {
+  background:var(--lime);
+  border-color:var(--lime);
+  color:#08130A;
+}
+
+#savePhotoBtn:hover:not(:disabled) {
+  box-shadow:0 0 22px rgba(154,230,0,.5);
+  transform:translateY(-1px);
+}
+
+/* Cancel confirmation */
+#confirmCancel {
+  background:transparent;
+  border-color:var(--card-border);
+  color:var(--white);
+}
+
+#confirmCancel:hover {
+  background:rgba(120,140,160,.08);
+}
+
+/* Proceed confirmation */
+#confirmProceed {
+  background:var(--lime);
+  border-color:var(--lime);
+  color:#08130A;
+}
+
+#confirmProceed:hover {
+  box-shadow:0 0 22px rgba(154,230,0,.5);
+  transform:translateY(-1px);
+}
+
+/* Disabled */
+#chooseFileBtn:disabled,
+#savePhotoBtn:disabled,
+#confirmProceed:disabled {
+  opacity:.6;
+  cursor:default;
+  transform:none;
+  box-shadow:none;
+}
+
+/* Icons */
+#chooseFileBtn i,
+#savePhotoBtn i,
+#confirmCancel i,
+#confirmProceed i {
+  font-size:1.05rem;
+}
+
+/* Loading state */
+#savePhotoBtn.loading {
+  cursor:wait;
+  pointer-events:none;
+  opacity:.75;
+}
+
+#savePhotoBtn .spinner {
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  border:2px solid rgba(8,19,10,.3);
+  border-top-color:#08130A;
+  animation:spin .7s linear infinite;
+  display:none;
+}
+
+#savePhotoBtn.loading .spinner {
+  display:inline-block;
+}
+
+/* Mobile */
+@media (max-width:480px) {
+  #chooseFileBtn,
+  #savePhotoBtn,
+  #confirmCancel,
+  #confirmProceed {
+    width:100%;
+  }
+
+  .photo-upload-controls,
+  .modal-actions {
+    width:100%;
+  }
+}
