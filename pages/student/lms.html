@@ -1,152 +1,545 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script>(function(){try{if(localStorage.getItem('iec-theme')==='light'){document.documentElement.classList.add('light-mode');}}catch(e){}})();</script>
-<title>LMS — Student Portal — Innovative Explorer Club</title>
-<meta name="robots" content="noindex, nofollow">
-<link rel="icon" type="image/png" href="../../assets/images/icon.png">
-<link rel="apple-touch-icon" href="../../assets/images/icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Boxicons Free -->
-<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-<!-- Basic Icons -->
-<link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
-<!-- Filled Icons -->
-<link href="https://cdn.boxicons.com/3.0.8/fonts/filled/boxicons-filled.min.css" rel="stylesheet">
-<!-- Brand Icons -->
-<link href="https://cdn.boxicons.com/3.0.8/fonts/brands/boxicons-brands.min.css" rel="stylesheet">
+  <title>Coming Soon | The Innovative Explorer Club</title>
 
-<link rel="stylesheet" href="../../css/student/lms.css">
+  <!-- Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- Boxicons -->
+  <link
+    href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+    rel="stylesheet"
+  >
+
+  <style>
+    /* =========================================================
+       DESIGN TOKENS — TIEC / STUDENT PORTAL STYLE
+       ========================================================= */
+
+    :root {
+      --bg-primary: #071420;
+      --bg-secondary: #101B2D;
+      --card-bg: rgba(255, 255, 255, .08);
+      --card-border: rgba(255, 255, 255, .10);
+
+      --blue: #157BFF;
+      --blue-2: #4AA6FF;
+      --lime: #9AE600;
+
+      --white: #FFFFFF;
+      --gray: #C7CFD9;
+      --danger: #FF4B55;
+      --success: #2BD67B;
+
+      --accent-text: var(--blue-2);
+      --accent-lime-text: var(--lime);
+
+      --radius: 16px;
+      --ease: cubic-bezier(.22, .61, .36, 1);
+
+      --font-body: 'Poppins', sans-serif;
+    }
+
+    html.light-mode {
+      --bg-primary: #EEF3F8;
+      --bg-secondary: #FFFFFF;
+      --card-bg: rgba(7, 20, 32, .045);
+      --card-border: rgba(7, 20, 32, .09);
+
+      --white: #0B1B29;
+      --gray: #4B5C6B;
+
+      --accent-text: #0F62D6;
+      --accent-lime-text: #5B8A00;
+    }
+
+    /* =========================================================
+       RESET
+       ========================================================= */
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      background: var(--bg-primary);
+      color: var(--white);
+
+      font-family: var(--font-body);
+      font-weight: 400;
+      line-height: 1.6;
+
+      overflow-x: hidden;
+
+      transition:
+        background .4s var(--ease),
+        color .4s var(--ease);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    /* =========================================================
+       PAGE
+       ========================================================= */
+
+    .coming-soon-page {
+      min-height: 100vh;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 30px 20px;
+
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* =========================================================
+       SUBTLE BACKGROUND GLOW
+       ========================================================= */
+
+    .background-glow {
+      position: absolute;
+      width: 420px;
+      height: 420px;
+
+      border-radius: 50%;
+
+      background: rgba(21, 123, 255, .08);
+
+      filter: blur(90px);
+
+      top: 50%;
+      left: 50%;
+
+      transform: translate(-50%, -50%);
+
+      pointer-events: none;
+    }
+
+    .background-glow::after {
+      content: "";
+
+      position: absolute;
+
+      width: 260px;
+      height: 260px;
+
+      border-radius: 50%;
+
+      background: rgba(154, 230, 0, .06);
+
+      filter: blur(80px);
+
+      top: 30%;
+      left: 55%;
+    }
+
+    /* =========================================================
+       MAIN CARD
+       ========================================================= */
+
+    .coming-card {
+      width: 100%;
+      max-width: 650px;
+
+      padding: 56px 48px;
+
+      position: relative;
+      z-index: 1;
+
+      text-align: center;
+
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+
+      box-shadow:
+        0 24px 70px rgba(0, 0, 0, .18);
+
+      animation: cardIn .7s var(--ease) both;
+    }
+
+    /* =========================================================
+       ICON
+       ========================================================= */
+
+    .coming-icon {
+      width: 78px;
+      height: 78px;
+
+      margin: 0 auto 26px;
+
+      border-radius: 50%;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background: rgba(21, 123, 255, .12);
+
+      border: 1px solid rgba(74, 166, 255, .18);
+
+      color: var(--accent-text);
+
+      font-size: 2.2rem;
+
+      animation: iconFloat 3s ease-in-out infinite;
+    }
+
+    /* =========================================================
+       EYEBROW
+       ========================================================= */
+
+    .eyebrow {
+      display: inline-block;
+
+      margin-bottom: 12px;
+
+      font-size: .72rem;
+      font-weight: 600;
+
+      letter-spacing: .12em;
+      text-transform: uppercase;
+
+      color: var(--accent-text);
+    }
+
+    /* =========================================================
+       TITLE
+       ========================================================= */
+
+    .coming-card h1 {
+      font-size: clamp(2rem, 7vw, 3.2rem);
+
+      font-weight: 700;
+
+      line-height: 1.1;
+
+      letter-spacing: -.02em;
+
+      margin-bottom: 18px;
+    }
+
+    .coming-card h1 span {
+      color: var(--lime);
+    }
+
+    /* =========================================================
+       DESCRIPTION
+       ========================================================= */
+
+    .coming-description {
+      max-width: 480px;
+
+      margin: 0 auto;
+
+      color: var(--gray);
+
+      font-size: .92rem;
+      line-height: 1.8;
+    }
+
+    /* =========================================================
+       STATUS
+       ========================================================= */
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+
+      margin-top: 30px;
+
+      padding: 7px 15px;
+
+      border-radius: 999px;
+
+      background: rgba(154, 230, 0, .12);
+
+      color: var(--accent-lime-text);
+
+      border: 1px solid rgba(154, 230, 0, .14);
+
+      font-size: .72rem;
+      font-weight: 700;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+
+      border-radius: 50%;
+
+      background: var(--lime);
+
+      box-shadow: 0 0 10px rgba(154, 230, 0, .5);
+
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+
+    /* =========================================================
+       DIVIDER
+       ========================================================= */
+
+    .divider {
+      width: 100%;
+      height: 1px;
+
+      margin: 34px 0 24px;
+
+      background: var(--card-border);
+    }
+
+    /* =========================================================
+       THEME BUTTON
+       ========================================================= */
+
+    .theme-btn {
+      width: 42px;
+      height: 42px;
+
+      margin: 0 auto;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+
+      background: rgba(120, 140, 160, .06);
+
+      color: var(--gray);
+
+      font-size: 1.15rem;
+
+      transition:
+        background .3s var(--ease),
+        color .3s var(--ease),
+        transform .3s var(--ease),
+        border-color .3s var(--ease);
+    }
+
+    .theme-btn:hover {
+      background: rgba(120, 140, 160, .12);
+      color: var(--white);
+
+      transform: translateY(-1px);
+    }
+
+    /* =========================================================
+       ANIMATIONS
+       ========================================================= */
+
+    @keyframes cardIn {
+      from {
+        opacity: 0;
+        transform: translateY(18px) scale(.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes iconFloat {
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-5px);
+      }
+    }
+
+    @keyframes pulse {
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: .45;
+        transform: scale(.75);
+      }
+    }
+
+    /* =========================================================
+       REDUCED MOTION
+       ========================================================= */
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* =========================================================
+       MOBILE
+       ========================================================= */
+
+    @media (max-width: 560px) {
+      .coming-soon-page {
+        padding: 20px 16px;
+      }
+
+      .coming-card {
+        padding: 42px 24px;
+      }
+
+      .coming-icon {
+        width: 68px;
+        height: 68px;
+        font-size: 1.9rem;
+      }
+
+      .coming-card h1 {
+        font-size: 2rem;
+      }
+
+      .coming-description {
+        font-size: .86rem;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<!-- ============ MOBILE SIDEBAR BACKDROP ============ -->
-<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <main class="coming-soon-page">
 
-<!-- ============ SIDEBAR ============ -->
-<aside class="sidebar" id="sidebar">
-  <a href="../../index.html" class="side-logo">
-    <img src="../../assets/images/logo-icon-footer.png" alt="Innovative Explorer Club logo">
-    <span>Innovative Explorer Club</span>
-  </a>
+    <div class="background-glow"></div>
 
-  <nav class="side-nav">
-    <a href="dashboard.html" class="side-link" data-page="dashboard"><i class="bx bxs-dashboard"></i><span>Dashboard</span></a>
-    <a href="attendance.html" class="side-link" data-page="attendance"><i class="bx bx-calendar-check"></i><span>Attendance &amp; Progress</span></a>
-    <a href="resources.html" class="side-link" data-page="resources"><i class="bx bx-folder-open"></i><span>Resources</span></a>
-    <a href="lms.html" class="side-link active" data-page="lms"><i class="bx bx-edit-alt"></i><span>LMS</span></a>
-    <a href="calendar.html" class="side-link" data-page="calendar"><i class="bx bx-calendar"></i><span>Calendar</span></a>
-    <a href="notifications.html" class="side-link" data-page="notifications"><i class="bx bx-bell"></i><span>Notifications</span></a>
-    <a href="profile.html" class="side-link" data-page="profile"><i class="bx bx-user"></i><span>Profile</span></a>
-    <a href="contact-admin.html" class="side-link" data-page="contact-admin"><i class="bx bx-envelope"></i><span>Contact Admin</span></a>
-  </nav>
+    <section class="coming-card">
 
-  <button class="side-logout" id="logoutBtnSide"><i class="bx bx-log-out"></i><span>Log Out</span></button>
-</aside>
-
-<!-- ============ TOPBAR ============ -->
-<header class="topbar" id="topbar">
-  <div class="topbar-left">
-    <button class="icon-btn" id="hamburger" aria-label="Toggle menu"><i class="bx bx-menu"></i></button>
-    <span class="topbar-title">LMS</span>
-  </div>
-
-  <div class="topbar-right">
-    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="bx bx-moon"></i></button>
-
-    <div class="dropdown-wrap">
-      <button class="icon-btn" id="bellBtn" aria-label="Notifications">
-        <i class="bx bx-bell"></i>
-        <span class="badge-dot" id="bellBadge" hidden></span>
-      </button>
-      <div class="dropdown-panel" id="bellDropdown">
-        <div class="dropdown-head"><span>Notifications</span><a href="notifications.html">View all</a></div>
-        <div class="dropdown-list" id="bellList"><p class="dropdown-empty">No notifications yet.</p></div>
+      <div class="coming-icon">
+        <i class="bx bx-rocket"></i>
       </div>
-    </div>
 
-    <div class="dropdown-wrap">
-      <button class="avatar-btn" id="avatarBtn" aria-label="Account menu">
-        <span class="avatar-circle" id="topAvatar">--</span>
-      </button>
-      <div class="dropdown-panel dropdown-panel-right" id="avatarDropdown">
-        <div class="dropdown-profile">
-          <span class="avatar-circle" id="ddAvatar">--</span>
-          <div>
-            <div class="dd-name" id="ddName">Loading…</div>
-            <div class="dd-level" id="ddLevel">—</div>
-          </div>
-        </div>
-        <a href="profile.html" class="dropdown-item"><i class="bx bx-user"></i> View Profile</a>
-        <a href="contact-admin.html" class="dropdown-item"><i class="bx bx-envelope"></i> Contact Admin</a>
-        <button class="dropdown-item dropdown-item-danger" id="logoutBtnTop"><i class="bx bx-log-out"></i> Log Out</button>
+      <span class="eyebrow">The Innovative Explorer Club</span>
+
+      <h1>
+        Coming <span>Soon</span>
+      </h1>
+
+      <p class="coming-description">
+        We're working behind the scenes to bring this page to life.
+        Check back soon for something new and exciting.
+      </p>
+
+      <div class="status-pill">
+        <span class="status-dot"></span>
+        Currently in development
       </div>
-    </div>
-  </div>
-</header>
 
-<!-- ============ MAIN CONTENT ============ -->
-<main class="dash-main">
+      <div class="divider"></div>
 
-  <!-- SCORES SUMMARY -->
-  <div class="stats-row">
-    <div class="stat-card glass">
-      <i class="bx bx-list-check stat-icon"></i>
-      <span class="stat-num" id="statAvailable">–</span>
-      <span class="stat-label">Available Now</span>
-    </div>
-    <div class="stat-card glass">
-      <i class="bx bx-check-double stat-icon stat-icon-present"></i>
-      <span class="stat-num" id="statCompleted">–</span>
-      <span class="stat-label">Completed</span>
-    </div>
-    <div class="stat-card glass">
-      <i class="bx bxs-medal stat-icon stat-icon-flame"></i>
-      <span class="stat-num" id="statAverage">–%</span>
-      <span class="stat-label">Average Score</span>
-    </div>
-  </div>
+      <button
+        class="theme-btn"
+        id="themeToggle"
+        aria-label="Toggle theme"
+        title="Toggle theme"
+      >
+        <i class="bx bx-moon"></i>
+      </button>
 
-  <!-- TABS -->
-  <div class="lms-tabs" id="lmsTabs">
-    <button class="lms-tab active" data-tab="available"><i class="bx bx-list-ul"></i> Available Tests</button>
-    <button class="lms-tab" data-tab="completed"><i class="bx bx-check-double"></i> Completed Tests</button>
-  </div>
+    </section>
 
-  <!-- AVAILABLE TESTS -->
-  <section class="tab-panel active" id="panel-available">
-    <div class="test-list" id="availableList">
-      <div class="list-skeleton"></div>
-      <div class="list-skeleton"></div>
-    </div>
-    <p class="empty-state" id="availableEmpty" hidden><i class="bx bx-coffee"></i> No tests available right now — check back soon.</p>
-  </section>
+  </main>
 
-  <!-- COMPLETED TESTS -->
-  <section class="tab-panel" id="panel-completed">
-    <div class="test-list" id="completedList">
-      <div class="list-skeleton"></div>
-    </div>
-    <p class="empty-state" id="completedEmpty" hidden><i class="bx bx-file-blank"></i> You haven't completed any tests yet.</p>
-  </section>
 
-  <div class="dash-bottom-spacer"></div>
-</main>
+  <script>
+    /* =========================================================
+       THEME
+       ========================================================= */
 
-<!-- ============ PERSISTENT BOTTOM NAV (first 5 pages) ============ -->
-<nav class="bottom-nav" id="bottomNav">
-  <a href="dashboard.html" class="bottom-link" data-page="dashboard"><i class="bx bxs-dashboard"></i><span>Home</span></a>
-  <a href="attendance.html" class="bottom-link" data-page="attendance"><i class="bx bx-calendar-check"></i><span>Attendance</span></a>
-  <a href="resources.html" class="bottom-link" data-page="resources"><i class="bx bx-folder-open"></i><span>Resources</span></a>
-  <a href="lms.html" class="bottom-link active" data-page="lms"><i class="bx bx-edit-alt"></i><span>LMS</span></a>
-  <a href="calendar.html" class="bottom-link" data-page="calendar"><i class="bx bx-calendar"></i><span>Calendar</span></a>
-</nav>
+    const themeToggle = document.getElementById('themeToggle');
 
-<script type="module" src="../../js/student/lms.js"></script>
+    function paintThemeIcon() {
+      const light =
+        document.documentElement.classList.contains('light-mode');
+
+      themeToggle.innerHTML = light
+        ? '<i class="bx bx-sun"></i>'
+        : '<i class="bx bx-moon"></i>';
+    }
+
+    /* Load saved theme */
+    try {
+      const savedTheme = localStorage.getItem('iec-theme');
+
+      if (savedTheme === 'light') {
+        document.documentElement.classList.add('light-mode');
+      }
+    } catch (error) {
+      console.warn('Theme preference could not be loaded.');
+    }
+
+    paintThemeIcon();
+
+
+    /* Toggle theme */
+    themeToggle.addEventListener('click', () => {
+
+      document.documentElement.classList.toggle('light-mode');
+
+      const light =
+        document.documentElement.classList.contains('light-mode');
+
+      try {
+        localStorage.setItem(
+          'iec-theme',
+          light ? 'light' : 'dark'
+        );
+      } catch (error) {
+        console.warn('Theme preference could not be saved.');
+      }
+
+      paintThemeIcon();
+    });
+  </script>
+
 </body>
 </html>
