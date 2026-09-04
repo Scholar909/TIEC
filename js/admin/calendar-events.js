@@ -242,6 +242,24 @@ document.getElementById('calPrev').addEventListener('click', () => { viewMonth--
 document.getElementById('calNext').addEventListener('click', () => { viewMonth++; if (viewMonth>11){viewMonth=0;viewYear++;} renderCalendar(); clearDayDetail(); });
 document.getElementById('calToday').addEventListener('click', () => { const t = new Date(); viewYear = t.getFullYear(); viewMonth = t.getMonth(); renderCalendar(); clearDayDetail(); });
 
+/* =========================================================
+   NOTIFICATIONS — writes into students/{uid}/notifications
+   ========================================================= */
+async function notifyEligibleStudents(level, { title, message, type, link }){
+  try{
+    const snap = level === 'All'
+      ? await getDocs(collection(db, 'students'))
+      : await getDocs(query(collection(db, 'students'), where('membershipLevel', '==', level)));
+    await Promise.all(snap.docs.map(d => setDoc(doc(collection(db, 'students', d.id, 'notifications')), {
+      title, message: message || '', type, link: link || '',
+      read: false,
+      createdAt: serverTimestamp()
+    })));
+  }catch(err){
+    console.error('Notification write failed:', err);
+  }
+}
+
 async function loadOccurrences(){
   try{
     const snap = await getDocs(query(collection(db, 'occurrences'), orderBy('date', 'asc')));
@@ -476,6 +494,14 @@ activityForm.addEventListener('submit', async (e) => {
     }
 
     showToast(editingActivityId ? 'Activity updated' : 'Activity created');
+    if (!editingActivityId){
+      notifyEligibleStudents(f.level, {
+        title: `New ${f.type}: ${f.title}`,
+        message: `"${f.title}" was just added to the calendar.`,
+        type: 'event',
+        link: 'calendar.html'
+      });
+    }
     formModal.classList.remove('open');
     clearDayDetail();
     loadOccurrences();

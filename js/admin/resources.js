@@ -4,7 +4,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 import {
   getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, deleteField, onSnapshot,
-  collection, query, orderBy, getDocs, serverTimestamp
+  collection, query, where, orderBy, getDocs, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -219,6 +219,24 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
   render();
 });
 
+/* =========================================================
+   NOTIFICATIONS — writes into students/{uid}/notifications
+   ========================================================= */
+async function notifyEligibleStudents(level, { title, message, type, link }){
+  try{
+    const snap = level === 'All'
+      ? await getDocs(collection(db, 'students'))
+      : await getDocs(query(collection(db, 'students'), where('membershipLevel', '==', level)));
+    await Promise.all(snap.docs.map(d => setDoc(doc(collection(db, 'students', d.id, 'notifications')), {
+      title, message: message || '', type, link: link || '',
+      read: false,
+      createdAt: serverTimestamp()
+    })));
+  }catch(err){
+    console.error('Notification write failed:', err);
+  }
+}
+
 async function loadResources(){
   gridEl.innerHTML = '<div class="list-skeleton"></div><div class="list-skeleton"></div><div class="list-skeleton"></div>';
   try{
@@ -356,6 +374,12 @@ resourceForm.addEventListener('submit', async (e) => {
         uploadedBy: operator.username
       });
       showToast('Resource added');
+      notifyEligibleStudents(level, {
+        title: `New resource: ${title}`,
+        message: `A new ${typeMeta[category] ? typeMeta[category].label.toLowerCase() : 'resource'} was just uploaded — "${title}".`,
+        type: 'resource',
+        link: 'resources.html'
+      });
     }
 
     formModal.classList.remove('open');

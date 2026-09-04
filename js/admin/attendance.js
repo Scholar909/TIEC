@@ -266,6 +266,25 @@ function renderMarkGrid(){
   });
 }
 
+/* =========================================================
+   NOTIFICATIONS — writes into students/{uid}/notifications
+   ========================================================= */
+async function notifyStudent(studentId, { title, message, type, link }){
+  try{
+    await setDoc(doc(collection(db, 'students', studentId, 'notifications')), {
+      title, message: message || '', type, link: link || '',
+      read: false,
+      createdAt: serverTimestamp()
+    });
+  }catch(err){
+    console.error('Notification write failed:', err);
+  }
+}
+async function notifyEligibleStudents(level, payload){
+  const targets = level === 'All' ? allStudents : allStudents.filter(s => s.membershipLevel === level);
+  await Promise.all(targets.map(s => notifyStudent(s.id, payload)));
+}
+
 async function markStudent(studentId, status){
   if (!activeOccurrence || !operator) return;
   try{
@@ -280,6 +299,12 @@ async function markStudent(studentId, status){
     });
     recordsMap.set(studentId, { status, occurrenceId: activeOccurrence.id, studentId, date: activeOccurrence.date, markedBy: operator.username });
     renderMarkGrid();
+    notifyStudent(studentId, {
+      title: `Marked ${status === 'present' ? 'Present' : 'Absent'}: ${activeOccurrence.title || 'Activity'}`,
+      message: `You were marked ${status} for "${activeOccurrence.title || 'this activity'}" on ${activeOccurrence.date}.`,
+      type: 'attendance',
+      link: 'attendance.html#calGrid'
+    });
   }catch(err){
     console.error(err);
     showToast("Couldn't save that mark — try again");
@@ -325,6 +350,12 @@ document.getElementById('offConfirm').addEventListener('click', async () => {
     document.getElementById('markingBody').classList.add('hidden');
     document.getElementById('noAttendanceNote').classList.remove('hidden');
     showToast('Attendance turned off for this activity');
+    notifyEligibleStudents(activeOccurrence.level, {
+      title: `No Attendance: ${activeOccurrence.title || 'Activity'}`,
+      message: `Attendance was turned off for "${activeOccurrence.title || 'this activity'}" on ${activeOccurrence.date} — it won't count toward Present/Absent.`,
+      type: 'attendance',
+      link: 'attendance.html#calGrid'
+    });
   }catch(err){
     console.error(err);
     attendanceToggle.checked = true;
