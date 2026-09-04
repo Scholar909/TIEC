@@ -347,29 +347,79 @@ const notifIcons = {
   resource: 'bx bx-folder-open',
   announcement: 'bx bx-megaphone',
   badge: 'bx bxs-medal',
-  attendance: 'bx bx-calendar-check'
+  attendance: 'bx bx-calendar-check',
+  test: 'bx bx-edit-alt',
+  profile: 'bx bx-user',
+  other: 'bx bx-bell'
 };
+const notifDefaultLinks = {
+  event: 'calendar.html',
+  resource: 'resources.html',
+  announcement: 'dashboard.html#announcementsList',
+  badge: 'attendance.html#badgeGrid',
+  attendance: 'attendance.html#calGrid',
+  test: 'lms.html',
+  profile: 'profile.html',
+  other: 'dashboard.html'
+};
+let dashboardNotifUid = null;
+
 async function loadNotifications(uid){
+  dashboardNotifUid = uid;
+  const el = document.getElementById('notificationsList');
   try{
-    const q = query(collection(db, 'students', uid, 'notifications'), orderBy('createdAt', 'desc'), limit(4));
+    const q = query(collection(db, 'students', uid, 'notifications'), orderBy('createdAt', 'desc'), limit(2));
     const snap = await getDocs(q);
-    const rows = [];
     let unread = 0;
-    snap.docs.forEach(d => {
+    const items = snap.docs.map(d => {
       const n = d.data();
       if (!n.read) unread++;
-      rows.push({ icon: notifIcons[n.type] || 'bx bx-bell', title: n.title || 'Notification', meta: timeAgo(toDate(n.createdAt)) });
+      return { id: d.id, ...n };
     });
 
-    renderRows('notificationsList', rows, 'You\u2019re all caught up.');
-    renderRows('bellList', rows, 'No notifications yet.');
+    if (!items.length){
+      el.innerHTML = '<p class="list-empty">You\u2019re all caught up.</p>';
+    } else {
+      el.innerHTML = items.map(n => `
+        <button class="list-row notif-row-btn ${n.read ? '' : 'unread'}" data-id="${n.id}">
+          <div class="list-row-icon"><i class="${notifIcons[n.type] || 'bx bx-bell'}"></i></div>
+          <div class="list-row-body">
+            <div class="list-row-title">${n.title || 'Notification'}</div>
+            <div class="list-row-meta">${timeAgo(toDate(n.createdAt))}</div>
+          </div>
+          ${n.read ? '' : '<span class="notif-dot"></span>'}
+        </button>
+      `).join('');
+      el.querySelectorAll('.notif-row-btn').forEach(btn => {
+        btn.addEventListener('click', () => handleDashboardNotifClick(btn.dataset.id, items));
+      });
+    }
+
+    // bell dropdown preview still shows a few more, for a quick glance
+    const bellItems = items.slice();
+    renderRows('bellList', bellItems.map(n => ({ icon: notifIcons[n.type] || 'bx bx-bell', title: n.title || 'Notification', meta: timeAgo(toDate(n.createdAt)) })), 'No notifications yet.');
     document.getElementById('bellBadge').hidden = unread === 0;
   } catch (err){
     console.error('Notifications load failed:', err);
-    renderRows('notificationsList', [], 'Couldn\u2019t load notifications right now.');
+    el.innerHTML = '<p class="list-empty">Couldn\u2019t load notifications right now.</p>';
     renderRows('bellList', [], 'No notifications yet.');
   }
 }
+
+async function handleDashboardNotifClick(notifId, items){
+  const n = items.find(x => x.id === notifId);
+  if (!n) return;
+  const destination = n.link || notifDefaultLinks[n.type] || 'dashboard.html';
+  if (!n.read){
+    try{
+      await updateDoc(doc(db, 'students', dashboardNotifUid, 'notifications', notifId), { read: true });
+    } catch (err){
+      console.error('Marking notification read failed:', err);
+    }
+  }
+  window.location.href = destination;
+}
+
 
 /* ---------- attendance ratio / percentage ----------
    Denominator excludes "No Attendance" occurrences and future

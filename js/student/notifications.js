@@ -190,14 +190,38 @@ function renderList(){
           <span class="notif-item-title">${n.title || 'Notification'}</span>
           <span class="notif-item-time">${timeAgo(n._date)}</span>
         </div>
-        ${n.message ? `<div class="notif-item-message">${n.message}</div>` : ''}
+        ${n.message ? `
+          <div class="notif-item-message" data-role="msg">${n.message}</div>
+          <span class="read-more-toggle hidden" data-role="toggle">Read more</span>
+        ` : ''}
       </div>
       ${n.read ? '' : '<span class="notif-dot"></span>'}
     </button>
   `).join('');
 
   container.querySelectorAll('.notif-item').forEach(el => {
-    el.addEventListener('click', () => handleNotifClick(el.dataset.id));
+    el.addEventListener('click', (e) => {
+      const toggle = e.target.closest('[data-role="toggle"]');
+      if (toggle){
+        e.preventDefault();
+        e.stopPropagation();
+        const msg = el.querySelector('[data-role="msg"]');
+        const expanded = msg.classList.toggle('expanded');
+        toggle.textContent = expanded ? 'Show less' : 'Read more';
+        return;
+      }
+      handleNotifClick(el.dataset.id);
+    });
+  });
+
+  // only show "Read more" on messages that are actually being clipped
+  requestAnimationFrame(() => {
+    container.querySelectorAll('[data-role="msg"]').forEach(msg => {
+      const toggle = msg.nextElementSibling;
+      if (toggle && msg.scrollHeight > msg.clientHeight + 1){
+        toggle.classList.remove('hidden');
+      }
+    });
   });
 }
 
