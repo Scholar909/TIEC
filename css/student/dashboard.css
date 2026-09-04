@@ -243,6 +243,12 @@ button{font-family:inherit;cursor:pointer;}
 .list-row-body{min-width:0;flex:1;}
 .list-row-title{font-size:.86rem;font-weight:600;color:var(--white);}
 .list-row-meta{font-size:.76rem;color:var(--gray);margin-top:3px;}
+
+.notif-row-btn{
+  width:100%;border:none;background:none;font-family:inherit;text-align:left;cursor:pointer;position:relative;
+}
+.notif-row-btn.unread .list-row-title{color:var(--white);font-weight:700;}
+.notif-dot{position:absolute;top:14px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--accent-lime-text);}
 .list-empty{font-size:.84rem;color:var(--gray);text-align:center;padding:24px 10px;}
 
 /* =========================================================

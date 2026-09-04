@@ -250,7 +250,16 @@ button{font-family:inherit;cursor:pointer;}
 .notif-item-title{font-size:.9rem;font-weight:600;color:var(--white);}
 .notif-item.unread .notif-item-title{font-weight:700;}
 .notif-item-time{font-size:.72rem;color:var(--gray);white-space:nowrap;flex-shrink:0;}
-.notif-item-message{font-size:.83rem;margin-top:5px;}
+.notif-item-message{
+  font-size:.83rem;margin-top:5px;line-height:1.5;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.notif-item-message.expanded{display:block;-webkit-line-clamp:unset;overflow:visible;}
+.read-more-toggle{
+  display:inline-block;margin-top:4px;font-size:.76rem;font-weight:600;color:var(--accent-text);
+}
+.read-more-toggle:hover{text-decoration:underline;}
+.read-more-toggle.hidden{display:none;}
 .notif-dot{width:8px;height:8px;border-radius:50%;background:var(--lime);flex-shrink:0;margin-top:6px;}
 
 .empty-state{
