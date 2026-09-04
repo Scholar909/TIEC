@@ -181,3 +181,5 @@ button{font-family:inherit;cursor:pointer;}
   .test-topbar-title{font-size:.82rem;}
   .question-card{padding:18px;}
 }
+
+.optional-hint{color:var(--gray);font-style:italic;font-size:.82rem;}
