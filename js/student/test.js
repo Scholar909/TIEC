@@ -5,10 +5,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/fireba
 
 // Additional SDKs used on this page (Auth + Firestore)
 import {
-  getAuth, onAuthStateChanged
+  getAuth, onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 import {
-  getFirestore, doc, getDoc, setDoc, serverTimestamp
+  getFirestore, doc, getDoc, collection, addDoc, getDocs, onSnapshot, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 // Your web app's Firebase configuration
@@ -31,23 +31,35 @@ const db = getFirestore(app);
 
    tests/{testId}
      title, description, published (bool),
-     questions: [{ type: 'mcq' | 'short', question, options: [],
-                    correctIndex (number, mcq only) }],
-     timeLimitMinutes (number, optional),
-     openFrom / openUntil (Timestamp, optional),
+     questions: [{
+       type: 'single' | 'multi', question, options: [],
+       required (bool),
+       correctIndex (number, type:'single' only),
+       correctIndexes (number[], type:'multi' only)
+     }],
+     totalMarks (number), attemptsAllowed (number, default 1),
+     timeLimitMinutes (number, optional — a per-attempt countdown,
+       separate from the openFrom/openUntil wall-clock window),
+     openFrom / openUntil (Timestamp),
      showScoreToStudent (bool)
 
-   students/{uid}/testAttempts/{testId}
-     answers, score (number | null), submittedAt, totalQuestions
+   students/{uid}/testAttempts/{testId}/attempts/{autoId}
+     — a new doc per attempt, so multiple attempts can be tracked
+     answers, score (0-100 percentage), earned, totalMarks, testId,
+     submittedAt, totalQuestions
 
-   ⚠️ NOTE ON SCORING: this scores MCQ answers client-side by
-   comparing against `correctIndex`, which means a determined
-   student could read the answer key straight out of the
-   `tests/{testId}` document before submitting. That's an
+   Every question is single- or multi-choice, so every attempt is
+   auto-scored the instant it's submitted — there's no more
+   "pending review" state.
+
+   ⚠️ NOTE ON SCORING: this scores answers client-side by
+   comparing against `correctIndex`/`correctIndexes`, which means
+   a determined student could read the answer key straight out of
+   the `tests/{testId}` document before submitting. That's an
    acceptable tradeoff for a lightweight club quiz tool, but if
    these tests ever carry real stakes, move scoring into a
-   Cloud Function that the client calls instead of reading
-   `correctIndex` directly.
+   Cloud Function that the client calls instead of reading the
+   correct answers directly.
    ========================================================= */
 
 const params = new URLSearchParams(window.location.search);
@@ -55,8 +67,9 @@ const testId = params.get('id');
 
 let uid = null;
 let testData = null;
-let answers = {};      // { questionIndex: selectedOptionIndex | textValue }
+let answers = {};      // { questionIndex: selectedOptionIndex (single) | number[] (multi) }
 let timerInterval = null;
+let expiryInterval = null;
 let secondsLeft = 0;
 let submitted = false;
 
@@ -100,7 +113,7 @@ document.getElementById('exitCancel').addEventListener('click', () => exitOverla
 document.getElementById('exitProceed').addEventListener('click', () => { window.location.href = 'lms.html'; });
 
 /* =========================================================
-   RENDER QUESTIONS
+   RENDER QUESTIONS — every question is single or multi choice
    ========================================================= */
 function renderQuestions(){
   const list = document.getElementById('questionList');
@@ -108,22 +121,10 @@ function renderQuestions(){
   document.getElementById('totalCount').textContent = questions.length;
 
   list.innerHTML = questions.map((q, i) => {
-    if (q.type === 'short'){
-      return `
-        <div class="question-card glass" id="q-${i}">
-          <div class="question-head">
-            <span class="question-num">${i + 1}</span>
-            <span class="question-text">${q.question}</span>
-          </div>
-          <div class="short-answer">
-            <textarea data-index="${i}" placeholder="Type your answer..."></textarea>
-          </div>
-        </div>
-      `;
-    }
+    const isMulti = q.type === 'multi';
     const options = (q.options || []).map((opt, oi) => `
       <label class="option-row" data-index="${i}" data-option="${oi}">
-        <input type="radio" name="q-${i}" value="${oi}">
+        <input type="${isMulti ? 'checkbox' : 'radio'}" name="q-${i}" value="${oi}">
         <span>${opt}</span>
       </label>
     `).join('');
@@ -131,34 +132,40 @@ function renderQuestions(){
       <div class="question-card glass" id="q-${i}">
         <div class="question-head">
           <span class="question-num">${i + 1}</span>
-          <span class="question-text">${q.question}</span>
+          <span class="question-text">${q.question}${q.required === false ? ' <em class="optional-hint">(optional)</em>' : ''}</span>
         </div>
         <div class="option-list">${options}</div>
       </div>
     `;
   }).join('');
 
-  // wire MCQ option clicks
   list.querySelectorAll('.option-row').forEach(row => {
-    row.addEventListener('click', () => {
+    row.addEventListener('click', (e) => {
+      e.preventDefault();
       const qIndex = Number(row.dataset.index);
       const optIndex = Number(row.dataset.option);
-      answers[qIndex] = optIndex;
+      const q = questions[qIndex];
+      const input = row.querySelector('input');
 
-      document.querySelectorAll(`.option-row[data-index="${qIndex}"]`).forEach(r => r.classList.remove('selected'));
-      row.classList.add('selected');
-      row.querySelector('input').checked = true;
-      document.getElementById(`q-${qIndex}`).classList.remove('unanswered');
-      updateProgress();
-    });
-  });
+      if (q.type === 'multi'){
+        const current = Array.isArray(answers[qIndex]) ? [...answers[qIndex]] : [];
+        const pos = current.indexOf(optIndex);
+        if (pos === -1) current.push(optIndex); else current.splice(pos, 1);
+        answers[qIndex] = current;
+        input.checked = current.includes(optIndex);
+        row.classList.toggle('selected', input.checked);
+      } else {
+        answers[qIndex] = optIndex;
+        document.querySelectorAll(`.option-row[data-index="${qIndex}"]`).forEach(r => {
+          r.classList.remove('selected');
+          r.querySelector('input').checked = false;
+        });
+        row.classList.add('selected');
+        input.checked = true;
+      }
 
-  // wire short-answer text
-  list.querySelectorAll('textarea').forEach(ta => {
-    ta.addEventListener('input', () => {
-      const qIndex = Number(ta.dataset.index);
-      answers[qIndex] = ta.value;
-      document.getElementById(`q-${qIndex}`).classList.toggle('unanswered', !ta.value.trim());
+      const hasAnswer = q.type === 'multi' ? (answers[qIndex] || []).length > 0 : typeof answers[qIndex] === 'number';
+      document.getElementById(`q-${qIndex}`).classList.toggle('unanswered', !hasAnswer);
       updateProgress();
     });
   });
@@ -170,7 +177,7 @@ function updateProgress(){
   const questions = testData.questions || [];
   const answeredCount = questions.reduce((count, q, i) => {
     const val = answers[i];
-    const isAnswered = q.type === 'short' ? !!(val && String(val).trim()) : typeof val === 'number';
+    const isAnswered = q.type === 'multi' ? Array.isArray(val) && val.length > 0 : typeof val === 'number';
     return count + (isAnswered ? 1 : 0);
   }, 0);
 
@@ -205,6 +212,23 @@ function startTimer(minutes){
 }
 
 /* =========================================================
+   LIVE EXPIRY WATCHDOG
+   Independent of the optional per-attempt timer above — this
+   checks the test's wall-clock closing time (openUntil) every
+   second and force-submits if it passes while a student is
+   still mid-test, closing the page like a real exam system.
+   ========================================================= */
+function startExpiryWatchdog(openUntil){
+  if (!openUntil) return;
+  expiryInterval = setInterval(() => {
+    if (new Date() >= openUntil){
+      clearInterval(expiryInterval);
+      submitTest(true, 'expired');
+    }
+  }, 1000);
+}
+
+/* =========================================================
    SUBMIT
    ========================================================= */
 const confirmOverlay = document.getElementById('confirmOverlay');
@@ -212,7 +236,7 @@ document.getElementById('submitBtn').addEventListener('click', () => {
   const questions = testData.questions || [];
   const unanswered = questions.filter((q, i) => {
     const val = answers[i];
-    return q.type === 'short' ? !(val && String(val).trim()) : typeof val !== 'number';
+    return q.type === 'multi' ? !(Array.isArray(val) && val.length > 0) : typeof val !== 'number';
   }).length;
 
   document.getElementById('confirmSubmitBody').textContent = unanswered > 0
@@ -227,24 +251,37 @@ document.getElementById('confirmProceed').addEventListener('click', () => {
   submitTest(false);
 });
 
-async function submitTest(autoSubmitted){
+async function submitTest(autoSubmitted, reason){
   if (submitted) return;
   submitted = true;
   clearInterval(timerInterval);
+  clearInterval(expiryInterval);
 
   const questions = testData.questions || [];
-  const allMcq = questions.every(q => q.type !== 'short');
-  let score = null;
+  const totalMarks = testData.totalMarks || questions.length || 1;
+  const marksPerQuestion = questions.length ? totalMarks / questions.length : 0;
 
-  if (allMcq && questions.length){
-    const correctCount = questions.reduce((count, q, i) => count + (answers[i] === q.correctIndex ? 1 : 0), 0);
-    score = Math.round((correctCount / questions.length) * 100);
-  }
+  let earned = 0;
+  questions.forEach((q, i) => {
+    if (q.type === 'multi'){
+      const correctSet = q.correctIndexes || [];
+      const selected = Array.isArray(answers[i]) ? answers[i] : [];
+      const correctSelectedCount = selected.filter(x => correctSet.includes(x)).length;
+      if (correctSet.length) earned += (correctSelectedCount / correctSet.length) * marksPerQuestion;
+    } else {
+      if (answers[i] === q.correctIndex) earned += marksPerQuestion;
+    }
+  });
+
+  const percentage = totalMarks ? Math.round((earned / totalMarks) * 100) : 0;
 
   try{
-    await setDoc(doc(db, 'students', uid, 'testAttempts', testId), {
+    await addDoc(collection(db, 'students', uid, 'testAttempts', testId, 'attempts'), {
       answers,
-      score,
+      score: percentage,
+      earned,
+      totalMarks,
+      testId,
       submittedAt: serverTimestamp(),
       totalQuestions: questions.length
     });
@@ -252,21 +289,23 @@ async function submitTest(autoSubmitted){
     console.error('Submit failed:', err);
   }
 
-  showResult(score, autoSubmitted);
+  showResult(percentage, autoSubmitted, reason);
 }
 
-function showResult(score, autoSubmitted){
-  document.getElementById('resultTitle').textContent = autoSubmitted ? "Time's up — test submitted" : 'Test submitted';
+function showResult(score, autoSubmitted, reason){
+  document.getElementById('resultTitle').textContent = autoSubmitted
+    ? (reason === 'expired' ? 'Time window closed — test submitted' : "Time's up — test submitted")
+    : 'Test submitted';
 
   const scoreCircle = document.getElementById('scoreCircle');
-  if (testData.showScoreToStudent && typeof score === 'number'){
+  if (testData.showScoreToStudent){
     scoreCircle.hidden = false;
     scoreCircle.style.setProperty('--pct', score);
     document.getElementById('scoreValue').textContent = `${score}%`;
     document.getElementById('resultMessage').textContent = 'Nice work — here\u2019s how you did.';
   } else {
     scoreCircle.hidden = true;
-    document.getElementById('resultMessage').textContent = 'Your answers have been recorded and are awaiting review.';
+    document.getElementById('resultMessage').textContent = "Your answers have been recorded. Your score isn't shown for this test.";
   }
 
   showState('resultState');
@@ -295,9 +334,9 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   try{
-    const [testSnap, attemptSnap] = await Promise.all([
+    const [testSnap, attemptsSnap] = await Promise.all([
       getDoc(doc(db, 'tests', testId)),
-      getDoc(doc(db, 'students', uid, 'testAttempts', testId))
+      getDocs(collection(db, 'students', uid, 'testAttempts', testId, 'attempts'))
     ]);
 
     if (!testSnap.exists() || testSnap.data().published !== true){
@@ -305,22 +344,24 @@ onAuthStateChanged(auth, async (user) => {
       return;
     }
 
-    if (attemptSnap.exists()){
-      blockWith('Already completed', 'You\u2019ve already submitted this test — check the LMS page for your result.');
+    testData = testSnap.data();
+
+    const attemptsAllowed = testData.attemptsAllowed || 1;
+    const attemptsUsed = attemptsSnap.size;
+    if (attemptsUsed >= attemptsAllowed){
+      blockWith('No attempts left', `You've used all ${attemptsAllowed} attempt${attemptsAllowed === 1 ? '' : 's'} for this ${testData.type === 'exam' ? 'exam' : 'test'} — check the LMS page for your result.`);
       return;
     }
-
-    testData = testSnap.data();
 
     const now = new Date();
     const openFrom = toDate(testData.openFrom);
     const openUntil = toDate(testData.openUntil);
     if (openFrom && openFrom > now){
-      blockWith('Not open yet', `This test opens on ${openFrom.toLocaleDateString()}.`);
+      blockWith('Not open yet', `This ${testData.type === 'exam' ? 'exam' : 'test'} opens at ${openFrom.toLocaleString()}.`);
       return;
     }
-    if (openUntil && openUntil < now){
-      blockWith('This test has closed', `The window to take this test closed on ${openUntil.toLocaleDateString()}.`);
+    if (openUntil && openUntil <= now){
+      blockWith('This has closed', `The window to take this ${testData.type === 'exam' ? 'exam' : 'test'} closed at ${openUntil.toLocaleString()}.`);
       return;
     }
 
@@ -329,6 +370,7 @@ onAuthStateChanged(auth, async (user) => {
     renderQuestions();
     showState('testBody');
 
+    startExpiryWatchdog(openUntil);
     if (testData.timeLimitMinutes){
       startTimer(testData.timeLimitMinutes);
     }

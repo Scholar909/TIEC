@@ -125,8 +125,10 @@ function formatDate(d){
   if (!d) return '';
   return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 }
+let studentLevel = 'All';
 function paintIdentity(data){
   const name = data.fullName || 'Explorer';
+  studentLevel = data.membershipLevel || 'All';
   const initials = getInitials(name);
   document.getElementById('topAvatar').textContent = initials;
   document.getElementById('ddAvatar').textContent = initials;
@@ -187,10 +189,14 @@ async function loadResources(){
   try{
     const q = query(collection(db, 'resources'), orderBy('uploadDate', 'desc'));
     const snap = await getDocs(q);
-    allResources = snap.docs.map(d => {
-      const r = d.data();
-      return { ...r, _date: toDate(r.uploadDate) };
-    });
+    allResources = snap.docs
+      .map(d => {
+        const r = d.data();
+        return { ...r, _date: toDate(r.uploadDate) };
+      })
+      // A resource with no level set is treated as club-wide ('All'),
+      // same as resources explicitly marked 'All'.
+      .filter(r => !r.level || r.level === 'All' || r.level === studentLevel);
     renderResources();
   } catch (err){
     console.error('Resources load failed:', err);

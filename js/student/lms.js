@@ -30,15 +30,14 @@ const db = getFirestore(app);
    Assumed Firestore schema this page reads:
 
    tests/{testId}        — club-wide, admin-managed
-     title, description, published (bool),
-     questions (array — used only to count questions here),
-     timeLimitMinutes (number, optional),
-     openFrom / openUntil (Timestamp, optional),
-     showScoreToStudent (bool)
+     title, description, published (bool), type ('test'|'exam'),
+     questions (array — every question is single/multi choice,
+       so every attempt is auto-scored, no "pending review" state),
+     totalMarks (number), attemptsAllowed (number, default 1),
+     openFrom / openUntil (Timestamp), showScoreToStudent (bool)
 
-   students/{uid}/testAttempts/{testId}
-     score (number | null — null means awaiting review,
-            e.g. the test included short-answer questions),
+   students/{uid}/testAttempts/{testId}/attempts/{autoId}
+     score (0-100 percentage), earned, totalMarks, testId,
      submittedAt (Timestamp), totalQuestions (number)
    ========================================================= */
 
@@ -150,7 +149,7 @@ document.getElementById('lmsTabs').querySelectorAll('.lms-tab').forEach(btn => {
 });
 
 /* =========================================================
-   LOAD TESTS + ATTEMPTS
+   LOAD TESTS + ATTEMPTS (supports multiple attempts per test)
    ========================================================= */
 async function loadLms(studentUid){
   const availableList = document.getElementById('availableList');
@@ -158,30 +157,33 @@ async function loadLms(studentUid){
 
   try{
     const now = new Date();
+    const testsSnap = await getDocs(query(collection(db, 'tests'), where('published', '==', true)));
+    const tests = testsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-    const [testsSnap, attemptsSnap] = await Promise.all([
-      getDocs(query(collection(db, 'tests'), where('published', '==', true))),
-      getDocs(collection(db, 'students', studentUid, 'testAttempts'))
-    ]);
-
-    const attemptsById = new Map(attemptsSnap.docs.map(d => [d.id, d.data()]));
+    // one attempts-history fetch per test — fine at this club's scale
+    const attemptSnaps = await Promise.all(
+      tests.map(t => getDocs(query(collection(db, 'students', studentUid, 'testAttempts', t.id, 'attempts'), orderBy('submittedAt', 'desc'))))
+    );
 
     const available = [];
     const completed = [];
 
-    testsSnap.docs.forEach(d => {
-      const test = { id: d.id, ...d.data() };
-      const attempt = attemptsById.get(d.id);
-
-      if (attempt){
-        completed.push({ test, attempt });
-        return;
-      }
+    tests.forEach((test, i) => {
+      const attempts = attemptSnaps[i].docs.map(d => d.data());
+      const attemptsUsed = attempts.length;
+      const attemptsAllowed = test.attemptsAllowed || 1;
+      const attemptsRemaining = Math.max(0, attemptsAllowed - attemptsUsed);
 
       const openFrom = toDate(test.openFrom);
       const openUntil = toDate(test.openUntil);
       const isOpen = (!openFrom || openFrom <= now) && (!openUntil || openUntil >= now);
-      if (isOpen) available.push(test);
+
+      if (isOpen && attemptsRemaining > 0){
+        available.push({ test, attemptsRemaining, attemptsAllowed });
+      }
+      if (attemptsUsed > 0){
+        completed.push({ test, latest: attempts[0], attemptsUsed, attemptsAllowed, canRetake: isOpen && attemptsRemaining > 0 });
+      }
     });
 
     renderAvailable(available);
@@ -196,28 +198,28 @@ async function loadLms(studentUid){
   }
 }
 
-function renderAvailable(tests){
+function renderAvailable(items){
   const list = document.getElementById('availableList');
   const empty = document.getElementById('availableEmpty');
-  if (!tests.length){
+  if (!items.length){
     list.innerHTML = '';
     empty.hidden = false;
     return;
   }
   empty.hidden = true;
-  list.innerHTML = tests.map(t => {
+  list.innerHTML = items.map(({ test: t, attemptsRemaining, attemptsAllowed }) => {
     const questionCount = Array.isArray(t.questions) ? t.questions.length : 0;
     const until = toDate(t.openUntil);
     return `
       <div class="test-card">
-        <div class="test-icon"><i class="bx bx-edit-alt"></i></div>
+        <div class="test-icon"><i class="bx ${t.type === 'exam' ? 'bx-file-blank' : 'bx-edit-alt'}"></i></div>
         <div class="test-body-info">
           <div class="test-title">${t.title || 'Untitled test'}</div>
           <div class="test-desc-line">${t.description || ''}</div>
           <div class="test-meta-row">
             <span><i class="bx bx-list-ul"></i> ${questionCount} question${questionCount === 1 ? '' : 's'}</span>
-            ${t.timeLimitMinutes ? `<span><i class="bx bx-time-five"></i> ${t.timeLimitMinutes} min</span>` : ''}
             ${until ? `<span><i class="bx bx-calendar-x"></i> Open until ${formatDate(until)}</span>` : ''}
+            <span><i class="bx bx-repeat"></i> ${attemptsRemaining}/${attemptsAllowed} attempt${attemptsAllowed === 1 ? '' : 's'} left</span>
           </div>
         </div>
         <a class="btn btn-lime btn-sm test-action" href="test.html?id=${t.id}">Start Test</a>
@@ -235,19 +237,21 @@ function renderCompleted(items){
     return;
   }
   empty.hidden = true;
-  list.innerHTML = items.map(({ test, attempt }) => {
-    const hasScore = test.showScoreToStudent && typeof attempt.score === 'number';
+  list.innerHTML = items.map(({ test, latest, attemptsUsed, attemptsAllowed, canRetake }) => {
+    const hasScore = test.showScoreToStudent && typeof latest.score === 'number';
     return `
       <div class="test-card">
         <div class="test-icon done"><i class="bx bx-check"></i></div>
         <div class="test-body-info">
           <div class="test-title">${test.title || 'Untitled test'}</div>
           <div class="test-meta-row">
-            <span><i class="bx bx-calendar-check"></i> Submitted ${formatDate(toDate(attempt.submittedAt))}</span>
+            <span><i class="bx bx-calendar-check"></i> Last submitted ${formatDate(toDate(latest.submittedAt))}</span>
+            <span><i class="bx bx-repeat"></i> ${attemptsUsed}/${attemptsAllowed} attempt${attemptsAllowed === 1 ? '' : 's'} used</span>
           </div>
+          ${canRetake ? `<a class="card-link" href="test.html?id=${test.id}">Retake <i class="bx bx-right-arrow-alt"></i></a>` : ''}
         </div>
         <span class="test-score-badge ${hasScore ? '' : 'pending'}">
-          ${hasScore ? Math.round(attempt.score) + '%' : 'Pending review'}
+          ${hasScore ? Math.round(latest.score) + '%' : 'Score hidden'}
         </span>
       </div>
     `;
@@ -258,9 +262,9 @@ function paintStats(availableCount, completedItems){
   document.getElementById('statAvailable').textContent = availableCount;
   document.getElementById('statCompleted').textContent = completedItems.length;
 
-  const scored = completedItems.filter(({ test, attempt }) => test.showScoreToStudent && typeof attempt.score === 'number');
+  const scored = completedItems.filter(({ test, latest }) => test.showScoreToStudent && typeof latest.score === 'number');
   if (scored.length){
-    const avg = scored.reduce((sum, { attempt }) => sum + attempt.score, 0) / scored.length;
+    const avg = scored.reduce((sum, { latest }) => sum + latest.score, 0) / scored.length;
     document.getElementById('statAverage').textContent = `${Math.round(avg)}%`;
   } else {
     document.getElementById('statAverage').textContent = '–%';
