@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){try{if(localStorage.getItem('iec-theme')==='light'){document.documentElement.classList.add('light-mode');}}catch(e){}})();</script>
+<title>Edit Test/Exam — Admin Portal — Innovative Explorer Club</title>
+<link rel="icon" type="image/png" href="../../assets/images/icon.png">
+<link rel="apple-touch-icon" href="../../assets/images/icon.png">
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/filled/boxicons-filled.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/brands/boxicons-brands.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="../../css/admin/lms-questions.css">
+</head>
+<body>
+
+<!-- Focus-mode topbar — no sidebar, this is a dedicated builder page -->
+<header class="qb-topbar" id="qbTopbar">
+  <a href="lms.html" class="icon-btn" aria-label="Back to LMS"><i class="bx bx-arrow-back"></i></a>
+  <div class="qb-topbar-title">
+    <span id="qbTitle">Loading…</span>
+    <div class="qb-topbar-badges">
+      <span class="badge-pill" id="qbType">Test</span>
+      <span class="badge-pill badge-pill-blue" id="qbLevel">—</span>
+    </div>
+  </div>
+  <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="bx bx-moon"></i></button>
+</header>
+
+<main class="qb-main">
+
+  <!-- LOADING / BLOCKED -->
+  <div class="qb-state" id="loadingState">
+    <div class="spinner-lg"></div>
+    <p>Loading test…</p>
+  </div>
+  <div class="qb-state" id="blockedState" hidden>
+    <i class="bx bx-error-circle blocked-icon"></i>
+    <h2>Couldn't find this test</h2>
+    <p>It may have been deleted. Head back to the LMS list.</p>
+    <a href="lms.html" class="btn btn-lime">Back to LMS</a>
+  </div>
+
+  <!-- BUILDER -->
+  <div class="qb-body" id="qbBody" hidden>
+
+    <div class="card glass total-marks-card">
+      <div>
+        <span class="section-label">Total Marks</span>
+        <p class="section-note">Split equally across every question below.</p>
+      </div>
+      <input type="number" id="totalMarksInput" min="1" value="10">
+    </div>
+
+    <div class="qb-summary" id="qbSummary">0 questions · 0 marks each</div>
+
+    <div class="question-list" id="questionList"></div>
+
+    <button class="btn btn-outline add-question-btn" id="addQuestionBtn"><i class="bx bx-plus"></i> Add Question</button>
+
+    <div class="qb-save-bar glass">
+      <span id="saveHint">Unsaved changes will be lost if you leave.</span>
+      <button class="btn btn-lime form-submit" id="saveAllBtn">
+        <span class="spinner"></span>
+        <span class="btn-label"><i class="bx bx-save"></i> Save All</span>
+      </button>
+    </div>
+  </div>
+
+</main>
+
+<!-- question card template (cloned via JS) -->
+<template id="questionTemplate">
+  <div class="card glass question-card">
+    <div class="question-card-head">
+      <span class="question-drag"><i class="bx bx-menu"></i> <span class="question-num"></span></span>
+      <span class="worth-badge"><span class="worth-value">0</span> marks</span>
+      <button type="button" class="icon-btn delete-question-btn" aria-label="Delete question"><i class="bx bx-trash"></i></button>
+    </div>
+
+    <div class="form-group">
+      <label>Question</label>
+      <input type="text" class="q-text" placeholder="Type your question…">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Answer Type</label>
+        <select class="q-type">
+          <option value="single">Single Choice</option>
+          <option value="multi">Multiple Choice (select all that apply)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="toggle-row">
+          <span>Required</span>
+          <span class="switch"><input type="checkbox" class="q-required" checked><span class="switch-track"></span></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="options-list"></div>
+    <button type="button" class="btn btn-ghost add-option-btn"><i class="bx bx-plus"></i> Add Option</button>
+  </div>
+</template>
+
+<!-- option row template -->
+<template id="optionTemplate">
+  <div class="option-row">
+    <span class="option-correct-wrap"></span>
+    <input type="text" class="option-text" placeholder="Option text">
+    <button type="button" class="icon-btn delete-option-btn" aria-label="Remove option"><i class="bx bx-x"></i></button>
+  </div>
+</template>
+
+<div class="toast" id="toast"></div>
+
+<script type="module" src="../../js/admin/lms-questions.js"></script>
+</body>
+</html>

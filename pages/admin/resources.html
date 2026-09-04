@@ -124,6 +124,16 @@
       <form id="resourceForm" novalidate>
 
         <div class="form-group">
+          <label>Membership Level</label>
+          <select id="fLevel">
+            <option value="All">All</option>
+            <option value="Young Explorers">Young Explorers</option>
+            <option value="Junior Innovators">Junior Innovators</option>
+            <option value="Teen Innovators">Teen Innovators</option>
+          </select>
+        </div>
+
+        <div class="form-group">
           <label>Resource Type</label>
           <select id="fCategory">
             <option value="pdf">PDF Notes</option>
@@ -166,7 +176,6 @@
               <button type="button" id="fileClear" aria-label="Remove file"><i class="bx bx-x"></i></button>
             </div>
           </div>
-          <p class="field-hint" id="cloudinaryHint">Cloudinary isn't connected yet — uploads will fail until that's set up. Use "Paste a link" for now if you need this live today.</p>
         </div>
 
         <div class="form-group hidden" id="linkSourceGroup">

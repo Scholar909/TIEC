@@ -1,545 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Coming Soon | The Innovative Explorer Club</title>
-
-  <!-- Poppins -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
-    rel="stylesheet"
-  >
-
-  <!-- Boxicons -->
-  <link
-    href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
-    rel="stylesheet"
-  >
-
-  <style>
-    /* =========================================================
-       DESIGN TOKENS — TIEC / STUDENT PORTAL STYLE
-       ========================================================= */
-
-    :root {
-      --bg-primary: #071420;
-      --bg-secondary: #101B2D;
-      --card-bg: rgba(255, 255, 255, .08);
-      --card-border: rgba(255, 255, 255, .10);
-
-      --blue: #157BFF;
-      --blue-2: #4AA6FF;
-      --lime: #9AE600;
-
-      --white: #FFFFFF;
-      --gray: #C7CFD9;
-      --danger: #FF4B55;
-      --success: #2BD67B;
-
-      --accent-text: var(--blue-2);
-      --accent-lime-text: var(--lime);
-
-      --radius: 16px;
-      --ease: cubic-bezier(.22, .61, .36, 1);
-
-      --font-body: 'Poppins', sans-serif;
-    }
-
-    html.light-mode {
-      --bg-primary: #EEF3F8;
-      --bg-secondary: #FFFFFF;
-      --card-bg: rgba(7, 20, 32, .045);
-      --card-border: rgba(7, 20, 32, .09);
-
-      --white: #0B1B29;
-      --gray: #4B5C6B;
-
-      --accent-text: #0F62D6;
-      --accent-lime-text: #5B8A00;
-    }
-
-    /* =========================================================
-       RESET
-       ========================================================= */
-
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-
-      background: var(--bg-primary);
-      color: var(--white);
-
-      font-family: var(--font-body);
-      font-weight: 400;
-      line-height: 1.6;
-
-      overflow-x: hidden;
-
-      transition:
-        background .4s var(--ease),
-        color .4s var(--ease);
-    }
-
-    h1,
-    h2,
-    h3,
-    p {
-      margin: 0;
-    }
-
-    button {
-      font-family: inherit;
-      cursor: pointer;
-    }
-
-    /* =========================================================
-       PAGE
-       ========================================================= */
-
-    .coming-soon-page {
-      min-height: 100vh;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      padding: 30px 20px;
-
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* =========================================================
-       SUBTLE BACKGROUND GLOW
-       ========================================================= */
-
-    .background-glow {
-      position: absolute;
-      width: 420px;
-      height: 420px;
-
-      border-radius: 50%;
-
-      background: rgba(21, 123, 255, .08);
-
-      filter: blur(90px);
-
-      top: 50%;
-      left: 50%;
-
-      transform: translate(-50%, -50%);
-
-      pointer-events: none;
-    }
-
-    .background-glow::after {
-      content: "";
-
-      position: absolute;
-
-      width: 260px;
-      height: 260px;
-
-      border-radius: 50%;
-
-      background: rgba(154, 230, 0, .06);
-
-      filter: blur(80px);
-
-      top: 30%;
-      left: 55%;
-    }
-
-    /* =========================================================
-       MAIN CARD
-       ========================================================= */
-
-    .coming-card {
-      width: 100%;
-      max-width: 650px;
-
-      padding: 56px 48px;
-
-      position: relative;
-      z-index: 1;
-
-      text-align: center;
-
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius);
-
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-
-      box-shadow:
-        0 24px 70px rgba(0, 0, 0, .18);
-
-      animation: cardIn .7s var(--ease) both;
-    }
-
-    /* =========================================================
-       ICON
-       ========================================================= */
-
-    .coming-icon {
-      width: 78px;
-      height: 78px;
-
-      margin: 0 auto 26px;
-
-      border-radius: 50%;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      background: rgba(21, 123, 255, .12);
-
-      border: 1px solid rgba(74, 166, 255, .18);
-
-      color: var(--accent-text);
-
-      font-size: 2.2rem;
-
-      animation: iconFloat 3s ease-in-out infinite;
-    }
-
-    /* =========================================================
-       EYEBROW
-       ========================================================= */
-
-    .eyebrow {
-      display: inline-block;
-
-      margin-bottom: 12px;
-
-      font-size: .72rem;
-      font-weight: 600;
-
-      letter-spacing: .12em;
-      text-transform: uppercase;
-
-      color: var(--accent-text);
-    }
-
-    /* =========================================================
-       TITLE
-       ========================================================= */
-
-    .coming-card h1 {
-      font-size: clamp(2rem, 7vw, 3.2rem);
-
-      font-weight: 700;
-
-      line-height: 1.1;
-
-      letter-spacing: -.02em;
-
-      margin-bottom: 18px;
-    }
-
-    .coming-card h1 span {
-      color: var(--lime);
-    }
-
-    /* =========================================================
-       DESCRIPTION
-       ========================================================= */
-
-    .coming-description {
-      max-width: 480px;
-
-      margin: 0 auto;
-
-      color: var(--gray);
-
-      font-size: .92rem;
-      line-height: 1.8;
-    }
-
-    /* =========================================================
-       STATUS
-       ========================================================= */
-
-    .status-pill {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-
-      margin-top: 30px;
-
-      padding: 7px 15px;
-
-      border-radius: 999px;
-
-      background: rgba(154, 230, 0, .12);
-
-      color: var(--accent-lime-text);
-
-      border: 1px solid rgba(154, 230, 0, .14);
-
-      font-size: .72rem;
-      font-weight: 700;
-    }
-
-    .status-dot {
-      width: 7px;
-      height: 7px;
-
-      border-radius: 50%;
-
-      background: var(--lime);
-
-      box-shadow: 0 0 10px rgba(154, 230, 0, .5);
-
-      animation: pulse 1.8s ease-in-out infinite;
-    }
-
-    /* =========================================================
-       DIVIDER
-       ========================================================= */
-
-    .divider {
-      width: 100%;
-      height: 1px;
-
-      margin: 34px 0 24px;
-
-      background: var(--card-border);
-    }
-
-    /* =========================================================
-       THEME BUTTON
-       ========================================================= */
-
-    .theme-btn {
-      width: 42px;
-      height: 42px;
-
-      margin: 0 auto;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-
-      background: rgba(120, 140, 160, .06);
-
-      color: var(--gray);
-
-      font-size: 1.15rem;
-
-      transition:
-        background .3s var(--ease),
-        color .3s var(--ease),
-        transform .3s var(--ease),
-        border-color .3s var(--ease);
-    }
-
-    .theme-btn:hover {
-      background: rgba(120, 140, 160, .12);
-      color: var(--white);
-
-      transform: translateY(-1px);
-    }
-
-    /* =========================================================
-       ANIMATIONS
-       ========================================================= */
-
-    @keyframes cardIn {
-      from {
-        opacity: 0;
-        transform: translateY(18px) scale(.98);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-
-    @keyframes iconFloat {
-      0%,
-      100% {
-        transform: translateY(0);
-      }
-
-      50% {
-        transform: translateY(-5px);
-      }
-    }
-
-    @keyframes pulse {
-      0%,
-      100% {
-        opacity: 1;
-        transform: scale(1);
-      }
-
-      50% {
-        opacity: .45;
-        transform: scale(.75);
-      }
-    }
-
-    /* =========================================================
-       REDUCED MOTION
-       ========================================================= */
-
-    @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        animation-duration: .001ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: .001ms !important;
-        scroll-behavior: auto !important;
-      }
-    }
-
-    /* =========================================================
-       MOBILE
-       ========================================================= */
-
-    @media (max-width: 560px) {
-      .coming-soon-page {
-        padding: 20px 16px;
-      }
-
-      .coming-card {
-        padding: 42px 24px;
-      }
-
-      .coming-icon {
-        width: 68px;
-        height: 68px;
-        font-size: 1.9rem;
-      }
-
-      .coming-card h1 {
-        font-size: 2rem;
-      }
-
-      .coming-description {
-        font-size: .86rem;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){try{if(localStorage.getItem('iec-theme')==='light'){document.documentElement.classList.add('light-mode');}}catch(e){}})();</script>
+<title>LMS — Admin Portal — Innovative Explorer Club</title>
+<link rel="icon" type="image/png" href="../../assets/images/icon.png">
+<link rel="apple-touch-icon" href="../../assets/images/icon.png">
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/filled/boxicons-filled.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/brands/boxicons-brands.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="../../css/admin/lms.css">
 </head>
-
 <body>
 
-  <main class="coming-soon-page">
+<div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
-    <div class="background-glow"></div>
+<aside class="sidebar" id="sidebar">
+  <a href="dashboard.html" class="side-logo">
+    <img src="../../assets/images/logo-icon-footer.png" alt="Innovative Explorer Club logo">
+    <span>TIEC Admin</span>
+  </a>
+  <nav class="side-nav">
+    <a href="dashboard.html" class="side-link" data-page="dashboard"><i class="bx bxs-dashboard"></i><span>Dashboard</span></a>
+    <a href="membership-applications.html" class="side-link" data-page="applications"><i class="bx bx-clipboard"></i><span>Membership Applications</span><span class="nav-badge" id="navBadgeApplications" hidden></span></a>
+    <a href="students.html" class="side-link" data-page="students"><i class="bx bx-group"></i><span>Students</span></a>
+    <a href="attendance.html" class="side-link" data-page="attendance"><i class="bx bx-calendar-check"></i><span>Attendance</span></a>
+    <a href="achievements.html" class="side-link" data-page="achievements"><i class="bx bx-trophy"></i><span>Achievements</span></a>
+    <a href="resources.html" class="side-link" data-page="resources"><i class="bx bx-folder-open"></i><span>Resources</span></a>
+    <a href="lms.html" class="side-link active" data-page="lms"><i class="bx bx-edit-alt"></i><span>LMS</span></a>
+    <a href="calendar-events.html" class="side-link" data-page="calendar-events"><i class="bx bx-calendar-event"></i><span>Calendar &amp; Events</span></a>
+    <a href="announcements.html" class="side-link" data-page="announcements"><i class="bx bx-megaphone"></i><span>Announcements</span></a>
+    <a href="messages.html" class="side-link" data-page="messages"><i class="bx bx-envelope"></i><span>Messages</span></a>
+    <a href="notifications.html" class="side-link" data-page="notifications"><i class="bx bx-bell"></i><span>Notifications</span><span class="nav-badge" id="navBadgeNotifications" hidden></span></a>
+    <a href="settings.html" class="side-link" data-page="settings"><i class="bx bx-cog"></i><span>Settings</span></a>
+  </nav>
+  <button class="side-logout" id="logoutBtnSide"><i class="bx bx-log-out"></i><span>Sign Out</span></button>
+</aside>
 
-    <section class="coming-card">
-
-      <div class="coming-icon">
-        <i class="bx bx-rocket"></i>
-      </div>
-
-      <span class="eyebrow">The Innovative Explorer Club</span>
-
-      <h1>
-        Coming <span>Soon</span>
-      </h1>
-
-      <p class="coming-description">
-        We're working behind the scenes to bring this page to life.
-        Check back soon for something new and exciting.
-      </p>
-
-      <div class="status-pill">
-        <span class="status-dot"></span>
-        Currently in development
-      </div>
-
-      <div class="divider"></div>
-
-      <button
-        class="theme-btn"
-        id="themeToggle"
-        aria-label="Toggle theme"
-        title="Toggle theme"
-      >
-        <i class="bx bx-moon"></i>
+<header class="topbar" id="topbar">
+  <div class="topbar-left">
+    <button class="icon-btn" id="hamburger" aria-label="Toggle menu"><i class="bx bx-menu"></i></button>
+    <span class="topbar-title">LMS</span>
+  </div>
+  <div class="topbar-right">
+    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="bx bx-moon"></i></button>
+    <div class="dropdown-wrap">
+      <button class="icon-btn" id="bellBtn" aria-label="Notifications">
+        <i class="bx bx-bell"></i><span class="badge-dot" id="bellBadge" hidden></span>
       </button>
+      <div class="dropdown-panel" id="bellDropdown">
+        <div class="dropdown-head"><span>Notifications</span><a href="notifications.html">View all</a></div>
+        <div class="dropdown-list" id="bellList"><p class="dropdown-empty">No notifications yet.</p></div>
+      </div>
+    </div>
+    <div class="dropdown-wrap">
+      <button class="avatar-btn" id="avatarBtn" aria-label="Account menu">
+        <span class="avatar-circle" id="topAvatar">--</span>
+      </button>
+      <div class="dropdown-panel dropdown-panel-right" id="avatarDropdown">
+        <div class="dropdown-profile">
+          <span class="avatar-circle" id="ddAvatar">--</span>
+          <div><div class="dd-name" id="ddName">Loading…</div><div class="dd-level" id="ddRole">—</div></div>
+        </div>
+        <a href="settings.html" class="dropdown-item"><i class="bx bx-cog"></i> Settings</a>
+        <button class="dropdown-item dropdown-item-danger" id="logoutBtnTop"><i class="bx bx-log-out"></i> Sign Out</button>
+      </div>
+    </div>
+  </div>
+</header>
 
-    </section>
+<main class="dash-main">
 
-  </main>
+  <div class="page-tabs" id="pageTabs">
+    <button class="page-tab active" data-target="panel-files"><i class="bx bx-folder"></i> Files</button>
+    <button class="page-tab" data-target="panel-settings"><i class="bx bx-slider-alt"></i> Settings</button>
+  </div>
 
+  <!-- ================= FILES ================= -->
+  <section class="settings-panel active" id="panel-files">
 
-  <script>
-    /* =========================================================
-       THEME
-       ========================================================= */
+    <div class="card glass toolbar-card">
+      <div class="tabs" id="levelTabs">
+        <button class="tab-btn active" data-level="all">All</button>
+        <button class="tab-btn" data-level="Young Explorers">Young Explorers</button>
+        <button class="tab-btn" data-level="Junior Innovators">Junior Innovators</button>
+        <button class="tab-btn" data-level="Teen Innovators">Teen Innovators</button>
+      </div>
+    </div>
 
-    const themeToggle = document.getElementById('themeToggle');
+    <div class="lms-list" id="lmsList">
+      <div class="list-skeleton"></div>
+      <div class="list-skeleton"></div>
+    </div>
+    <p class="list-empty" id="lmsEmpty" hidden>No tests or exams yet — tap + to create one.</p>
+  </section>
 
-    function paintThemeIcon() {
-      const light =
-        document.documentElement.classList.contains('light-mode');
+  <!-- ================= SETTINGS ================= -->
+  <section class="settings-panel" id="panel-settings">
+    <div class="card glass" id="noSelectionCard">
+      <div class="empty-icon"><i class="bx bx-checkbox"></i></div>
+      <h3>Nothing selected</h3>
+      <p>Check the box on a file in the Files tab to view and edit its settings here.</p>
+    </div>
 
-      themeToggle.innerHTML = light
-        ? '<i class="bx bx-sun"></i>'
-        : '<i class="bx bx-moon"></i>';
-    }
+    <div class="card glass" id="fileSettingsCard" hidden>
+      <div class="card-head">
+        <h3 id="settingsFileTitle"><i class="bx bx-edit-alt"></i> —</h3>
+        <span class="badge-pill" id="settingsFileType">Test</span>
+      </div>
 
-    /* Load saved theme */
-    try {
-      const savedTheme = localStorage.getItem('iec-theme');
+      <form id="settingsForm">
+        <div class="form-group">
+          <label>Attempts Allowed</label>
+          <div class="stepper">
+            <button type="button" class="stepper-btn" id="settingsAttemptsMinus"><i class="bx bx-minus"></i></button>
+            <input type="number" id="settingsAttempts" min="1" value="1" readonly>
+            <button type="button" class="stepper-btn" id="settingsAttemptsPlus"><i class="bx bx-plus"></i></button>
+          </div>
+        </div>
 
-      if (savedTheme === 'light') {
-        document.documentElement.classList.add('light-mode');
-      }
-    } catch (error) {
-      console.warn('Theme preference could not be loaded.');
-    }
+        <div class="form-group">
+          <label class="toggle-row">
+            <span>Show score after submission</span>
+            <span class="switch"><input type="checkbox" id="settingsShowScore" checked><span class="switch-track"></span></span>
+          </label>
+        </div>
 
-    paintThemeIcon();
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="settingsDate">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Start Time</label>
+            <input type="time" id="settingsStartTime">
+          </div>
+          <div class="form-group">
+            <label>End Time</label>
+            <input type="time" id="settingsEndTime">
+          </div>
+        </div>
 
+        <button type="submit" class="btn btn-lime form-submit" id="settingsSaveBtn">
+          <span class="spinner"></span>
+          <span class="btn-label"><i class="bx bx-save"></i> Save Settings</span>
+        </button>
+      </form>
+    </div>
+  </section>
 
-    /* Toggle theme */
-    themeToggle.addEventListener('click', () => {
+  <div class="dash-bottom-spacer"></div>
+</main>
 
-      document.documentElement.classList.toggle('light-mode');
+<button class="fab" id="fabAdd" aria-label="Add test or exam"><i class="bx bx-plus"></i></button>
 
-      const light =
-        document.documentElement.classList.contains('light-mode');
+<nav class="bottom-nav" id="bottomNav">
+  <a href="dashboard.html" class="bottom-link" data-page="dashboard"><i class="bx bxs-dashboard"></i><span>Home</span></a>
+  <a href="membership-applications.html" class="bottom-link" data-page="applications"><i class="bx bx-clipboard"></i><span>Apps</span></a>
+  <a href="students.html" class="bottom-link" data-page="students"><i class="bx bx-group"></i><span>Students</span></a>
+  <a href="attendance.html" class="bottom-link" data-page="attendance"><i class="bx bx-calendar-check"></i><span>Attend.</span></a>
+  <a href="settings.html" class="bottom-link" data-page="settings"><i class="bx bx-cog"></i><span>Settings</span></a>
+</nav>
 
-      try {
-        localStorage.setItem(
-          'iec-theme',
-          light ? 'light' : 'dark'
-        );
-      } catch (error) {
-        console.warn('Theme preference could not be saved.');
-      }
+<!-- ============ ADD / EDIT FORM MODAL ============ -->
+<div class="modal-overlay" id="formModal">
+  <div class="modal-sheet glass">
+    <div class="modal-sheet-head">
+      <h3 id="formTitle">New Test / Exam</h3>
+      <button class="icon-btn" id="formClose" aria-label="Close"><i class="bx bx-x"></i></button>
+    </div>
+    <div class="modal-sheet-body">
+      <form id="lmsForm" novalidate>
 
-      paintThemeIcon();
-    });
-  </script>
+        <div class="form-group">
+          <label>LMS Type</label>
+          <select id="fType">
+            <option value="test">Test</option>
+            <option value="exam">Exam</option>
+          </select>
+        </div>
 
+        <div class="form-group">
+          <label>Level</label>
+          <select id="fLevel">
+            <option value="All">All</option>
+            <option value="Young Explorers">Young Explorers</option>
+            <option value="Junior Innovators">Junior Innovators</option>
+            <option value="Teen Innovators">Teen Innovators</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" id="fTitleInput" placeholder="e.g. Robotics Term 1 Test">
+          <span class="field-err hidden" id="fTitleErr">A title is required.</span>
+        </div>
+
+        <div class="form-group">
+          <label>Description <span class="optional-tag">(optional)</span></label>
+          <textarea id="fDescription" rows="3" placeholder="What this test/exam covers…"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="fDate">
+          <span class="field-err hidden" id="fDateErr">Pick a date.</span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Start Time</label>
+            <input type="time" id="fStartTime">
+          </div>
+          <div class="form-group">
+            <label>End Time</label>
+            <input type="time" id="fEndTime">
+            <span class="field-err hidden" id="fEndTimeErr">End must be after start.</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Attempts Allowed</label>
+          <div class="stepper">
+            <button type="button" class="stepper-btn" id="fAttemptsMinus"><i class="bx bx-minus"></i></button>
+            <input type="number" id="fAttempts" min="1" value="1" readonly>
+            <button type="button" class="stepper-btn" id="fAttemptsPlus"><i class="bx bx-plus"></i></button>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline-danger hidden" id="formDeleteBtn"><i class="bx bx-trash"></i> Delete</button>
+          <button type="submit" class="btn btn-lime" id="formSaveBtn"><span class="spinner"></span><span id="formSaveLabel">Add</span></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-card glass">
+    <div class="modal-icon"><i class="bx bx-trash"></i></div>
+    <h3>Delete this file?</h3>
+    <p>This removes the test/exam, all of its questions, and every student's attempts at it. This can't be undone.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="deleteCancel">Cancel</button>
+      <button class="btn btn-danger" id="deleteConfirm">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module" src="../../js/admin/lms.js"></script>
 </body>
 </html>
