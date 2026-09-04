@@ -56,6 +56,8 @@ async function uploadToCloudinary(file){
 
    resources/{autoId}
      title, description, category ('pdf'|'assignment'|'video'|'other'),
+     level ('All'|'Young Explorers'|'Junior Innovators'|'Teen Innovators'
+     — students only see resources matching their own level, or 'All'),
      fileURL, uploadDate (Timestamp), uploadedBy (operator username)
    ========================================================= */
 
@@ -149,6 +151,13 @@ const typeMeta = {
   other:      { icon: 'bx bx-folder',      label: 'Other' }
 };
 
+function levelBadgeClass(level){
+  if (level === 'Young Explorers') return 'level-young';
+  if (level === 'Junior Innovators') return 'level-junior';
+  if (level === 'Teen Innovators') return 'level-teen';
+  return 'level-all';
+}
+
 let allResources = [];
 let currentFilter = 'all';
 let currentSearch = '';
@@ -170,12 +179,14 @@ function render(){
 
   gridEl.innerHTML = filtered.map(r => {
     const meta = typeMeta[r.category] || typeMeta.other;
+    const level = r.level || 'All';
     return `
       <div class="resource-card" data-id="${r.id}">
         <div class="resource-icon type-${r.category || 'other'}"><i class="${meta.icon}"></i></div>
         <div class="resource-body">
           <div class="resource-title">${escapeHtml(r.title || 'Untitled resource')}</div>
           ${r.description ? `<div class="resource-desc">${escapeHtml(r.description)}</div>` : ''}
+          <span class="level-badge ${levelBadgeClass(level)}">${escapeHtml(level)}</span>
           <div class="resource-meta">
             <div>
               <span class="resource-date"><i class="bx bx-calendar"></i> ${formatDate(r._date)}</span>
@@ -278,6 +289,7 @@ function openEditForm(id){
   document.getElementById('fTitleErr').classList.add('hidden');
   document.getElementById('fLinkErr').classList.add('hidden');
 
+  document.getElementById('fLevel').value = r.level || 'All';
   document.getElementById('fCategory').value = r.category || 'other';
   document.getElementById('fTitle').value = r.title || '';
   document.getElementById('fDescription').value = r.description || '';
@@ -300,6 +312,7 @@ resourceForm.addEventListener('submit', async (e) => {
   document.getElementById('fTitleErr').classList.add('hidden');
 
   const mode = document.querySelector('input[name="fSourceMode"]:checked').value;
+  const level = document.getElementById('fLevel').value;
   const category = document.getElementById('fCategory').value;
   const description = document.getElementById('fDescription').value.trim();
 
@@ -332,13 +345,13 @@ resourceForm.addEventListener('submit', async (e) => {
     }
 
     if (editingId){
-      const payload = { category, title, description, updatedBy: operator.username, updatedAt: serverTimestamp() };
+      const payload = { level, category, title, description, updatedBy: operator.username, updatedAt: serverTimestamp() };
       if (fileURL) payload.fileURL = fileURL;
       await updateDoc(doc(db, 'resources', editingId), payload);
       showToast('Resource updated');
     } else {
       await setDoc(doc(collection(db, 'resources')), {
-        category, title, description, fileURL,
+        level, category, title, description, fileURL,
         uploadDate: serverTimestamp(),
         uploadedBy: operator.username
       });
