@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 import {
-  getAuth, onAuthStateChanged, signOut
+  getAuth, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 import {
   getFirestore, doc, getDoc, updateDoc
@@ -19,7 +19,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 /* =========================================================
-   AUTH GUARD (same block every admin page must repeat)
+   AUTH GUARD
    ========================================================= */
 const operatorRaw = sessionStorage.getItem('iec_operator');
 if (!operatorRaw) { window.location.href = 'admin-login.html'; }
@@ -63,7 +63,7 @@ const optTemplate = document.getElementById('optionTemplate');
 function showState(id){
   ['loadingState', 'blockedState', 'qbBody'].forEach(s => {
     const el = document.getElementById(s);
-    if (el) el.hidden = s !== id;
+    if (el) el.classList.toggle('hidden', s !== id);
   });
 }
 
@@ -77,6 +77,7 @@ function addQuestionCard(data){
 
   node.querySelector('.q-text').value = data?.question || '';
   node.querySelector('.q-type').value = data?.type || 'single';
+  node.querySelector('.q-mark').value = data?.mark !== undefined ? data.mark : 1;
   node.querySelector('.q-required').checked = data?.required !== false;
 
   const optionsList = node.querySelector('.options-list');
@@ -90,21 +91,25 @@ function addQuestionCard(data){
 
   node.querySelector('.add-option-btn').addEventListener('click', () => {
     addOptionRow(optionsList, node, '', false);
-    recomputeMarks();
   });
   node.querySelector('.delete-question-btn').addEventListener('click', () => {
     node.remove();
     renumberQuestions();
-    recomputeMarks();
-  });
-  node.querySelector('.q-type').addEventListener('change', (e) => {
-    convertOptionInputs(node, e.target.value);
+    recomputeTotalMarks();
   });
 
+  node.querySelector('.q-type').addEventListener('change', (e) => {
+    convertOptionInputs(node, e.target.value);
+    toggleMultiNote(node, e.target.value);
+  });
+
+  node.querySelector('.q-mark').addEventListener('input', recomputeTotalMarks);
+
   questionList.appendChild(node);
-  convertOptionInputs(node, node.querySelector('.q-type').value); // ensure radio/checkbox matches type
+  convertOptionInputs(node, node.querySelector('.q-type').value);
+  toggleMultiNote(node, node.querySelector('.q-type').value);
   renumberQuestions();
-  recomputeMarks();
+  recomputeTotalMarks();
 }
 
 function addOptionRow(optionsList, questionNode, text, isCorrect){
@@ -141,7 +146,6 @@ function convertOptionInputs(questionNode, type){
     wrap.innerHTML = '';
     wrap.appendChild(input);
   });
-  // single-choice can only have one correct answer selected — keep the first checked one only
   if (type !== 'multi'){
     const inputs = [...questionNode.querySelectorAll('.option-correct-wrap input')];
     let seenChecked = false;
@@ -154,28 +158,29 @@ function convertOptionInputs(questionNode, type){
   }
 }
 
+function toggleMultiNote(node, type){
+  const note = node.querySelector('.multi-note');
+  if (note) note.classList.toggle('hidden', type !== 'multi');
+}
+
 function renumberQuestions(){
   [...questionList.children].forEach((card, i) => {
     card.querySelector('.question-num').textContent = `Question ${i + 1}`;
   });
 }
 
-/* =========================================================
-   MARKS: split totalMarks evenly across questions
-   ========================================================= */
-function recomputeMarks(){
-  const total = parseFloat(document.getElementById('totalMarksInput').value) || 0;
-  const count = questionList.children.length;
-  const each = count ? total / count : 0;
-
-  [...questionList.children].forEach(card => {
-    card.querySelector('.worth-value').textContent = each % 1 === 0 ? each : each.toFixed(2);
+function recomputeTotalMarks(){
+  let total = 0;
+  const cards = [...questionList.children];
+  cards.forEach(card => {
+    const val = parseFloat(card.querySelector('.q-mark').value) || 0;
+    total += val;
   });
 
-  document.getElementById('qbSummary').textContent =
-    `${count} question${count === 1 ? '' : 's'} · ${count ? (each % 1 === 0 ? each : each.toFixed(2)) : 0} marks each`;
+  document.getElementById('totalMarksCount').textContent = total;
+  document.getElementById('qbSummary').textContent = `${cards.length} question${cards.length === 1 ? '' : 's'}`;
 }
-document.getElementById('totalMarksInput').addEventListener('input', recomputeMarks);
+
 document.getElementById('addQuestionBtn').addEventListener('click', () => addQuestionCard());
 
 /* =========================================================
@@ -190,9 +195,12 @@ document.getElementById('saveAllBtn').addEventListener('click', async () => {
   }
 
   const questions = [];
+  let calculatedTotalMarks = 0;
+
   for (const card of cards){
     const questionText = card.querySelector('.q-text').value.trim();
     const type = card.querySelector('.q-type').value;
+    const mark = parseFloat(card.querySelector('.q-mark').value) || 1;
     const required = card.querySelector('.q-required').checked;
     const optionRows = [...card.querySelectorAll('.option-row')];
     const options = optionRows.map(r => r.querySelector('.option-text').value.trim());
@@ -200,26 +208,30 @@ document.getElementById('saveAllBtn').addEventListener('click', async () => {
     if (!questionText){ showToast('Every question needs text'); return; }
     if (options.some(o => !o)){ showToast('Every option needs text'); return; }
 
+    calculatedTotalMarks += mark;
+
     if (type === 'multi'){
       const correctIndexes = [];
       optionRows.forEach((r, i) => { if (r.querySelector('input').checked) correctIndexes.push(i); });
       if (!correctIndexes.length){ showToast(`Mark at least one correct option for "${questionText}"`); return; }
-      questions.push({ question: questionText, type, required, options, correctIndexes });
+      questions.push({ question: questionText, type, mark, required, options, correctIndexes });
     } else {
       const correctIndex = optionRows.findIndex(r => r.querySelector('input').checked);
       if (correctIndex === -1){ showToast(`Mark the correct option for "${questionText}"`); return; }
-      questions.push({ question: questionText, type, required, options, correctIndex });
+      questions.push({ question: questionText, type, mark, required, options, correctIndex });
     }
   }
 
-  const totalMarks = parseFloat(document.getElementById('totalMarksInput').value) || questions.length;
   const btn = document.getElementById('saveAllBtn');
   btn.classList.add('loading');
   btn.disabled = true;
 
   try{
-    await updateDoc(doc(db, 'tests', testId), { questions, totalMarks });
-    showToast('Saved');
+    await updateDoc(doc(db, 'tests', testId), {
+      questions,
+      totalMarks: calculatedTotalMarks
+    });
+    showToast('Saved successfully');
   }catch(err){
     console.error(err);
     showToast("Couldn't save — try again");
@@ -241,13 +253,13 @@ async function loadTest(){
     const t = snap.data();
     document.getElementById('qbTitle').textContent = t.title || 'Untitled';
     document.getElementById('qbType').textContent = t.type === 'exam' ? 'Exam' : 'Test';
+    document.getElementById('qbType').classList.toggle('exam', t.type === 'exam');
     document.getElementById('qbLevel').textContent = t.level || 'All';
-    document.getElementById('totalMarksInput').value = t.totalMarks || 10;
 
     (t.questions || []).forEach(q => addQuestionCard(q));
     if (!(t.questions || []).length) addQuestionCard();
 
-    recomputeMarks();
+    recomputeTotalMarks();
     showState('qbBody');
   }catch(err){
     console.error(err);

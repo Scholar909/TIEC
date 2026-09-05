@@ -21,7 +21,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 /* =========================================================
-   AUTH GUARD (same block every admin page must repeat)
+   AUTH GUARD
    ========================================================= */
 const operatorRaw = sessionStorage.getItem('iec_operator');
 if (!operatorRaw) { window.location.href = 'admin-login.html'; }
@@ -47,14 +47,14 @@ onSnapshot(doc(db, 'system', 'activeSession'), (snap) => {
    ========================================================= */
 function initials(name){ return (name || '?').trim().split(/\s+/).map(w => w[0]).slice(0,2).join('').toUpperCase(); }
 function escapeHtml(str){ const d = document.createElement('div'); d.textContent = str == null ? '' : String(str); return d.innerHTML; }
-function fmtTime12(hhmm){
-  if (!hhmm) return '';
-  let [h, m] = hhmm.split(':').map(Number);
-  const ap = h >= 12 ? 'PM' : 'AM';
-  h = h % 12 || 12;
-  return `${h}:${String(m).padStart(2,'0')} ${ap}`;
-}
 function fmtDate(d){ return d ? d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—'; }
+function fmtClock(d){ return d ? d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}) : '—'; }
+function levelClass(level){
+  if (level === 'Young Explorers') return 'level-young';
+  if (level === 'Junior Innovators') return 'level-junior';
+  if (level === 'Teen Innovators') return 'level-teen';
+  return 'level-all';
+}
 
 /* =========================================================
    OPERATOR CHROME
@@ -128,7 +128,7 @@ function showToast(msg){
 }
 
 /* =========================================================
-   PAGE TABS (Files / Settings)
+   PAGE TABS (Files / Submissions / Settings)
    ========================================================= */
 document.querySelectorAll('#pageTabs .page-tab').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -140,11 +140,32 @@ document.querySelectorAll('#pageTabs .page-tab').forEach(btn => {
 });
 
 /* =========================================================
-   DATA: tests
-   tests/{id} — type ('test'|'exam'), level, title, description,
-     openFrom, openUntil (Timestamp), attemptsAllowed (number),
-     showScoreToStudent (bool), totalMarks (number),
-     questions (array), published (bool), createdAt
+   NOTIFY STUDENTS
+   ========================================================= */
+let allStudents = [];
+async function loadStudents(){
+  try{
+    const snap = await getDocs(query(collection(db, 'students'), orderBy('fullName', 'asc')));
+    allStudents = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(s => s.blocked !== true);
+  }catch(err){
+    console.error('Could not load students:', err);
+  }
+}
+loadStudents();
+
+async function notifyEligibleStudents(level, payload){
+  const targets = level === 'All' ? allStudents : allStudents.filter(s => s.membershipLevel === level);
+  await Promise.all(targets.map(s =>
+    setDoc(doc(collection(db, 'students', s.id, 'notifications')), {
+      ...payload,
+      read: false,
+      createdAt: serverTimestamp()
+    }).catch(err => console.error('Notify failed for', s.id, err))
+  ));
+}
+
+/* =========================================================
+   DATA: TESTS & LIST RENDERING
    ========================================================= */
 let allTests = [];
 let levelFilter = 'all';
@@ -167,57 +188,70 @@ function renderList(){
 
   if (!visible.length){
     lmsList.innerHTML = '';
-    lmsEmpty.hidden = false;
+    lmsEmpty.classList.remove('hidden');
     return;
   }
-  lmsEmpty.hidden = true;
+  lmsEmpty.classList.add('hidden');
 
   lmsList.innerHTML = visible.map(t => {
     const start = t.openFrom?.toDate ? t.openFrom.toDate() : null;
     const end = t.openUntil?.toDate ? t.openUntil.toDate() : null;
     const isChecked = selectedId === t.id;
+    const isExam = t.type === 'exam';
+
     return `
-      <div class="lms-card glass" data-id="${t.id}">
-        <span class="lms-checkbox-wrap"><input type="checkbox" class="lms-select" data-id="${t.id}" ${isChecked ? 'checked' : ''}></span>
-        <div class="lms-card-icon ${t.type === 'exam' ? 'type-exam' : ''}"><i class="bx ${t.type === 'exam' ? 'bx-file-blank' : 'bx-edit-alt'}"></i></div>
-        <div class="lms-card-body" data-role="open">
-          <div class="lms-card-top">
+      <div class="lms-card" data-id="${t.id}">
+        <!-- ROW 1: Checkbox, Title, Type tag, Level badge -->
+        <div class="lms-card-top-bar">
+          <div class="lms-card-title-wrap">
+            <span class="lms-checkbox-wrap"><input type="checkbox" class="lms-select" data-id="${t.id}" ${isChecked ? 'checked' : ''}></span>
             <span class="lms-card-title">${escapeHtml(t.title || 'Untitled')}</span>
-            <span class="badge-pill ${t.type === 'exam' ? 'badge-pill-blue' : ''}">${t.type === 'exam' ? 'Exam' : 'Test'}</span>
-            <span class="badge-pill badge-pill-purple">${escapeHtml(t.level || 'All')}</span>
           </div>
-          <div class="lms-card-meta">
-            <span><i class="bx bx-calendar"></i> ${fmtDate(start)}</span>
-            <span><i class="bx bx-time-five"></i> ${start ? start.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}) : '—'} – ${end ? end.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}) : '—'}</span>
-            <span><i class="bx bx-repeat"></i> ${t.attemptsAllowed || 1} attempt${(t.attemptsAllowed || 1) === 1 ? '' : 's'}</span>
-            <span><i class="bx bx-list-ul"></i> ${(t.questions || []).length} question${(t.questions || []).length === 1 ? '' : 's'}</span>
+          <div class="lms-card-tags-wrap">
+            <span class="type-tag ${isExam ? 'exam' : ''}">${isExam ? 'Exam' : 'Test'}</span>
+            <span class="level-badge ${levelClass(t.level)}">${escapeHtml(t.level || 'All')}</span>
           </div>
         </div>
-        <div class="lms-card-actions">
-          <button class="edit-lms-btn" data-id="${t.id}" aria-label="Edit"><i class="bx bx-edit"></i></button>
-          <button class="delete-lms-btn" data-id="${t.id}" aria-label="Delete"><i class="bx bx-trash"></i></button>
+
+        <!-- ROW 2: Calendar and Time window under title -->
+        <div class="lms-card-middle-bar">
+          <span><i class="bx bx-calendar"></i> ${fmtDate(start)}</span>
+          <span><i class="bx bx-time-five"></i> ${fmtClock(start)} – ${fmtClock(end)}</span>
+        </div>
+
+        <!-- ROW 3: Attempts, Duration & Question count + Edit / Delete / Open buttons -->
+        <div class="lms-card-bottom-bar">
+          <div class="lms-card-bottom-info">
+            <span><i class="bx bx-repeat"></i> ${t.attemptsAllowed || 1} attempt${(t.attemptsAllowed || 1) === 1 ? '' : 's'}</span>
+            <span><i class="bx bx-timer"></i> ${t.durationSeconds ? t.durationSeconds + 's' : '—'}</span>
+            <span><i class="bx bx-list-ul"></i> ${(t.questions || []).length} question${(t.questions || []).length === 1 ? '' : 's'}</span>
+          </div>
+          <div class="lms-card-actions">
+            <button class="edit-lms-btn" data-id="${t.id}" aria-label="Edit"><i class="bx bx-edit-alt"></i></button>
+            <button class="delete-lms-btn" data-id="${t.id}" aria-label="Delete"><i class="bx bx-trash"></i></button>
+            <button class="open-lms-btn" data-id="${t.id}" aria-label="Open questions"><i class="bx bx-chevron-right"></i></button>
+          </div>
         </div>
       </div>`;
   }).join('');
 
-  lmsList.querySelectorAll('[data-role="open"]').forEach(el => {
-    el.addEventListener('click', () => {
-      window.location.href = `lms-questions.html?id=${el.closest('.lms-card').dataset.id}`;
-    });
+  
+  lmsList.querySelectorAll('.open-lms-btn').forEach(btn => {
+    btn.addEventListener('click', () => { window.location.href = `lms-questions.html?id=${btn.dataset.id}`; });
   });
   lmsList.querySelectorAll('.lms-select').forEach(cb => {
-    cb.addEventListener('click', (e) => e.stopPropagation());
     cb.addEventListener('change', () => {
       selectedId = cb.checked ? cb.dataset.id : null;
       lmsList.querySelectorAll('.lms-select').forEach(other => { if (other !== cb) other.checked = false; });
       paintSettingsPanel();
+      paintSubmissionsPanel();
     });
   });
   lmsList.querySelectorAll('.edit-lms-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => { e.stopPropagation(); openEditForm(btn.dataset.id); });
+    btn.addEventListener('click', () => openEditForm(btn.dataset.id));
   });
   lmsList.querySelectorAll('.delete-lms-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => { e.stopPropagation(); openDeleteConfirm(btn.dataset.id); });
+    btn.addEventListener('click', () => openDeleteConfirm(btn.dataset.id));
   });
 }
 
@@ -225,12 +259,176 @@ onSnapshot(query(collection(db, 'tests'), orderBy('createdAt', 'desc')), (snap) 
   allTests = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   renderList();
   paintSettingsPanel();
+  paintSubmissionsPanel();
 }, (err) => {
   console.error(err);
   lmsList.innerHTML = '';
-  lmsEmpty.hidden = false;
+  lmsEmpty.classList.remove('hidden');
   lmsEmpty.textContent = "Couldn't load tests/exams.";
 });
+
+/* =========================================================
+   SUBMISSIONS PANEL
+   ========================================================= */
+let currentSubmissions = [];
+
+async function paintSubmissionsPanel(){
+  const noSubCard = document.getElementById('noSubSelectionCard');
+  const subCard = document.getElementById('submissionsCard');
+  const subList = document.getElementById('submissionsList');
+  const t = allTests.find(x => x.id === selectedId);
+
+  if (!t){
+    noSubCard.classList.remove('hidden');
+    subCard.classList.add('hidden');
+    return;
+  }
+  noSubCard.classList.add('hidden');
+  subCard.classList.remove('hidden');
+
+  document.getElementById('submissionsFileTitle').innerHTML = `<i class="bx bx-file-blank"></i> ${escapeHtml(t.title || 'Untitled')}`;
+  document.getElementById('submissionsFileType').textContent = t.type === 'exam' ? 'Exam' : 'Test';
+
+  subList.innerHTML = `<p class="dropdown-empty">Loading submissions...</p>`;
+
+  try {
+    const attemptsSnap = await getDocs(query(collectionGroup(db, 'attempts'), where('testId', '==', selectedId)));
+    currentSubmissions = attemptsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+    if (!currentSubmissions.length){
+      subList.innerHTML = `<p class="dropdown-empty">No student submissions yet for this ${t.type || 'test'}.</p>`;
+      return;
+    }
+
+    subList.innerHTML = currentSubmissions.map((sub, idx) => {
+      const student = allStudents.find(s => s.id === sub.studentId) || {};
+      const name = student.fullName || sub.studentName || 'Student';
+      const level = student.membershipLevel || sub.studentLevel || 'Member';
+      const pct = Math.round((sub.score / (sub.totalMarks || t.totalMarks || 1)) * 100) || 0;
+
+      return `
+        <div class="sub-student-card" data-sub-idx="${idx}">
+          <div class="sub-student-left">
+            <div class="sub-student-avatar">${initials(name)}</div>
+            <div class="sub-student-info">
+              <span class="sub-student-name">${escapeHtml(name)}</span>
+              <span class="sub-student-level">${escapeHtml(level)}</span>
+            </div>
+          </div>
+          <div class="sub-score-badge" data-score="${sub.score || 0}" data-total="${sub.totalMarks || t.totalMarks || 10}" data-pct="${pct}">
+            ${pct}%
+          </div>
+        </div>`;
+    }).join('');
+
+    // Toggle score fraction on tap
+    subList.querySelectorAll('.sub-score-badge').forEach(badge => {
+      badge.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (badge.dataset.active === 'true') return;
+        badge.dataset.active = 'true';
+        const score = badge.dataset.score;
+        const total = badge.dataset.total;
+        const pct = badge.dataset.pct;
+        badge.textContent = `${score}/${total}`;
+        setTimeout(() => {
+          badge.textContent = `${pct}%`;
+          badge.dataset.active = 'false';
+        }, 2500);
+      });
+    });
+
+    // Open preview modal on card click
+    subList.querySelectorAll('.sub-student-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const sub = currentSubmissions[card.dataset.subIdx];
+        openSubmissionPreview(sub, t);
+      });
+    });
+
+  } catch(err) {
+    console.error('Error fetching submissions:', err);
+    subList.innerHTML = `<p class="dropdown-empty">Could not load submissions.</p>`;
+  }
+}
+
+/* =========================================================
+   SUBMISSION PREVIEW MODAL
+   ========================================================= */
+const submissionModal = document.getElementById('submissionModal');
+document.getElementById('previewClose').addEventListener('click', () => submissionModal.classList.remove('open'));
+
+function openSubmissionPreview(sub, test){
+  const student = allStudents.find(s => s.id === sub.studentId) || {};
+  const name = student.fullName || sub.studentName || 'Student';
+  document.getElementById('previewStudentName').textContent = `${name}'s Submission`;
+  document.getElementById('previewSubMeta').textContent = `Score: ${sub.score || 0} / ${sub.totalMarks || test.totalMarks || 0} · Completed`;
+
+  const body = document.getElementById('previewModalBody');
+  body.innerHTML = '';
+
+  const questions = test.questions || [];
+  const userAnswers = sub.answers || {};
+
+  questions.forEach((q, qIndex) => {
+    const card = document.createElement('div');
+    card.className = 'preview-q-card';
+
+    const qTitle = document.createElement('div');
+    qTitle.className = 'preview-q-title';
+    qTitle.textContent = `${qIndex + 1}. ${q.question}`;
+    card.appendChild(qTitle);
+
+    const optsList = document.createElement('div');
+    optsList.className = 'preview-opts';
+
+    const isMulti = q.type === 'multi';
+    const chosen = userAnswers[qIndex]; // single index OR array of indexes
+
+    (q.options || []).forEach((optText, optIdx) => {
+      const optRow = document.createElement('div');
+      optRow.className = 'preview-opt';
+
+      let isPicked = false;
+      if (isMulti && Array.isArray(chosen)){
+        isPicked = chosen.includes(optIdx);
+      } else if (!isMulti && chosen !== undefined && chosen !== null){
+        isPicked = Number(chosen) === optIdx;
+      }
+
+      let isCorrectTarget = false;
+      if (isMulti && Array.isArray(q.correctIndexes)){
+        isCorrectTarget = q.correctIndexes.includes(optIdx);
+      } else if (!isMulti && q.correctIndex !== undefined){
+        isCorrectTarget = q.correctIndex === optIdx;
+      }
+
+      if (isPicked && isCorrectTarget){
+        // Correct answer student picked: green text with tick icon at right
+        optRow.classList.add('correct-chosen');
+        optRow.innerHTML = `<span>${escapeHtml(optText)}</span><i class="bx bx-check" style="font-size:1.2rem;color:var(--success);"></i>`;
+      } else if (isPicked && !isCorrectTarget){
+        // Wrong answer student picked: red text with crossed icon at left
+        optRow.classList.add('wrong-chosen');
+        optRow.innerHTML = `<i class="bx bx-x" style="font-size:1.2rem;color:var(--danger);margin-right:8px;"></i><span>${escapeHtml(optText)}</span>`;
+      } else if (!isPicked && isCorrectTarget){
+        // Correct answer set by admin (user didn't pick it): white text with green tick at right
+        optRow.classList.add('correct-target');
+        optRow.innerHTML = `<span>${escapeHtml(optText)}</span><i class="bx bx-check" style="font-size:1.2rem;color:var(--success);"></i>`;
+      } else {
+        // Not selected & incorrect: normal text
+        optRow.innerHTML = `<span>${escapeHtml(optText)}</span>`;
+      }
+
+      optsList.appendChild(optRow);
+    });
+
+    card.appendChild(optsList);
+    body.appendChild(card);
+  });
+
+  submissionModal.classList.add('open');
+}
 
 /* =========================================================
    SETTINGS TAB
@@ -241,17 +439,20 @@ function paintSettingsPanel(){
   const t = allTests.find(x => x.id === selectedId);
 
   if (!t){
-    noCard.hidden = false;
-    fileCard.hidden = true;
+    noCard.classList.remove('hidden');
+    fileCard.classList.add('hidden');
     return;
   }
-  noCard.hidden = true;
-  fileCard.hidden = false;
+  noCard.classList.add('hidden');
+  fileCard.classList.remove('hidden');
 
   document.getElementById('settingsFileTitle').innerHTML = `<i class="bx bx-edit-alt"></i> ${escapeHtml(t.title || 'Untitled')}`;
   document.getElementById('settingsFileType').textContent = t.type === 'exam' ? 'Exam' : 'Test';
   document.getElementById('settingsAttempts').value = t.attemptsAllowed || 1;
   document.getElementById('settingsShowScore').checked = t.showScoreToStudent !== false;
+  document.getElementById('settingsRandomize').checked = t.randomizeQuestions === true;
+  document.getElementById('settingsAllowPreview').checked = t.allowPreview !== false;
+  document.getElementById('settingsDuration').value = t.durationSeconds || '';
 
   const start = t.openFrom?.toDate ? t.openFrom.toDate() : null;
   const end = t.openUntil?.toDate ? t.openUntil.toDate() : null;
@@ -285,6 +486,9 @@ document.getElementById('settingsForm').addEventListener('submit', async (e) => 
     await updateDoc(doc(db, 'tests', selectedId), {
       attemptsAllowed: parseInt(document.getElementById('settingsAttempts').value, 10) || 1,
       showScoreToStudent: document.getElementById('settingsShowScore').checked,
+      randomizeQuestions: document.getElementById('settingsRandomize').checked,
+      allowPreview: document.getElementById('settingsAllowPreview').checked,
+      durationSeconds: parseInt(document.getElementById('settingsDuration').value, 10) || null,
       ...(openFrom ? { openFrom } : {}),
       ...(openUntil ? { openUntil } : {})
     });
@@ -308,9 +512,26 @@ let editingId = null;
 document.getElementById('fAttemptsMinus').addEventListener('click', () => stepValue('fAttempts', -1));
 document.getElementById('fAttemptsPlus').addEventListener('click', () => stepValue('fAttempts', 1));
 
+document.querySelectorAll('#typeRow .radio-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('#typeRow .radio-pill').forEach(p => p.classList.remove('checked'));
+    pill.classList.add('checked');
+    pill.querySelector('input').checked = true;
+  });
+});
+function getSelectedType(){ return document.querySelector('#typeRow input:checked')?.value || 'test'; }
+function setSelectedType(value){
+  document.querySelectorAll('#typeRow .radio-pill').forEach(p => {
+    const isMatch = p.dataset.value === value;
+    p.classList.toggle('checked', isMatch);
+    p.querySelector('input').checked = isMatch;
+  });
+}
+
 function openNewForm(){
   editingId = null;
   lmsForm.reset();
+  setSelectedType('test');
   document.getElementById('fAttempts').value = 1;
   document.getElementById('formTitle').textContent = 'New Test / Exam';
   document.getElementById('formSaveLabel').textContent = 'Add';
@@ -325,10 +546,11 @@ function openEditForm(id){
   if (!t) return;
   editingId = id;
 
-  document.getElementById('fType').value = t.type || 'test';
+  setSelectedType(t.type || 'test');
   document.getElementById('fLevel').value = t.level || 'All';
   document.getElementById('fTitleInput').value = t.title || '';
   document.getElementById('fDescription').value = t.description || '';
+  document.getElementById('fDuration').value = t.durationSeconds || '';
 
   const start = t.openFrom?.toDate ? t.openFrom.toDate() : null;
   const end = t.openUntil?.toDate ? t.openUntil.toDate() : null;
@@ -367,11 +589,14 @@ lmsForm.addEventListener('submit', async (e) => {
   btn.classList.add('loading');
   btn.disabled = true;
 
+  const level = document.getElementById('fLevel').value;
+  const type = getSelectedType();
   const payload = {
-    type: document.getElementById('fType').value,
-    level: document.getElementById('fLevel').value,
+    type,
+    level,
     title,
     description: document.getElementById('fDescription').value.trim(),
+    durationSeconds: parseInt(document.getElementById('fDuration').value, 10) || null,
     openFrom: Timestamp.fromDate(new Date(`${dateVal}T${startVal}`)),
     openUntil: Timestamp.fromDate(new Date(`${dateVal}T${endVal}`)),
     attemptsAllowed: parseInt(document.getElementById('fAttempts').value, 10) || 1
@@ -382,14 +607,24 @@ lmsForm.addEventListener('submit', async (e) => {
       await updateDoc(doc(db, 'tests', editingId), payload);
       showToast('Test/exam updated');
     } else {
-      await addDoc(collection(db, 'tests'), {
+      const newDoc = await addDoc(collection(db, 'tests'), {
         ...payload,
         showScoreToStudent: true,
-        totalMarks: 10,
+        randomizeQuestions: false,
+        allowPreview: true,
+        totalMarks: 0,
         questions: [],
         published: true,
         createdAt: serverTimestamp()
       });
+
+      notifyEligibleStudents(level, {
+        title: `New ${type} available: ${title}`,
+        message: `A new ${type} has been added${level !== 'All' ? ` for ${level}` : ''} — check the LMS page to take it.`,
+        type: 'test',
+        link: `test.html?id=${newDoc.id}`
+      });
+
       showToast('Test/exam created — add questions from its card');
     }
     formModal.classList.remove('open');
@@ -403,7 +638,7 @@ lmsForm.addEventListener('submit', async (e) => {
 });
 
 /* =========================================================
-   DELETE (cascades to every student's attempts at this test)
+   DELETE CONFIRM
    ========================================================= */
 const deleteModal = document.getElementById('deleteModal');
 let pendingDeleteId = null;
@@ -430,7 +665,7 @@ document.getElementById('deleteConfirm').addEventListener('click', async () => {
       await batch.commit();
     }
     await deleteDoc(doc(db, 'tests', id));
-    if (selectedId === id){ selectedId = null; paintSettingsPanel(); }
+    if (selectedId === id){ selectedId = null; paintSettingsPanel(); paintSubmissionsPanel(); }
     showToast('Test/exam deleted');
   }catch(err){
     console.error(err);
