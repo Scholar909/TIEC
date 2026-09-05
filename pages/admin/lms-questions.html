@@ -22,14 +22,13 @@
 </head>
 <body>
 
-<!-- Focus-mode topbar — no sidebar, this is a dedicated builder page -->
 <header class="qb-topbar" id="qbTopbar">
   <a href="lms.html" class="icon-btn" aria-label="Back to LMS"><i class="bx bx-arrow-back"></i></a>
   <div class="qb-topbar-title">
     <span id="qbTitle">Loading…</span>
     <div class="qb-topbar-badges">
-      <span class="badge-pill" id="qbType">Test</span>
-      <span class="badge-pill badge-pill-blue" id="qbLevel">—</span>
+      <span class="type-tag" id="qbType">Test</span>
+      <span class="level-tag" id="qbLevel">—</span>
     </div>
   </div>
   <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="bx bx-moon"></i></button>
@@ -37,34 +36,30 @@
 
 <main class="qb-main">
 
-  <!-- LOADING / BLOCKED -->
   <div class="qb-state" id="loadingState">
     <div class="spinner-lg"></div>
     <p>Loading test…</p>
   </div>
-  <div class="qb-state" id="blockedState" hidden>
+
+  <div class="qb-state hidden" id="blockedState">
     <i class="bx bx-error-circle blocked-icon"></i>
     <h2>Couldn't find this test</h2>
     <p>It may have been deleted. Head back to the LMS list.</p>
     <a href="lms.html" class="btn btn-lime">Back to LMS</a>
   </div>
 
-  <!-- BUILDER -->
-  <div class="qb-body" id="qbBody" hidden>
+  <div class="qb-body hidden" id="qbBody">
 
-    <div class="card glass total-marks-card">
-      <div>
-        <span class="section-label">Total Marks</span>
-        <p class="section-note">Split equally across every question below.</p>
-      </div>
-      <input type="number" id="totalMarksInput" min="1" value="10">
-    </div>
-
-    <div class="qb-summary" id="qbSummary">0 questions · 0 marks each</div>
+    <div class="qb-summary" id="qbSummary">0 questions</div>
 
     <div class="question-list" id="questionList"></div>
 
     <button class="btn btn-outline add-question-btn" id="addQuestionBtn"><i class="bx bx-plus"></i> Add Question</button>
+
+    <div class="card glass total-marks-bar">
+      <span>Total Marks:</span>
+      <strong id="totalMarksCount">0</strong>
+    </div>
 
     <div class="qb-save-bar glass">
       <span id="saveHint">Unsaved changes will be lost if you leave.</span>
@@ -77,12 +72,14 @@
 
 </main>
 
-<!-- question card template (cloned via JS) -->
 <template id="questionTemplate">
   <div class="card glass question-card">
     <div class="question-card-head">
       <span class="question-drag"><i class="bx bx-menu"></i> <span class="question-num"></span></span>
-      <span class="worth-badge"><span class="worth-value">0</span> marks</span>
+      <div class="q-mark-wrap">
+        <label class="q-mark-label">Mark:</label>
+        <input type="number" class="q-mark" min="1" value="1">
+      </div>
       <button type="button" class="icon-btn delete-question-btn" aria-label="Delete question"><i class="bx bx-trash"></i></button>
     </div>
 
@@ -98,8 +95,9 @@
           <option value="single">Single Choice</option>
           <option value="multi">Multiple Choice (select all that apply)</option>
         </select>
+        <p class="q-note multi-note hidden"><i class="bx bx-info-circle"></i> Question mark is shared equally among correct answers.</p>
       </div>
-      <div class="form-group">
+      <div class="form-group required-group">
         <label class="toggle-row">
           <span>Required</span>
           <span class="switch"><input type="checkbox" class="q-required" checked><span class="switch-track"></span></span>
@@ -108,11 +106,10 @@
     </div>
 
     <div class="options-list"></div>
-    <button type="button" class="btn btn-ghost add-option-btn"><i class="bx bx-plus"></i> Add Option</button>
+    <button type="button" class="add-option-btn"><i class="bx bx-plus"></i> Add Option</button>
   </div>
 </template>
 
-<!-- option row template -->
 <template id="optionTemplate">
   <div class="option-row">
     <span class="option-correct-wrap"></span>
