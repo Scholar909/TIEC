@@ -29,14 +29,17 @@
 <header class="test-topbar" id="testTopbar">
   <button class="icon-btn" id="exitBtn" aria-label="Exit test"><i class="bx bx-x"></i></button>
   <span class="test-topbar-title" id="testTitle">Loading test…</span>
-  <div class="test-topbar-right">
-    <span class="timer-chip" id="timerChip" hidden><i class="bx bx-time-five"></i> <span id="timerText">--:--</span></span>
-    <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="bx bx-moon"></i></button>
-  </div>
+  <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="bx bx-moon"></i></button>
 </header>
 
+<!-- ============ FIXED TIMER BAR — always visible, never covers question cards ============ -->
+<div class="timer-bar hidden" id="timerBar">
+  <i class="bx bx-time-five"></i>
+  <span id="timerText">00:00:00</span>
+</div>
+
 <!-- ============ MAIN ============ -->
-<main class="test-main">
+<main class="test-main" id="testMain">
 
   <!-- LOADING -->
   <div class="test-state" id="loadingState">
@@ -45,7 +48,7 @@
   </div>
 
   <!-- BLOCKED (not found / not open / already completed) -->
-  <div class="test-state" id="blockedState" hidden>
+  <div class="test-state hidden" id="blockedState">
     <i class="bx bx-error-circle blocked-icon"></i>
     <h2 id="blockedTitle">This test isn't available</h2>
     <p id="blockedMessage">—</p>
@@ -53,7 +56,7 @@
   </div>
 
   <!-- TEST FORM -->
-  <div class="test-body" id="testBody" hidden>
+  <div class="test-body hidden" id="testBody">
     <p class="test-desc" id="testDesc"></p>
 
     <div class="progress-wrap">
@@ -63,18 +66,35 @@
 
     <div class="question-list" id="questionList"></div>
 
-    <div class="submit-bar glass">
-      <span id="submitHint">Answer every question, then submit.</span>
-      <button class="btn btn-lime" id="submitBtn"><i class="bx bx-send"></i> Submit Test</button>
+    <!-- Prev / Next pagination -->
+    <div class="page-nav">
+      <button class="btn btn-outline" id="prevPageBtn"><i class="bx bx-chevron-left"></i> Previous</button>
+      <span class="page-indicator" id="pageIndicator">Page 1 of 1</span>
+      <button class="btn btn-outline" id="nextPageBtn">Next <i class="bx bx-chevron-right"></i></button>
     </div>
+
+    <!-- Question number grid (like a calendar) — grey = answered, white = not -->
+    <div class="qgrid-card glass">
+      <div class="qgrid-head">
+        <span>Jump to a question</span>
+        <div class="qgrid-legend">
+          <span><span class="dot dot-answered"></span> Answered</span>
+          <span><span class="dot dot-unanswered"></span> Not answered</span>
+        </div>
+      </div>
+      <div class="qgrid" id="qGrid"></div>
+    </div>
+
+    <!-- Finish Attempt — static, sits at the bottom of the page in normal flow -->
+    <button class="btn btn-lime finish-btn" id="submitBtn"><i class="bx bx-send"></i> Finish Attempt</button>
   </div>
 
   <!-- RESULT -->
-  <div class="test-state" id="resultState" hidden>
+  <div class="test-state hidden" id="resultState">
     <div class="result-icon" id="resultIcon"><i class="bx bx-check"></i></div>
     <h2 id="resultTitle">Test submitted</h2>
     <p id="resultMessage">—</p>
-    <div class="score-circle" id="scoreCircle" hidden>
+    <div class="score-circle hidden" id="scoreCircle">
       <span id="scoreValue">0%</span>
     </div>
     <a href="lms.html" class="btn btn-lime">Back to LMS</a>
@@ -86,11 +106,11 @@
 <div class="modal-overlay" id="confirmOverlay">
   <div class="modal-card glass">
     <div class="modal-icon"><i class="bx bx-error"></i></div>
-    <h3>Submit this test?</h3>
+    <h3>Finish this attempt?</h3>
     <p id="confirmSubmitBody">You won't be able to change your answers after this.</p>
     <div class="modal-actions">
       <button class="btn btn-outline" id="confirmCancel">Keep Reviewing</button>
-      <button class="btn btn-lime" id="confirmProceed">Submit</button>
+      <button class="btn btn-lime" id="confirmProceed">Finish</button>
     </div>
   </div>
 </div>
