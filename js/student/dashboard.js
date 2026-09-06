@@ -262,19 +262,28 @@ async function loadAttendance(uid, level){
   }
 }
 
-/* ---------- events (activities whose type is exactly 'event') ---------- */
+/* ---------- upcoming activities (all types: event, workshop, class, competition, holiday) ---------- */
+const typeIcons = {
+  class: 'bx bx-chalkboard',
+  event: 'bx bx-calendar-star',
+  competition: 'bx bxs-trophy',
+  workshop: 'bx bx-wrench',
+  holiday: 'bx bx-sun',
+  lms: 'bx bx-edit-alt'
+};
+
 function dateKeyStr(d){
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
+
 async function loadEvents(level){
   try{
     const todayStr = dateKeyStr(new Date());
     const q = query(
       collection(db, 'occurrences'),
-      where('type', '==', 'event'),
       where('date', '>=', todayStr),
       orderBy('date', 'asc'),
-      limit(6)
+      limit(10)
     );
     const snap = await getDocs(q);
     const rows = snap.docs
@@ -283,14 +292,16 @@ async function loadEvents(level){
       .slice(0, 3)
       .map(ev => {
         const date = new Date(ev.date + 'T00:00:00');
-        return { icon: 'bx bx-calendar-star', title: ev.title || 'Untitled event', meta: `${formatDate(date)}${ev.level && ev.level !== 'All' ? ' · ' + ev.level : ''}` };
+        const icon = typeIcons[ev.type] || 'bx bx-calendar';
+        return { icon, title: ev.title || 'Untitled activity', meta: `${formatDate(date)}${ev.level && ev.level !== 'All' ? ' · ' + ev.level : ''}` };
       });
-    renderRows('eventsList', rows, 'No upcoming events right now — check back soon.');
+    renderRows('eventsList', rows, 'No upcoming activities right now — check back soon.');
   } catch (err){
     console.error('Events load failed:', err);
-    renderRows('eventsList', [], 'Couldn\u2019t load events right now.');
+    renderRows('eventsList', [], 'Couldn\u2019t load activities right now.');
   }
 }
+
 
 /* ---------- announcement (single, club-wide — glows until seen) ---------- */
 function escapeHtml(str){

@@ -31,14 +31,22 @@ const db = getFirestore(app);
 
    tests/{testId}        — club-wide, admin-managed
      title, description, published (bool), type ('test'|'exam'),
-     questions (array — every question is single/multi choice,
-       so every attempt is auto-scored, no "pending review" state),
-     totalMarks (number), attemptsAllowed (number, default 1),
-     openFrom / openUntil (Timestamp), showScoreToStudent (bool)
+     level, questions (array — every question is single/multi
+       choice, so every attempt is auto-scored, no "pending
+       review" state), totalMarks (number),
+     attemptsAllowed (number, default 1),
+     durationSeconds (number, optional — a per-attempt countdown,
+       set by admin in seconds even though students see it as
+       hh:mm:ss on the test page),
+     openFrom / openUntil (Timestamp), showScoreToStudent (bool),
+     randomizeQuestions (bool), allowPreview (bool, default true
+       — gates the eye/preview icon on completed cards)
 
    students/{uid}/testAttempts/{testId}/attempts/{autoId}
-     score (0-100 percentage), earned, totalMarks, testId,
-     submittedAt (Timestamp), totalQuestions (number)
+     answers, score (raw points earned — NOT a percentage;
+       the admin side divides by totalMarks itself), totalMarks,
+       testId, studentId, studentName, studentLevel,
+       submittedAt (Timestamp), totalQuestions (number)
    ========================================================= */
 
 let uid = null;
@@ -169,7 +177,7 @@ async function loadLms(studentUid){
     const completed = [];
 
     tests.forEach((test, i) => {
-      const attempts = attemptSnaps[i].docs.map(d => d.data());
+      const attempts = attemptSnaps[i].docs.map(d => ({ id: d.id, ...d.data() }));
       const attemptsUsed = attempts.length;
       const attemptsAllowed = test.attemptsAllowed || 1;
       const attemptsRemaining = Math.max(0, attemptsAllowed - attemptsUsed);
@@ -182,7 +190,7 @@ async function loadLms(studentUid){
         available.push({ test, attemptsRemaining, attemptsAllowed });
       }
       if (attemptsUsed > 0){
-        completed.push({ test, latest: attempts[0], attemptsUsed, attemptsAllowed, canRetake: isOpen && attemptsRemaining > 0 });
+        completed.push({ test, latest: attempts[0], attemptId: attempts[0].id, attemptsUsed, attemptsAllowed, canRetake: isOpen && attemptsRemaining > 0 });
       }
     });
 
@@ -222,7 +230,7 @@ function renderAvailable(items){
             <span><i class="bx bx-repeat"></i> ${attemptsRemaining}/${attemptsAllowed} attempt${attemptsAllowed === 1 ? '' : 's'} left</span>
           </div>
         </div>
-        <a class="btn btn-lime btn-sm test-action" href="test.html?id=${t.id}">Start Test</a>
+        <a class="btn btn-outline-lime btn-sm test-action" href="test.html?id=${t.id}">Attempt</a>
       </div>
     `;
   }).join('');
@@ -237,10 +245,14 @@ function renderCompleted(items){
     return;
   }
   empty.hidden = true;
-  list.innerHTML = items.map(({ test, latest, attemptsUsed, attemptsAllowed, canRetake }) => {
-    const hasScore = test.showScoreToStudent && typeof latest.score === 'number';
+  list.innerHTML = items.map(({ test, latest, attemptId, attemptsUsed, attemptsAllowed, canRetake }) => {
+    const totalMarks = latest.totalMarks || test.totalMarks || 0;
+    const pct = totalMarks ? Math.round(((latest.score || 0) / totalMarks) * 100) : 0;
+    const showScore = test.showScoreToStudent !== false;
+    const showPreview = test.allowPreview !== false;
+
     return `
-      <div class="test-card">
+      <div class="test-card completed-card">
         <div class="test-icon done"><i class="bx bx-check"></i></div>
         <div class="test-body-info">
           <div class="test-title">${test.title || 'Untitled test'}</div>
@@ -250,9 +262,16 @@ function renderCompleted(items){
           </div>
           ${canRetake ? `<a class="card-link" href="test.html?id=${test.id}">Retake <i class="bx bx-right-arrow-alt"></i></a>` : ''}
         </div>
-        <span class="test-score-badge ${hasScore ? '' : 'pending'}">
-          ${hasScore ? Math.round(latest.score) + '%' : 'Score hidden'}
-        </span>
+
+        <div class="completed-card-right">
+          ${showScore ? `
+            <div class="score-total-pair">
+              <span class="score-fraction">${latest.score || 0}/${totalMarks}</span>
+              <span class="test-score-badge">${pct}%</span>
+            </div>
+          ` : `<span class="test-score-badge pending">Score hidden</span>`}
+          ${showPreview ? `<a class="preview-eye-btn" href="preview.html?testId=${test.id}&attemptId=${attemptId}" aria-label="Preview submission"><i class="bx bx-show"></i></a>` : ''}
+        </div>
       </div>
     `;
   }).join('');
@@ -262,9 +281,12 @@ function paintStats(availableCount, completedItems){
   document.getElementById('statAvailable').textContent = availableCount;
   document.getElementById('statCompleted').textContent = completedItems.length;
 
-  const scored = completedItems.filter(({ test, latest }) => test.showScoreToStudent && typeof latest.score === 'number');
+  const scored = completedItems.filter(({ test }) => test.showScoreToStudent !== false);
   if (scored.length){
-    const avg = scored.reduce((sum, { latest }) => sum + latest.score, 0) / scored.length;
+    const avg = scored.reduce((sum, { latest, test }) => {
+      const totalMarks = latest.totalMarks || test.totalMarks || 1;
+      return sum + ((latest.score || 0) / totalMarks) * 100;
+    }, 0) / scored.length;
     document.getElementById('statAverage').textContent = `${Math.round(avg)}%`;
   } else {
     document.getElementById('statAverage').textContent = '–%';

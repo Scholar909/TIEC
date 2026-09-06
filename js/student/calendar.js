@@ -173,7 +173,8 @@ const typeIcons = {
   event: 'bx bx-calendar-star',
   competition: 'bx bxs-trophy',
   workshop: 'bx bx-wrench',
-  holiday: 'bx bx-sun'
+  holiday: 'bx bx-sun',
+  lms: 'bx bx-edit-alt'
 };
 
 /* =========================================================

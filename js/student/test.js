@@ -27,10 +27,10 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 /* =========================================================
-   Assumed Firestore schema:
+   Assumed Firestore schema (matches the admin LMS pages):
 
    tests/{testId}
-     title, description, published (bool),
+     title, description, published (bool), type ('test'|'exam'), level,
      questions: [{
        type: 'single' | 'multi', question, options: [],
        required (bool),
@@ -38,19 +38,24 @@ const db = getFirestore(app);
        correctIndexes (number[], type:'multi' only)
      }],
      totalMarks (number), attemptsAllowed (number, default 1),
-     timeLimitMinutes (number, optional — a per-attempt countdown,
-       separate from the openFrom/openUntil wall-clock window),
+     durationSeconds (number, optional — a per-attempt countdown,
+       set by admin in seconds; shown to students as hh:mm:ss),
      openFrom / openUntil (Timestamp),
-     showScoreToStudent (bool)
+     showScoreToStudent (bool), allowPreview (bool, default true),
+     randomizeQuestions (bool) — shuffles both question order AND
+       each question's option order for this student; correct
+       answers are remapped to match so scoring stays correct
 
    students/{uid}/testAttempts/{testId}/attempts/{autoId}
      — a new doc per attempt, so multiple attempts can be tracked
-     answers, score (0-100 percentage), earned, totalMarks, testId,
+     answers, score (RAW POINTS EARNED, not a percentage — the
+       admin side divides by totalMarks itself), totalMarks, testId,
+     studentId, studentName, studentLevel,
      submittedAt, totalQuestions
 
    Every question is single- or multi-choice, so every attempt is
-   auto-scored the instant it's submitted — there's no more
-   "pending review" state.
+   auto-scored the instant it's submitted — there's no "pending
+   review" state.
 
    ⚠️ NOTE ON SCORING: this scores answers client-side by
    comparing against `correctIndex`/`correctIndexes`, which means
@@ -65,9 +70,14 @@ const db = getFirestore(app);
 const params = new URLSearchParams(window.location.search);
 const testId = params.get('id');
 
+const PAGE_SIZE = 5;
+
 let uid = null;
+let studentName = 'Student';
+let studentLevel = '';
 let testData = null;
 let answers = {};      // { questionIndex: selectedOptionIndex (single) | number[] (multi) }
+let currentPage = 0;
 let timerInterval = null;
 let expiryInterval = null;
 let secondsLeft = 0;
@@ -92,15 +102,48 @@ function toDate(value){
   if (!value) return null;
   return value.toDate ? value.toDate() : new Date(value);
 }
+// Uses the .hidden class (display:none !important) instead of the
+// `hidden` attribute alone, so a component's own display rule can
+// never leave two states visible on top of each other.
 function showState(id){
   ['loadingState', 'blockedState', 'testBody', 'resultState'].forEach(s => {
-    document.getElementById(s).hidden = s !== id;
+    document.getElementById(s).classList.toggle('hidden', s !== id);
   });
 }
 function blockWith(title, message){
   document.getElementById('blockedTitle').textContent = title;
   document.getElementById('blockedMessage').textContent = message;
   showState('blockedState');
+}
+function shuffleArray(arr){
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* =========================================================
+   RANDOMIZATION — question order AND per-question option order,
+   with correctIndex/correctIndexes remapped so scoring still works
+   ========================================================= */
+function randomizeTestData(questions){
+  const shuffledQuestions = shuffleArray(questions).map(q => {
+    const order = shuffleArray(q.options.map((_, i) => i)); // new position -> old index
+    const newOptions = order.map(oldIndex => q.options[oldIndex]);
+
+    if (q.type === 'multi'){
+      const oldCorrect = q.correctIndexes || [];
+      const newCorrectIndexes = order
+        .map((oldIndex, newIndex) => oldCorrect.includes(oldIndex) ? newIndex : -1)
+        .filter(i => i !== -1);
+      return { ...q, options: newOptions, correctIndexes: newCorrectIndexes };
+    }
+    const newCorrectIndex = order.indexOf(q.correctIndex);
+    return { ...q, options: newOptions, correctIndex: newCorrectIndex };
+  });
+  return shuffledQuestions;
 }
 
 /* ---------- exit (unsaved-progress guard) ---------- */
@@ -113,21 +156,41 @@ document.getElementById('exitCancel').addEventListener('click', () => exitOverla
 document.getElementById('exitProceed').addEventListener('click', () => { window.location.href = 'lms.html'; });
 
 /* =========================================================
-   RENDER QUESTIONS — every question is single or multi choice
+   RENDER — 5 questions per page, plus the jump-to-question grid
    ========================================================= */
+function totalPages(){
+  const n = (testData.questions || []).length;
+  return Math.max(1, Math.ceil(n / PAGE_SIZE));
+}
+
+function isAnswered(qIndex){
+  const q = testData.questions[qIndex];
+  const val = answers[qIndex];
+  return q.type === 'multi' ? Array.isArray(val) && val.length > 0 : typeof val === 'number';
+}
+
 function renderQuestions(){
   const list = document.getElementById('questionList');
   const questions = testData.questions || [];
   document.getElementById('totalCount').textContent = questions.length;
 
-  list.innerHTML = questions.map((q, i) => {
+  const start = currentPage * PAGE_SIZE;
+  const pageQuestions = questions.slice(start, start + PAGE_SIZE);
+
+  list.innerHTML = pageQuestions.map((q, localIndex) => {
+    const i = start + localIndex; // global question index
     const isMulti = q.type === 'multi';
-    const options = (q.options || []).map((opt, oi) => `
-      <label class="option-row" data-index="${i}" data-option="${oi}">
-        <input type="${isMulti ? 'checkbox' : 'radio'}" name="q-${i}" value="${oi}">
-        <span>${opt}</span>
-      </label>
-    `).join('');
+    const options = (q.options || []).map((opt, oi) => {
+      const selected = isMulti
+        ? Array.isArray(answers[i]) && answers[i].includes(oi)
+        : answers[i] === oi;
+      return `
+        <label class="option-row ${selected ? 'selected' : ''}" data-index="${i}" data-option="${oi}">
+          <input type="${isMulti ? 'checkbox' : 'radio'}" name="q-${i}" value="${oi}" ${selected ? 'checked' : ''}>
+          <span>${opt}</span>
+        </label>
+      `;
+    }).join('');
     return `
       <div class="question-card glass" id="q-${i}">
         <div class="question-head">
@@ -144,7 +207,7 @@ function renderQuestions(){
       e.preventDefault();
       const qIndex = Number(row.dataset.index);
       const optIndex = Number(row.dataset.option);
-      const q = questions[qIndex];
+      const q = testData.questions[qIndex];
       const input = row.querySelector('input');
 
       if (q.type === 'multi'){
@@ -164,41 +227,86 @@ function renderQuestions(){
         input.checked = true;
       }
 
-      const hasAnswer = q.type === 'multi' ? (answers[qIndex] || []).length > 0 : typeof answers[qIndex] === 'number';
-      document.getElementById(`q-${qIndex}`).classList.toggle('unanswered', !hasAnswer);
+      document.getElementById(`q-${qIndex}`).classList.toggle('unanswered', !isAnswered(qIndex));
       updateProgress();
+      buildQuestionGrid();
     });
   });
 
   updateProgress();
+  updatePageControls();
+  buildQuestionGrid();
 }
 
 function updateProgress(){
   const questions = testData.questions || [];
-  const answeredCount = questions.reduce((count, q, i) => {
-    const val = answers[i];
-    const isAnswered = q.type === 'multi' ? Array.isArray(val) && val.length > 0 : typeof val === 'number';
-    return count + (isAnswered ? 1 : 0);
-  }, 0);
-
+  const answeredCount = questions.reduce((count, q, i) => count + (isAnswered(i) ? 1 : 0), 0);
   document.getElementById('answeredCount').textContent = answeredCount;
   document.getElementById('progressFill').style.width = `${questions.length ? (answeredCount / questions.length) * 100 : 0}%`;
 }
 
+function updatePageControls(){
+  document.getElementById('pageIndicator').textContent = `Page ${currentPage + 1} of ${totalPages()}`;
+  document.getElementById('prevPageBtn').disabled = currentPage === 0;
+  document.getElementById('nextPageBtn').disabled = currentPage >= totalPages() - 1;
+}
+
+document.getElementById('prevPageBtn').addEventListener('click', () => {
+  if (currentPage > 0){ currentPage--; renderQuestions(); scrollToQuestions(); }
+});
+document.getElementById('nextPageBtn').addEventListener('click', () => {
+  if (currentPage < totalPages() - 1){ currentPage++; renderQuestions(); scrollToQuestions(); }
+});
+function scrollToQuestions(){
+  document.getElementById('questionList').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 /* =========================================================
-   TIMER
+   QUESTION NUMBER GRID — "calendar" view: grey once answered,
+   white while blank, ring around the current page's questions
    ========================================================= */
-function startTimer(minutes){
-  secondsLeft = Math.round(minutes * 60);
-  const chip = document.getElementById('timerChip');
+function buildQuestionGrid(){
+  const grid = document.getElementById('qGrid');
+  const questions = testData.questions || [];
+  const pageStart = currentPage * PAGE_SIZE;
+  const pageEnd = pageStart + PAGE_SIZE;
+
+  grid.innerHTML = questions.map((q, i) => {
+    const answered = isAnswered(i);
+    const onCurrentPage = i >= pageStart && i < pageEnd;
+    return `<button type="button" class="qgrid-item ${answered ? 'answered' : ''} ${onCurrentPage ? 'current' : ''}" data-index="${i}">${i + 1}</button>`;
+  }).join('');
+
+  grid.querySelectorAll('.qgrid-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const i = Number(btn.dataset.index);
+      currentPage = Math.floor(i / PAGE_SIZE);
+      renderQuestions();
+      scrollToQuestions();
+    });
+  });
+}
+
+/* =========================================================
+   TIMER — fixed bar, always visible, hh:mm:ss from a
+   durationSeconds value admin sets in seconds
+   ========================================================= */
+function formatHMS(totalSeconds){
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+function startTimer(durationSeconds){
+  secondsLeft = Math.round(durationSeconds);
+  const bar = document.getElementById('timerBar');
   const text = document.getElementById('timerText');
-  chip.hidden = false;
+  bar.classList.remove('hidden');
+  document.getElementById('testMain').classList.add('has-timer');
 
   function tick(){
-    const m = Math.floor(secondsLeft / 60);
-    const s = secondsLeft % 60;
-    text.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-    chip.classList.toggle('urgent', secondsLeft <= 60);
+    text.textContent = formatHMS(Math.max(0, secondsLeft));
+    bar.classList.toggle('urgent', secondsLeft <= 60);
 
     if (secondsLeft <= 0){
       clearInterval(timerInterval);
@@ -234,10 +342,7 @@ function startExpiryWatchdog(openUntil){
 const confirmOverlay = document.getElementById('confirmOverlay');
 document.getElementById('submitBtn').addEventListener('click', () => {
   const questions = testData.questions || [];
-  const unanswered = questions.filter((q, i) => {
-    const val = answers[i];
-    return q.type === 'multi' ? !(Array.isArray(val) && val.length > 0) : typeof val !== 'number';
-  }).length;
+  const unanswered = questions.filter((q, i) => !isAnswered(i)).length;
 
   document.getElementById('confirmSubmitBody').textContent = unanswered > 0
     ? `You have ${unanswered} unanswered question${unanswered === 1 ? '' : 's'}. You won't be able to change your answers after submitting.`
@@ -278,10 +383,12 @@ async function submitTest(autoSubmitted, reason){
   try{
     await addDoc(collection(db, 'students', uid, 'testAttempts', testId, 'attempts'), {
       answers,
-      score: percentage,
-      earned,
+      score: earned,       // raw points earned — admin side computes % itself
       totalMarks,
       testId,
+      studentId: uid,
+      studentName,
+      studentLevel,
       submittedAt: serverTimestamp(),
       totalQuestions: questions.length
     });
@@ -298,13 +405,13 @@ function showResult(score, autoSubmitted, reason){
     : 'Test submitted';
 
   const scoreCircle = document.getElementById('scoreCircle');
-  if (testData.showScoreToStudent){
-    scoreCircle.hidden = false;
+  if (testData.showScoreToStudent !== false){
+    scoreCircle.classList.remove('hidden');
     scoreCircle.style.setProperty('--pct', score);
     document.getElementById('scoreValue').textContent = `${score}%`;
     document.getElementById('resultMessage').textContent = 'Nice work — here\u2019s how you did.';
   } else {
-    scoreCircle.hidden = true;
+    scoreCircle.classList.add('hidden');
     document.getElementById('resultMessage').textContent = "Your answers have been recorded. Your score isn't shown for this test.";
   }
 
@@ -334,10 +441,17 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   try{
-    const [testSnap, attemptsSnap] = await Promise.all([
+    const [testSnap, attemptsSnap, studentSnap] = await Promise.all([
       getDoc(doc(db, 'tests', testId)),
-      getDocs(collection(db, 'students', uid, 'testAttempts', testId, 'attempts'))
+      getDocs(collection(db, 'students', uid, 'testAttempts', testId, 'attempts')),
+      getDoc(doc(db, 'students', uid))
     ]);
+
+    if (studentSnap.exists()){
+      const sd = studentSnap.data();
+      studentName = sd.fullName || 'Student';
+      studentLevel = sd.membershipLevel || '';
+    }
 
     if (!testSnap.exists() || testSnap.data().published !== true){
       blockWith('Test not found', 'This test may have been removed or isn\u2019t published yet.');
@@ -345,6 +459,9 @@ onAuthStateChanged(auth, async (user) => {
     }
 
     testData = testSnap.data();
+    if (testData.randomizeQuestions){
+      testData = { ...testData, questions: randomizeTestData(testData.questions || []) };
+    }
 
     const attemptsAllowed = testData.attemptsAllowed || 1;
     const attemptsUsed = attemptsSnap.size;
@@ -367,12 +484,13 @@ onAuthStateChanged(auth, async (user) => {
 
     document.getElementById('testTitle').textContent = testData.title || 'Test';
     document.getElementById('testDesc').textContent = testData.description || '';
+    currentPage = 0;
     renderQuestions();
     showState('testBody');
 
     startExpiryWatchdog(openUntil);
-    if (testData.timeLimitMinutes){
-      startTimer(testData.timeLimitMinutes);
+    if (testData.durationSeconds){
+      startTimer(testData.durationSeconds);
     }
   } catch (err){
     console.error('Test load failed:', err);
