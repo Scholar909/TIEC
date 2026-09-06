@@ -137,6 +137,11 @@ function formatDate(d){
   if (!d) return '';
   return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 }
+function formatTime(d){
+  if (!d) return '';
+  return d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+}
+
 function paintIdentity(data){
   const name = data.fullName || 'Explorer';
   const initials = getInitials(name);
@@ -216,25 +221,38 @@ function renderAvailable(items){
   }
   empty.hidden = true;
   list.innerHTML = items.map(({ test: t, attemptsRemaining, attemptsAllowed }) => {
-    const questionCount = Array.isArray(t.questions) ? t.questions.length : 0;
-    const until = toDate(t.openUntil);
+    const openFrom = toDate(t.openFrom);
+    const openUntil = toDate(t.openUntil);
+
+    let timeRange = '';
+    if (openFrom && openUntil) {
+      timeRange = `${formatTime(openFrom)} - ${formatTime(openUntil)}`;
+    } else if (openFrom) {
+      timeRange = `From ${formatTime(openFrom)}`;
+    } else if (openUntil) {
+      timeRange = `Until ${formatTime(openUntil)}`;
+    } else {
+      timeRange = 'All day';
+    }
+
     return `
-      <div class="test-card">
-        <div class="test-icon"><i class="bx ${t.type === 'exam' ? 'bx-file-blank' : 'bx-edit-alt'}"></i></div>
+      <div class="test-card available-card">
         <div class="test-body-info">
           <div class="test-title">${t.title || 'Untitled test'}</div>
           <div class="test-desc-line">${t.description || ''}</div>
           <div class="test-meta-row">
-            <span><i class="bx bx-list-ul"></i> ${questionCount} question${questionCount === 1 ? '' : 's'}</span>
-            ${until ? `<span><i class="bx bx-calendar-x"></i> Open until ${formatDate(until)}</span>` : ''}
+            <span><i class="bx bx-time"></i> ${timeRange}</span>
             <span><i class="bx bx-repeat"></i> ${attemptsRemaining}/${attemptsAllowed} attempt${attemptsAllowed === 1 ? '' : 's'} left</span>
           </div>
         </div>
-        <a class="btn btn-outline-lime btn-sm test-action" href="test.html?id=${t.id}">Attempt</a>
+        <div class="test-action-wrap">
+          <a class="btn btn-outline-lime btn-sm test-action" href="test.html?id=${t.id}">Attempt</a>
+        </div>
       </div>
     `;
   }).join('');
 }
+
 
 function renderCompleted(items){
   const list = document.getElementById('completedList');
