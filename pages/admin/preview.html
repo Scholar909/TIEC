@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){try{if(localStorage.getItem('iec-theme')==='light'){document.documentElement.classList.add('light-mode');}}catch(e){}})();</script>
+<title>Submission Preview — Admin Portal — Innovative Explorer Club</title>
+<link rel="icon" type="image/png" href="../../assets/images/icon.png">
+<link rel="apple-touch-icon" href="../../assets/images/icon.png">
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/basic/boxicons.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/filled/boxicons-filled.min.css" rel="stylesheet">
+<link href="https://cdn.boxicons.com/3.0.8/fonts/brands/boxicons-brands.min.css" rel="stylesheet">
+
+<style>
+:root{
+  --bg-primary:#071420;--bg-secondary:#101B2D;--card-bg:rgba(255,255,255,.08);--card-border:rgba(255,255,255,.10);
+  --blue:#157BFF;--blue-2:#4AA6FF;--lime:#9AE600;--purple:#8B5CF6;--white:#FFFFFF;--gray:#C7CFD9;
+  --danger:#FF4B55;--success:#2BD67B;--orange:#ff8a3d;
+  --accent-text:var(--blue-2);--accent-lime-text:var(--lime);
+  --radius:16px;--nav-h:64px;--ease:cubic-bezier(.22,.61,.36,1);--font-body:'Poppins',sans-serif;
+}
+html.light-mode{
+  --bg-primary:#EEF3F8;--bg-secondary:#FFFFFF;--card-bg:rgba(7,20,32,.045);--card-border:rgba(7,20,32,.09);
+  --white:#0B1B29;--gray:#4B5C6B;--accent-text:#0F62D6;--accent-lime-text:#5B8A00;
+}
+*,*::before,*::after{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;min-height:100vh;background:var(--bg-primary);color:var(--white);font-family:var(--font-body);font-weight:400;line-height:1.6;overflow-x:hidden;transition:background .4s var(--ease), color .4s var(--ease);}
+h1,h2,h3,h4{font-family:var(--font-body);font-weight:700;margin:0;line-height:1.2;letter-spacing:-.01em;}
+p{margin:0;color:var(--gray);}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;}
+.hidden{display:none !important;}
+
+.glass{background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);}
+.card{padding:22px 24px;}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;border-radius:12px;font-weight:600;font-size:.88rem;border:1px solid transparent;transition:transform .3s var(--ease), box-shadow .3s var(--ease);white-space:nowrap;}
+.btn-lime{background:var(--lime);color:#08130A;}
+.btn-lime:hover{box-shadow:0 0 22px rgba(154,230,0,.5);transform:translateY(-1px);}
+
+.icon-btn{background:none;border:none;color:var(--gray);width:40px;height:40px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:background .3s var(--ease), color .3s var(--ease);}
+.icon-btn:hover{background:rgba(120,140,160,.12);color:var(--white);}
+
+.type-tag{font-size:.66rem;font-weight:700;padding:3px 10px;border-radius:999px;background:rgba(21,123,255,.14);color:var(--accent-text);text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;}
+.type-tag.exam{background:rgba(255,138,61,.15);color:var(--orange);}
+.level-tag{font-size:.66rem;font-weight:700;padding:3px 10px;border-radius:999px;background:rgba(139,92,246,.16);color:var(--purple);white-space:nowrap;}
+
+/* topbar */
+.pv-topbar{position:fixed;top:0;left:0;right:0;z-index:900;height:var(--nav-h);display:flex;align-items:center;gap:12px;padding:0 16px;background:var(--bg-secondary);border-bottom:1px solid var(--card-border);transition:background .4s var(--ease), border-color .4s var(--ease);}
+.pv-topbar-title{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;}
+.pv-topbar-title > span{font-size:.9rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pv-topbar-badges{display:flex;gap:6px;}
+
+.pv-main{max-width:760px;margin:0 auto;padding:calc(var(--nav-h) + 20px) 16px 48px;display:flex;flex-direction:column;gap:16px;}
+
+.pv-state{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;padding:20px;}
+.pv-state h2{font-size:1.15rem;}
+.pv-state p{font-size:.88rem;max-width:380px;}
+.spinner-lg{width:32px;height:32px;border-radius:50%;border:3px solid var(--card-border);border-top-color:var(--accent-text);animation:spin .8s linear infinite;}
+.blocked-icon{font-size:2.1rem;color:var(--danger);}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* subject / score summary */
+.subject-card{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.subject-avatar{width:48px;height:48px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg, var(--blue), var(--blue-2));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;}
+.subject-info{min-width:0;flex:1;}
+.subject-name{font-size:1rem;font-weight:700;}
+.subject-meta{font-size:.78rem;margin-top:3px;}
+.score-pill{display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
+.score-fraction-lg{font-size:1.15rem;font-weight:700;color:var(--white);}
+.score-pct{font-size:.78rem;font-weight:700;padding:3px 11px;border-radius:999px;background:rgba(43,214,123,.14);color:var(--success);}
+
+/* preview question cards — mirrors the admin lms.js preview modal styling */
+.preview-q-card{padding:20px;}
+.preview-q-title{font-size:.9rem;font-weight:700;color:var(--white);margin-bottom:6px;}
+.preview-q-marks{font-size:.74rem;color:var(--gray);margin-bottom:12px;display:block;}
+.preview-opts{display:flex;flex-direction:column;gap:8px;}
+.preview-opt{padding:10px 14px;border-radius:10px;border:1px solid var(--card-border);background:rgba(120,140,160,.05);font-size:.85rem;display:flex;align-items:center;gap:10px;}
+.preview-opt i{font-size:1rem;flex-shrink:0;color:var(--gray);}
+.preview-opt.correct-chosen{border-color:rgba(43,214,123,.4);background:rgba(43,214,123,.1);}
+.preview-opt.correct-chosen i{color:var(--success);}
+.preview-opt.wrong-chosen{border-color:rgba(255,75,85,.4);background:rgba(255,75,85,.1);}
+.preview-opt.wrong-chosen i{color:var(--danger);}
+.preview-opt.correct-target{border-color:rgba(43,214,123,.3);}
+.preview-opt.correct-target i{color:var(--success);}
+
+.pv-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.76rem;color:var(--gray);}
+.pv-legend span{display:inline-flex;align-items:center;gap:6px;}
+.pv-legend i{font-size:.95rem;}
+
+@media (max-width:480px){
+  .subject-card{flex-direction:column;align-items:flex-start;}
+  .score-pill{align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+
+<header class="pv-topbar">
+  <button class="icon-btn" id="backBtn" aria-label="Back"><i class="bx bx-arrow-back"></i></button>
+  <div class="pv-topbar-title">
+    <span id="pvTitle">Loading…</span>
+    <div class="pv-topbar-badges">
+      <span class="type-tag" id="pvType">Test</span>
+      <span class="level-tag" id="pvLevel">—</span>
+    </div>
+  </div>
+  <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="bx bx-moon"></i></button>
+</header>
+
+<main class="pv-main">
+
+  <div class="pv-state" id="loadingState">
+    <div class="spinner-lg"></div>
+    <p>Loading submission…</p>
+  </div>
+
+  <div class="pv-state hidden" id="blockedState">
+    <i class="bx bx-error-circle blocked-icon"></i>
+    <h2>Couldn't load this submission</h2>
+    <p id="blockedMessage">It may have been removed, or the link is missing information.</p>
+    <a href="lms.html" class="btn btn-lime">Back to LMS</a>
+  </div>
+
+  <div class="pv-body hidden" id="pvBody">
+    <div class="card glass subject-card">
+      <span class="subject-avatar" id="subjectAvatar">--</span>
+      <div class="subject-info">
+        <div class="subject-name" id="subjectName">—</div>
+        <div class="subject-meta" id="subjectMeta">—</div>
+      </div>
+      <div class="score-pill">
+        <span class="score-fraction-lg" id="scoreFraction">0/0</span>
+        <span class="score-pct" id="scorePct">0%</span>
+      </div>
+    </div>
+
+    <div class="pv-legend">
+      <span><i class="bx bx-check-circle" style="color:var(--success);"></i> Correct &amp; chosen</span>
+      <span><i class="bx bx-x-circle" style="color:var(--danger);"></i> Chosen, incorrect</span>
+      <span><i class="bx bx-check" style="color:var(--success);"></i> Correct answer</span>
+    </div>
+
+    <div id="questionsWrap" style="display:flex;flex-direction:column;gap:14px;"></div>
+  </div>
+
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDBRvD87vNdWMS1wvufAd_RNZhuCf2CN4g",
+  authDomain: "the-innovative-explorer-club.firebaseapp.com",
+  projectId: "the-innovative-explorer-club",
+  storageBucket: "the-innovative-explorer-club.firebasestorage.app",
+  messagingSenderId: "421600505981",
+  appId: "1:421600505981:web:6a633ef8b98b4a6f990114"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* =========================================================
+   AUTH GUARD (same block every admin page must repeat)
+   ========================================================= */
+const operatorRaw = sessionStorage.getItem('iec_operator');
+if (!operatorRaw) { window.location.href = 'admin-login.html'; }
+const operator = operatorRaw ? JSON.parse(operatorRaw) : null;
+
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    sessionStorage.removeItem('iec_operator');
+    window.location.href = 'admin-login.html';
+  }
+});
+onSnapshot(doc(db, 'system', 'activeSession'), (snap) => {
+  if (!snap.exists()) return;
+  const data = snap.data();
+  if (operator && data.username && data.username !== operator.username) {
+    sessionStorage.removeItem('iec_operator');
+    signOut(auth).finally(() => { window.location.href = 'admin-login.html?kicked=1'; });
+  }
+});
+
+/* ---------- theme ---------- */
+const themeToggle = document.getElementById('themeToggle');
+themeToggle.innerHTML = document.documentElement.classList.contains('light-mode') ? "<i class='bx bx-sun'></i>" : "<i class='bx bx-moon'></i>";
+themeToggle.addEventListener('click', () => {
+  document.documentElement.classList.toggle('light-mode');
+  const light = document.documentElement.classList.contains('light-mode');
+  themeToggle.innerHTML = light ? "<i class='bx bx-sun'></i>" : "<i class='bx bx-moon'></i>";
+  try{ localStorage.setItem('iec-theme', light ? 'light' : 'dark'); }catch(e){}
+});
+document.getElementById('backBtn').addEventListener('click', () => {
+  if (document.referrer) window.history.back(); else window.location.href = 'lms.html';
+});
+
+/* ---------- helpers ---------- */
+function initials(name){ return (name || '?').trim().split(/\s+/).map(w => w[0]).slice(0,2).join('').toUpperCase(); }
+function escapeHtml(str){ const d = document.createElement('div'); d.textContent = str == null ? '' : String(str); return d.innerHTML; }
+function showState(id){
+  ['loadingState', 'blockedState', 'pvBody'].forEach(s => {
+    document.getElementById(s).classList.toggle('hidden', s !== id);
+  });
+}
+function blockWith(message){
+  document.getElementById('blockedMessage').textContent = message;
+  showState('blockedState');
+}
+
+/* =========================================================
+   LOAD — reads students/{studentUid}/testAttempts/{testId}/attempts/{attemptId}
+   URL params required: testId, attemptId, studentUid
+   ========================================================= */
+async function loadPreview(){
+  const p = new URLSearchParams(window.location.search);
+  const testId = p.get('testId');
+  const attemptId = p.get('attemptId');
+  const studentUid = p.get('studentUid');
+
+  if (!testId || !attemptId || !studentUid){
+    blockWith('This preview link is missing information.');
+    return;
+  }
+
+  try{
+    const [testSnap, attemptSnap] = await Promise.all([
+      getDoc(doc(db, 'tests', testId)),
+      getDoc(doc(db, 'students', studentUid, 'testAttempts', testId, 'attempts', attemptId))
+    ]);
+
+    if (!testSnap.exists()){ blockWith('This test no longer exists.'); return; }
+    if (!attemptSnap.exists()){ blockWith("This submission couldn't be found."); return; }
+
+    const test = testSnap.data();
+    const sub = attemptSnap.data();
+
+    document.getElementById('pvTitle').textContent = test.title || 'Untitled';
+    document.getElementById('pvType').textContent = test.type === 'exam' ? 'Exam' : 'Test';
+    document.getElementById('pvType').classList.toggle('exam', test.type === 'exam');
+    document.getElementById('pvLevel').textContent = test.level || 'All';
+
+    const name = sub.studentName || 'Student';
+    document.getElementById('subjectAvatar').textContent = initials(name);
+    document.getElementById('subjectName').textContent = name;
+    document.getElementById('subjectMeta').textContent = sub.studentLevel || '';
+
+    const totalMarks = sub.totalMarks || test.totalMarks || 0;
+    const pct = totalMarks ? Math.round(((sub.score || 0) / totalMarks) * 100) : 0;
+    document.getElementById('scoreFraction').textContent = `${sub.score || 0}/${totalMarks}`;
+    document.getElementById('scorePct').textContent = `${pct}%`;
+
+    renderQuestions(test.questions || [], sub.answers || {});
+    showState('pvBody');
+  }catch(err){
+    console.error(err);
+    blockWith("Something went wrong loading this submission.");
+  }
+}
+
+function renderQuestions(questions, answers){
+  const wrap = document.getElementById('questionsWrap');
+
+  wrap.innerHTML = questions.map((q, i) => {
+    const isMulti = q.type === 'multi';
+    const studentAnswer = answers[i];
+    const chosenSet = isMulti ? (Array.isArray(studentAnswer) ? studentAnswer : []) : (typeof studentAnswer === 'number' ? [studentAnswer] : []);
+    const correctSet = isMulti ? (q.correctIndexes || []) : (typeof q.correctIndex === 'number' ? [q.correctIndex] : []);
+
+    const opts = (q.options || []).map((opt, oi) => {
+      const wasChosen = chosenSet.includes(oi);
+      const isCorrectTarget = correctSet.includes(oi);
+      let cls = '';
+      let icon = 'bx-circle';
+      if (wasChosen && isCorrectTarget){ cls = 'correct-chosen'; icon = 'bx-check-circle'; }
+      else if (wasChosen && !isCorrectTarget){ cls = 'wrong-chosen'; icon = 'bx-x-circle'; }
+      else if (!wasChosen && isCorrectTarget){ cls = 'correct-target'; icon = 'bx-check'; }
+      return `<div class="preview-opt ${cls}"><i class="bx ${icon}"></i> ${escapeHtml(opt)}</div>`;
+    }).join('');
+
+    return `
+      <div class="card glass preview-q-card">
+        <div class="preview-q-title">${i + 1}. ${escapeHtml(q.question)}</div>
+        <span class="preview-q-marks">${isMulti ? 'Select all that apply' : 'Single choice'}</span>
+        <div class="preview-opts">${opts}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+loadPreview();
+</script>
+</body>
+</html>
