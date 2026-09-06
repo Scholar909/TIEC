@@ -204,18 +204,6 @@ input,textarea,select{font-family:inherit;}
 }
 .sub-score-badge:hover{transform:scale(1.05);}
 
-/* Submission Preview Modal Options */
-.preview-q-card{padding:16px;border-radius:12px;background:rgba(120,140,160,.06);border:1px solid var(--card-border);margin-bottom:12px;}
-.preview-q-title{font-size:.88rem;font-weight:700;color:var(--white);margin-bottom:10px;}
-.preview-opts{display:flex;flex-direction:column;gap:8px;}
-.preview-opt{
-  padding:10px 14px;border-radius:10px;font-size:.84rem;border:1px solid var(--card-border);
-  background:rgba(120,140,160,.04);color:var(--gray);display:flex;align-items:center;justify-content:space-between;
-}
-.preview-opt.correct-chosen{background:rgba(43,214,123,.14);border-color:rgba(43,214,123,.4);color:var(--success);font-weight:600;}
-.preview-opt.wrong-chosen{background:rgba(255,75,85,.14);border-color:rgba(255,75,85,.4);color:var(--danger);font-weight:600;justify-content:flex-start;}
-.preview-opt.correct-target{background:rgba(255,255,255,.08);border-color:rgba(43,214,123,.4);color:var(--white);font-weight:600;}
-
 /* =========================================================
    SETTINGS TAB
    ========================================================= */
