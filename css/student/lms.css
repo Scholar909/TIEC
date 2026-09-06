@@ -336,14 +336,6 @@ button{font-family:inherit;cursor:pointer;}
   width: 100%;
 }
 
-.score-total-pair {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 8px;
-}
-
-
 .test-card:hover{transform:translateY(-2px);border-color:rgba(74,166,255,.3);}
 .test-icon{
   width:42px;height:42px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
@@ -362,8 +354,16 @@ button{font-family:inherit;cursor:pointer;}
 /* completed card — score/total + percentage + preview eye */
 .completed-card{flex-wrap:nowrap;}
 .completed-card-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
-.score-total-pair{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.score-total-pair{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+}
 .score-fraction{font-size:.72rem;color:var(--gray);font-weight:600;white-space:nowrap;}
+
+
 .preview-eye-btn{
   width:36px;height:36px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
   background:rgba(21,123,255,.12);color:var(--accent-text);font-size:1.05rem;border:1px solid rgba(21,123,255,.25);
