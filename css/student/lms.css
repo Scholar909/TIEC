@@ -238,10 +238,12 @@ button{font-family:inherit;cursor:pointer;}
 /* =========================================================
    TABS
    ========================================================= */
-.lms-tabs{display:flex;gap:8px;flex-wrap:wrap;}
+.lms-tabs{display:flex;gap:8px;flex-wrap:nowrap;width:100%;}
 .lms-tab{
-  display:inline-flex;align-items:center;gap:7px;padding:10px 18px;border-radius:999px;
+  flex:1;justify-content:center;
+  display:inline-flex;align-items:center;gap:7px;padding:10px 14px;border-radius:999px;
   font-size:.84rem;font-weight:600;color:var(--gray);border:1px solid var(--card-border);background:var(--card-bg);
+  text-align:center;white-space:nowrap;
   transition:color .3s var(--ease), background .3s var(--ease), border-color .3s var(--ease);
 }
 .lms-tab:hover{color:var(--white);border-color:rgba(74,166,255,.4);}
@@ -259,6 +261,46 @@ button{font-family:inherit;cursor:pointer;}
   padding:16px 18px;display:flex;align-items:center;gap:16px;
   transition:transform .3s var(--ease), border-color .3s var(--ease);
 }
+/* Available Card Layout */
+.test-card.available-card {
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 12px;
+}
+
+.available-card .test-body-info {
+  width: 100%;
+  text-align: left;
+}
+
+.available-card .test-title {
+  text-align: left;
+  white-space: normal;
+}
+
+.available-card .test-desc-line {
+  text-align: left;
+  white-space: normal;
+  margin-top: 4px;
+}
+
+.available-card .test-meta-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 8px;
+  text-align: left;
+}
+
+.available-card .test-action-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 4px;
+}
+
 .test-card:hover{transform:translateY(-2px);border-color:rgba(74,166,255,.3);}
 .test-icon{
   width:42px;height:42px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
@@ -303,9 +345,11 @@ button{font-family:inherit;cursor:pointer;}
 }
 @media (max-width:420px){
   .test-card{flex-direction:column;align-items:stretch;text-align:center;}
+  .test-card.available-card{align-items:flex-start;text-align:left;}
   .test-icon{margin:0 auto;order:0;}
   .test-body-info{order:1;}
   .test-meta-row{justify-content:center;}
+  .available-card .test-meta-row{align-items:flex-start;justify-content:flex-start;}
   .btn-outline-lime, .test-score-badge{order:2;margin-left:0;width:100%;justify-content:center;}
   .completed-card-right{order:2;margin-left:0;width:100%;justify-content:center;}
 }
