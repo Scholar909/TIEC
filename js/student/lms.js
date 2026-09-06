@@ -253,29 +253,34 @@ function renderAvailable(items){
   }).join('');
 }
 
-
 function renderCompleted(items){
   const list = document.getElementById('completedList');
   const empty = document.getElementById('completedEmpty');
   if (!items.length){
     list.innerHTML = '';
     empty.hidden = false;
+    empty.style.display = 'flex';
     return;
   }
   empty.hidden = true;
+  empty.style.display = 'none';
   list.innerHTML = items.map(({ test, latest, attemptId, attemptsUsed, attemptsAllowed, canRetake }) => {
     const totalMarks = latest.totalMarks || test.totalMarks || 0;
     const pct = totalMarks ? Math.round(((latest.score || 0) / totalMarks) * 100) : 0;
     const showScore = test.showScoreToStudent !== false;
     const showPreview = test.allowPreview !== false;
 
+    const submittedDate = toDate(latest.submittedAt);
+    const submittedFormatted = submittedDate 
+      ? `${formatDate(submittedDate)} at ${formatTime(submittedDate)}` 
+      : '—';
+
     return `
       <div class="test-card completed-card">
-        <div class="test-icon done"><i class="bx bx-check"></i></div>
         <div class="test-body-info">
           <div class="test-title">${test.title || 'Untitled test'}</div>
           <div class="test-meta-row">
-            <span><i class="bx bx-calendar-check"></i> Last submitted ${formatDate(toDate(latest.submittedAt))}</span>
+            <span><i class="bx bx-calendar-check"></i> Last submitted ${submittedFormatted}</span>
             <span><i class="bx bx-repeat"></i> ${attemptsUsed}/${attemptsAllowed} attempt${attemptsAllowed === 1 ? '' : 's'} used</span>
           </div>
           ${canRetake ? `<a class="card-link" href="test.html?id=${test.id}">Retake <i class="bx bx-right-arrow-alt"></i></a>` : ''}
@@ -287,7 +292,7 @@ function renderCompleted(items){
               <span class="score-fraction">${latest.score || 0}/${totalMarks}</span>
               <span class="test-score-badge">${pct}%</span>
             </div>
-          ` : `<span class="test-score-badge pending">Score hidden</span>`}
+          ` : ''}
           ${showPreview ? `<a class="preview-eye-btn" href="preview.html?testId=${test.id}&attemptId=${attemptId}" aria-label="Preview submission"><i class="bx bx-show"></i></a>` : ''}
         </div>
       </div>
@@ -299,17 +304,17 @@ function paintStats(availableCount, completedItems){
   document.getElementById('statAvailable').textContent = availableCount;
   document.getElementById('statCompleted').textContent = completedItems.length;
 
-  const scored = completedItems.filter(({ test }) => test.showScoreToStudent !== false);
-  if (scored.length){
-    const avg = scored.reduce((sum, { latest, test }) => {
+  if (completedItems.length){
+    const avg = completedItems.reduce((sum, { latest, test }) => {
       const totalMarks = latest.totalMarks || test.totalMarks || 1;
       return sum + ((latest.score || 0) / totalMarks) * 100;
-    }, 0) / scored.length;
+    }, 0) / completedItems.length;
     document.getElementById('statAverage').textContent = `${Math.round(avg)}%`;
   } else {
     document.getElementById('statAverage').textContent = '–%';
   }
 }
+
 
 /* =========================================================
    AUTH GUARD + DATA LOAD
