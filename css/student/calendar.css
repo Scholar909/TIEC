@@ -214,6 +214,7 @@ button{font-family:inherit;cursor:pointer;}
   --type-competition:#ff8a3d;
   --type-workshop:#c792ea;
   --type-holiday:#8aa0b3;
+  --type-lms: #D32F2F;
 }
 .type-dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex-shrink:0;}
 .type-class{background:var(--type-class);}
@@ -221,6 +222,7 @@ button{font-family:inherit;cursor:pointer;}
 .type-competition{background:var(--type-competition);}
 .type-workshop{background:var(--type-workshop);}
 .type-holiday{background:var(--type-holiday);}
+.type-lms{background: var(--type-lms);}
 
 /* =========================================================
    NEXT UP LIST
