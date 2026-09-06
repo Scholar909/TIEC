@@ -301,6 +301,49 @@ button{font-family:inherit;cursor:pointer;}
   margin-top: 4px;
 }
 
+/* completed card — left-aligned text & inline score layout */
+.test-card.completed-card {
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 12px;
+}
+
+.completed-card .test-body-info {
+  width: 100%;
+  text-align: left;
+}
+
+.completed-card .test-title {
+  text-align: left;
+  white-space: normal;
+}
+
+.completed-card .test-meta-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 8px;
+  text-align: left;
+}
+
+.completed-card-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  width: 100%;
+}
+
+.score-total-pair {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+
 .test-card:hover{transform:translateY(-2px);border-color:rgba(74,166,255,.3);}
 .test-icon{
   width:42px;height:42px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
@@ -345,18 +388,23 @@ button{font-family:inherit;cursor:pointer;}
 }
 @media (max-width:420px){
   .test-card{flex-direction:column;align-items:stretch;text-align:center;}
-  .test-card.available-card{align-items:flex-start;text-align:left;}
+  .test-card.available-card, .test-card.completed-card{align-items:flex-start;text-align:left;}
   .test-icon{margin:0 auto;order:0;}
   .test-body-info{order:1;}
   .test-meta-row{justify-content:center;}
-  .available-card .test-meta-row{align-items:flex-start;justify-content:flex-start;}
-  .btn-outline-lime, .test-score-badge{order:2;margin-left:0;width:100%;justify-content:center;}
-  .completed-card-right{order:2;margin-left:0;width:100%;justify-content:center;}
+  .available-card .test-meta-row, .completed-card .test-meta-row{align-items:flex-start;justify-content:flex-start;}
+  .btn-outline-lime{order:2;margin-left:0;width:100%;justify-content:center;}
+  .completed-card-right{order:2;margin-left:0;width:100%;justify-content:flex-start;}
+  .completed-card .test-score-badge{width:auto;}
 }
+
 
 .empty-state{
   text-align:center;padding:50px 20px;color:var(--gray);font-size:.9rem;
   display:flex;flex-direction:column;align-items:center;gap:12px;
+}
+.empty-state[hidden]{
+  display:none !important;
 }
 .empty-state i{font-size:1.8rem;color:var(--accent-text);}
 
