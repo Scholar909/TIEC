@@ -173,15 +173,21 @@ async function loadAttendanceToday(){
   }catch(e){ console.error(e); document.getElementById('statAttendance').textContent = '—'; }
 }
 
+const typeIcons = {
+  class: 'bx bx-chalkboard',
+  event: 'bx bx-calendar-star',
+  competition: 'bx bxs-trophy',
+  workshop: 'bx bx-wrench',
+  holiday: 'bx bx-sun',
+  lms: 'bx bx-edit-alt'
+};
+
 async function loadUpcomingEvents(){
   const listEl = document.getElementById('eventsList');
   try{
     const todayStr = new Date().toISOString().slice(0,10);
-    // "Upcoming Events" here means activities of type 'event' exactly —
-    // classes/competitions/workshops/holidays don't count toward this card.
     const q = query(
       collection(db, 'occurrences'),
-      where('type', '==', 'event'),
       where('date', '>=', todayStr),
       orderBy('date', 'asc'),
       limit(5)
@@ -190,24 +196,25 @@ async function loadUpcomingEvents(){
     document.getElementById('statEvents').textContent = snap.size;
 
     if (snap.empty){
-      listEl.innerHTML = '<p class="list-empty">No upcoming events yet.</p>';
+      listEl.innerHTML = '<p class="list-empty">No upcoming activities yet.</p>';
       return;
     }
     listEl.innerHTML = '';
     snap.forEach(d => {
       const ev = d.data();
       const when = ev.date ? new Date(ev.date + 'T00:00:00').toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' }) : '';
+      const icon = typeIcons[ev.type] || 'bx bx-calendar';
       const row = document.createElement('div');
       row.className = 'list-row';
-      row.innerHTML = `<span class="list-row-icon"><i class="bx bx-calendar-event"></i></span>
-        <span class="list-row-body"><span class="list-row-title">${escapeHtml(ev.title || 'Untitled event')}</span>
+      row.innerHTML = `<span class="list-row-icon"><i class="${icon}"></i></span>
+        <span class="list-row-body"><span class="list-row-title">${escapeHtml(ev.title || 'Untitled activity')}</span>
         <span class="list-row-meta">${when}${ev.level && ev.level !== 'All' ? ' · ' + escapeHtml(ev.level) : ''}</span></span>`;
       listEl.appendChild(row);
     });
   }catch(e){
     console.error(e);
     document.getElementById('statEvents').textContent = '—';
-    listEl.innerHTML = '<p class="list-empty">Couldn\'t load events.</p>';
+    listEl.innerHTML = '<p class="list-empty">Couldn\'t load activities.</p>';
   }
 }
 

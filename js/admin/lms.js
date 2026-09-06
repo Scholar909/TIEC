@@ -165,6 +165,32 @@ async function notifyEligibleStudents(level, payload){
 }
 
 /* =========================================================
+   CALENDAR SYNC — every LMS test/exam gets a matching occurrence
+   so it shows on the admin + student calendars as an activity.
+   No dedicated color: type 'lms' just falls back to a neutral tone.
+   ========================================================= */
+async function syncLmsOccurrence(testId, { level, title, description, date, startTime, endTime }){
+  try{
+    await setDoc(doc(db, 'occurrences', `lms-${testId}`), {
+      activityId: `lms-${testId}`,
+      type: 'lms',
+      title,
+      description: description || '',
+      level,
+      date,
+      startTime: startTime || null,
+      endTime: endTime || null,
+      attendanceRequired: true,
+      attendanceOverridden: false,
+      updatedBy: operator.username,
+      updatedAt: serverTimestamp()
+    }, { merge: true });
+  }catch(err){
+    console.error('Calendar sync failed:', err);
+  }
+}
+
+/* =========================================================
    DATA: TESTS & LIST RENDERING
    ========================================================= */
 let allTests = [];
@@ -487,11 +513,18 @@ document.getElementById('settingsForm').addEventListener('submit', async (e) => 
       attemptsAllowed: parseInt(document.getElementById('settingsAttempts').value, 10) || 1,
       showScoreToStudent: document.getElementById('settingsShowScore').checked,
       randomizeQuestions: document.getElementById('settingsRandomize').checked,
-      allowPreview: document.getElementById('settingsAllowPreview').checked,
-      durationSeconds: parseInt(document.getElementById('settingsDuration').value, 10) || null,
       ...(openFrom ? { openFrom } : {}),
       ...(openUntil ? { openUntil } : {})
     });
+
+    const t = allTests.find(x => x.id === selectedId);
+    if (t && dateVal){
+      syncLmsOccurrence(selectedId, {
+        level: t.level, title: t.title, description: t.description,
+        date: dateVal, startTime: startVal, endTime: endVal
+      });
+    }
+
     showToast('Settings saved');
   }catch(err){
     console.error(err);
@@ -605,6 +638,10 @@ lmsForm.addEventListener('submit', async (e) => {
   try{
     if (editingId){
       await updateDoc(doc(db, 'tests', editingId), payload);
+      syncLmsOccurrence(editingId, {
+        level, title, description: payload.description,
+        date: dateVal, startTime: startVal, endTime: endVal
+      });
       showToast('Test/exam updated');
     } else {
       const newDoc = await addDoc(collection(db, 'tests'), {
@@ -623,6 +660,10 @@ lmsForm.addEventListener('submit', async (e) => {
         message: `A new ${type} has been added${level !== 'All' ? ` for ${level}` : ''} — check the LMS page to take it.`,
         type: 'test',
         link: `test.html?id=${newDoc.id}`
+      });
+      syncLmsOccurrence(newDoc.id, {
+        level, title, description: payload.description,
+        date: dateVal, startTime: startVal, endTime: endVal
       });
 
       showToast('Test/exam created — add questions from its card');
@@ -664,6 +705,15 @@ document.getElementById('deleteConfirm').addEventListener('click', async () => {
       attemptsSnap.docs.forEach(d => batch.delete(d.ref));
       await batch.commit();
     }
+
+    const recSnap = await getDocs(query(collection(db, 'attendanceRecords'), where('occurrenceId', '==', `lms-${id}`)));
+    if (!recSnap.empty){
+      const recBatch = writeBatch(db);
+      recSnap.docs.forEach(d => recBatch.delete(d.ref));
+      await recBatch.commit();
+    }
+    await deleteDoc(doc(db, 'occurrences', `lms-${id}`)).catch(() => {});
+
     await deleteDoc(doc(db, 'tests', id));
     if (selectedId === id){ selectedId = null; paintSettingsPanel(); paintSubmissionsPanel(); }
     showToast('Test/exam deleted');
