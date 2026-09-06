@@ -14,7 +14,7 @@
   --type-competition:#FF9A3D;
   --type-workshop:#8B5CF6;
   --type-holiday:#9AA6B2;
-  --type-lms:#9AA6B2;
+  --type-lms:#D32F2F;
 }
 html.light-mode{
   --bg-primary:#EEF3F8;--bg-secondary:#FFFFFF;--card-bg:rgba(7,20,32,.045);--card-border:rgba(7,20,32,.09);
