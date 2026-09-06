@@ -368,7 +368,7 @@ async function paintSubmissionsPanel(){
     subList.querySelectorAll('.sub-student-card').forEach(card => {
       card.addEventListener('click', () => {
         const sub = currentSubmissions[card.dataset.subIdx];
-        openSubmissionPreview(sub, t);
+        window.location.href = `preview.html?testId=${selectedId}&attemptId=${sub.id}&studentUid=${sub.studentId}`;
       });
     });
 
@@ -376,84 +376,6 @@ async function paintSubmissionsPanel(){
     console.error('Error fetching submissions:', err);
     subList.innerHTML = `<p class="dropdown-empty">Could not load submissions.</p>`;
   }
-}
-
-/* =========================================================
-   SUBMISSION PREVIEW MODAL
-   ========================================================= */
-const submissionModal = document.getElementById('submissionModal');
-document.getElementById('previewClose').addEventListener('click', () => submissionModal.classList.remove('open'));
-
-function openSubmissionPreview(sub, test){
-  const student = allStudents.find(s => s.id === sub.studentId) || {};
-  const name = student.fullName || sub.studentName || 'Student';
-  document.getElementById('previewStudentName').textContent = `${name}'s Submission`;
-  document.getElementById('previewSubMeta').textContent = `Score: ${sub.score || 0} / ${sub.totalMarks || test.totalMarks || 0} · Completed`;
-
-  const body = document.getElementById('previewModalBody');
-  body.innerHTML = '';
-
-  const questions = test.questions || [];
-  const userAnswers = sub.answers || {};
-
-  questions.forEach((q, qIndex) => {
-    const card = document.createElement('div');
-    card.className = 'preview-q-card';
-
-    const qTitle = document.createElement('div');
-    qTitle.className = 'preview-q-title';
-    qTitle.textContent = `${qIndex + 1}. ${q.question}`;
-    card.appendChild(qTitle);
-
-    const optsList = document.createElement('div');
-    optsList.className = 'preview-opts';
-
-    const isMulti = q.type === 'multi';
-    const chosen = userAnswers[qIndex]; // single index OR array of indexes
-
-    (q.options || []).forEach((optText, optIdx) => {
-      const optRow = document.createElement('div');
-      optRow.className = 'preview-opt';
-
-      let isPicked = false;
-      if (isMulti && Array.isArray(chosen)){
-        isPicked = chosen.includes(optIdx);
-      } else if (!isMulti && chosen !== undefined && chosen !== null){
-        isPicked = Number(chosen) === optIdx;
-      }
-
-      let isCorrectTarget = false;
-      if (isMulti && Array.isArray(q.correctIndexes)){
-        isCorrectTarget = q.correctIndexes.includes(optIdx);
-      } else if (!isMulti && q.correctIndex !== undefined){
-        isCorrectTarget = q.correctIndex === optIdx;
-      }
-
-      if (isPicked && isCorrectTarget){
-        // Correct answer student picked: green text with tick icon at right
-        optRow.classList.add('correct-chosen');
-        optRow.innerHTML = `<span>${escapeHtml(optText)}</span><i class="bx bx-check" style="font-size:1.2rem;color:var(--success);"></i>`;
-      } else if (isPicked && !isCorrectTarget){
-        // Wrong answer student picked: red text with crossed icon at left
-        optRow.classList.add('wrong-chosen');
-        optRow.innerHTML = `<i class="bx bx-x" style="font-size:1.2rem;color:var(--danger);margin-right:8px;"></i><span>${escapeHtml(optText)}</span>`;
-      } else if (!isPicked && isCorrectTarget){
-        // Correct answer set by admin (user didn't pick it): white text with green tick at right
-        optRow.classList.add('correct-target');
-        optRow.innerHTML = `<span>${escapeHtml(optText)}</span><i class="bx bx-check" style="font-size:1.2rem;color:var(--success);"></i>`;
-      } else {
-        // Not selected & incorrect: normal text
-        optRow.innerHTML = `<span>${escapeHtml(optText)}</span>`;
-      }
-
-      optsList.appendChild(optRow);
-    });
-
-    card.appendChild(optsList);
-    body.appendChild(card);
-  });
-
-  submissionModal.classList.add('open');
 }
 
 /* =========================================================
@@ -506,15 +428,24 @@ document.getElementById('settingsForm').addEventListener('submit', async (e) => 
     const dateVal = document.getElementById('settingsDate').value;
     const startVal = document.getElementById('settingsStartTime').value;
     const endVal = document.getElementById('settingsEndTime').value;
-    const openFrom = dateVal && startVal ? Timestamp.fromDate(new Date(`${dateVal}T${startVal}`)) : null;
-    const openUntil = dateVal && endVal ? Timestamp.fromDate(new Date(`${dateVal}T${endVal}`)) : null;
+    
+    const openFrom = dateVal && startVal ? Timestamp.fromDate(new Date(`${dateVal}T${startVal}`)) : (dateVal ? Timestamp.fromDate(new Date(`${dateVal}T00:00`)) : null);
+    const openUntil = dateVal && endVal ? Timestamp.fromDate(new Date(`${dateVal}T${endVal}`)) : (dateVal ? Timestamp.fromDate(new Date(`${dateVal}T23:59`)) : null);
+
+    const attemptsAllowed = parseInt(document.getElementById('settingsAttempts').value, 10) || 1;
+    const showScoreToStudent = document.getElementById('settingsShowScore').checked;
+    const randomizeQuestions = document.getElementById('settingsRandomize').checked;
+    const allowPreview = document.getElementById('settingsAllowPreview').checked;
+    const durationSeconds = parseInt(document.getElementById('settingsDuration').value, 10) || null;
 
     await updateDoc(doc(db, 'tests', selectedId), {
-      attemptsAllowed: parseInt(document.getElementById('settingsAttempts').value, 10) || 1,
-      showScoreToStudent: document.getElementById('settingsShowScore').checked,
-      randomizeQuestions: document.getElementById('settingsRandomize').checked,
-      ...(openFrom ? { openFrom } : {}),
-      ...(openUntil ? { openUntil } : {})
+      attemptsAllowed,
+      showScoreToStudent,
+      randomizeQuestions,
+      allowPreview,
+      durationSeconds,
+      openFrom,
+      openUntil
     });
 
     const t = allTests.find(x => x.id === selectedId);
@@ -534,6 +465,7 @@ document.getElementById('settingsForm').addEventListener('submit', async (e) => 
     btn.disabled = false;
   }
 });
+
 
 /* =========================================================
    ADD / EDIT FORM MODAL
