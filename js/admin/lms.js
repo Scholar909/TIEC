@@ -326,22 +326,45 @@ async function paintSubmissionsPanel(){
       return;
     }
 
-    subList.innerHTML = currentSubmissions.map((sub, idx) => {
-      const student = allStudents.find(s => s.id === sub.studentId) || {};
-      const name = student.fullName || sub.studentName || 'Student';
-      const level = student.membershipLevel || sub.studentLevel || 'Member';
-      const pct = Math.round((sub.score / (sub.totalMarks || t.totalMarks || 1)) * 100) || 0;
+    // Group every attempt doc by student so one student's repeat attempts
+    // render as a single card instead of one card per attempt.
+    const groupsMap = new Map();
+    currentSubmissions.forEach(sub => {
+      const key = sub.studentId || sub.id;
+      if (!groupsMap.has(key)) groupsMap.set(key, []);
+      groupsMap.get(key).push(sub);
+    });
+
+    // Sort each student's attempts most-recent-first, then sort the cards
+    // themselves by whoever submitted most recently.
+    const groups = Array.from(groupsMap.values()).map(list => {
+      list.sort((a, b) => (b.submittedAt?.toMillis?.() || 0) - (a.submittedAt?.toMillis?.() || 0));
+      return list;
+    });
+    groups.sort((a, b) => (b[0].submittedAt?.toMillis?.() || 0) - (a[0].submittedAt?.toMillis?.() || 0));
+
+    const attemptsAllowed = t.attemptsAllowed || 1;
+
+    subList.innerHTML = groups.map((groupAttempts, idx) => {
+      const latest = groupAttempts[0];
+      const student = allStudents.find(s => s.id === latest.studentId) || {};
+      const name = student.fullName || latest.studentName || 'Student';
+      const level = student.membershipLevel || latest.studentLevel || 'Member';
+      const totalMarks = latest.totalMarks || t.totalMarks || 1;
+      const pct = Math.round((latest.score / totalMarks) * 100) || 0;
+      const submittedCount = groupAttempts.length;
 
       return `
-        <div class="sub-student-card" data-sub-idx="${idx}">
+        <div class="sub-student-card" data-group-idx="${idx}">
           <div class="sub-student-left">
             <div class="sub-student-avatar">${initials(name)}</div>
             <div class="sub-student-info">
               <span class="sub-student-name">${escapeHtml(name)}</span>
               <span class="sub-student-level">${escapeHtml(level)}</span>
+              <span class="sub-attempts-pill" style="display:inline-flex;align-items:center;gap:4px;margin-top:4px;font-size:.7rem;font-weight:700;padding:2px 9px;border-radius:999px;background:rgba(74,166,255,.14);color:var(--accent-text, #4AA6FF);width:fit-content;"><i class='bx bx-repeat'></i> ${submittedCount}/${attemptsAllowed}</span>
             </div>
           </div>
-          <div class="sub-score-badge" data-score="${sub.score || 0}" data-total="${sub.totalMarks || t.totalMarks || 10}" data-pct="${pct}">
+          <div class="sub-score-badge" data-score="${latest.score || 0}" data-total="${totalMarks}" data-pct="${pct}">
             ${pct}%
           </div>
         </div>`;
@@ -364,11 +387,12 @@ async function paintSubmissionsPanel(){
       });
     });
 
-    // Open preview modal on card click
+    // Open preview on card click — no attemptId, so the preview page loads
+    // every attempt for this student+test and starts on the most recent one.
     subList.querySelectorAll('.sub-student-card').forEach(card => {
       card.addEventListener('click', () => {
-        const sub = currentSubmissions[card.dataset.subIdx];
-        window.location.href = `preview.html?testId=${selectedId}&attemptId=${sub.id}&studentUid=${sub.studentId}`;
+        const latest = groups[card.dataset.groupIdx][0];
+        window.location.href = `preview.html?testId=${selectedId}&studentUid=${latest.studentId}`;
       });
     });
 
