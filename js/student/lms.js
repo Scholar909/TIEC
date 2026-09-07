@@ -203,8 +203,9 @@ async function loadLms(studentUid){
         available.push({ test, attemptsRemaining, attemptsAllowed });
       }
       if (attemptsUsed > 0){
-        completed.push({ test, latest: attempts[0], attemptId: attempts[0].id, attemptsUsed, attemptsAllowed, canRetake: isOpen && attemptsRemaining > 0 });
+        completed.push({ test, attempts, latest: attempts[0], attemptId: attempts[0].id, attemptsUsed, attemptsAllowed, canRetake: isOpen && attemptsRemaining > 0 });
       }
+
     });
 
     renderAvailable(available);
@@ -310,22 +311,28 @@ function renderCompleted(items){
   }).join('');
 }
 
-
+// AFTER
 function paintStats(availableCount, completedItems){
   document.getElementById('statAvailable').textContent = availableCount;
   document.getElementById('statCompleted').textContent = completedItems.length;
 
   if (completedItems.length){
-    const avg = completedItems.reduce((sum, { latest, test }) => {
-      const totalMarks = latest.totalMarks || test.totalMarks || 1;
-      return sum + ((latest.score || 0) / totalMarks) * 100;
-    }, 0) / completedItems.length;
-    document.getElementById('statAverage').textContent = `${Math.round(avg)}%`;
+    const overallAvg = completedItems.reduce((sum, { test, attempts }) => {
+      // 1. Calculate average score across all attempts for this specific test
+      const testAvg = attempts.reduce((aSum, att) => {
+        const totalMarks = att.totalMarks || test.totalMarks || 1;
+        return aSum + ((att.score || 0) / totalMarks) * 100;
+      }, 0) / (attempts.length || 1);
+
+      // 2. Add test average to cumulative sum
+      return sum + testAvg;
+    }, 0) / completedItems.length; // 3. Divide by total unique tests taken
+
+    document.getElementById('statAverage').textContent = `${Math.round(overallAvg)}%`;
   } else {
     document.getElementById('statAverage').textContent = '–%';
   }
 }
-
 
 /* =========================================================
    AUTH GUARD + DATA LOAD
