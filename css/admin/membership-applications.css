@@ -371,3 +371,14 @@ code{font-family:'Courier New',monospace;background:rgba(120,140,160,.14);paddin
 @media (min-width:960px){
   .bottom-nav{left:var(--sidebar-w);}
 }
+
+/* Hide notifications link from the navigation sidebar */
+.side-link[data-page="notifications"],
+.side-link[href*="notifications"] {
+  display: none !important;
+}
+
+/* Hide the notification bell button and its dropdown container */
+.topbar-right .dropdown-wrap:has(#bellBtn) {
+  display: none !important;
+}

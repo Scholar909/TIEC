@@ -126,3 +126,14 @@ template{display:none;}
 /* TOAST */
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);z-index:1500;background:var(--bg-secondary);border:1px solid var(--card-border);color:var(--white);padding:12px 20px;border-radius:12px;font-size:.84rem;font-weight:500;opacity:0;pointer-events:none;transition:opacity .3s var(--ease), transform .3s var(--ease);box-shadow:0 10px 30px rgba(0,0,0,.3);}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* Hide notifications link from the navigation sidebar */
+.side-link[data-page="notifications"],
+.side-link[href*="notifications"] {
+  display: none !important;
+}
+
+/* Hide the notification bell button and its dropdown container */
+.topbar-right .dropdown-wrap:has(#bellBtn) {
+  display: none !important;
+}
