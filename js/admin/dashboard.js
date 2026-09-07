@@ -262,62 +262,66 @@ async function loadApplications(){
   }
 }
 
-async function loadNotifications(){
+/* =========================================================
+   NOTIFICATIONS — unread adminMessages, live. A message drops
+   off here the instant it's marked read on the Messages page.
+   ========================================================= */
+function setupNotifications(){
   const listEl = document.getElementById('notificationsList');
   const bellListEl = document.getElementById('bellList');
-  try{
-    const snap = await getDocs(query(collection(db, 'notifications'), orderBy('createdAt', 'desc'), limit(5)));
-    if (snap.empty){
-      listEl.innerHTML = '<p class="list-empty">No notifications yet.</p>';
-      bellListEl.innerHTML = '<p class="dropdown-empty">No notifications yet.</p>';
-      return;
-    }
 
-    let unread = 0;
-    listEl.innerHTML = '';
-    bellListEl.innerHTML = '';
-    snap.forEach(d => {
-      const n = d.data();
-      if (!n.readBy || !operator || !n.readBy.includes(operator.username)) unread++;
-      const when = n.createdAt && n.createdAt.toDate ? timeAgo(n.createdAt.toDate()) : '';
+  onSnapshot(
+    query(collection(db, 'adminMessages'), orderBy('createdAt', 'desc'), limit(20)),
+    (snap) => {
+      const unread = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(m => m.status === 'unread')
+        .slice(0, 5);
 
-      const row = document.createElement('div');
-      row.className = 'list-row';
-      row.innerHTML = `<span class="list-row-icon"><i class="${iconForType(n.type)}"></i></span>
-        <span class="list-row-body"><span class="list-row-title">${escapeHtml(n.title || 'Notification')}</span>
-        <span class="list-row-meta">${when}</span></span>`;
-      listEl.appendChild(row);
+      if (unread.length === 0){
+        listEl.innerHTML = '<p class="list-empty">No new messages.</p>';
+        bellListEl.innerHTML = '<p class="dropdown-empty">No new messages.</p>';
+        document.getElementById('bellBadge').hidden = true;
+        document.getElementById('navBadgeNotifications').hidden = true;
+        return;
+      }
 
-      const bellRow = document.createElement('div');
-      bellRow.className = 'notif-row';
-      bellRow.innerHTML = `<i class="${iconForType(n.type)}"></i>
-        <div><div class="notif-title">${escapeHtml(n.title || 'Notification')}</div>
-        <div class="notif-time">${when}</div></div>`;
-      bellListEl.appendChild(bellRow);
-    });
+      listEl.innerHTML = '';
+      bellListEl.innerHTML = '';
+      unread.forEach(m => {
+        const when = m.createdAt && m.createdAt.toDate ? timeAgo(m.createdAt.toDate()) : '';
+        const title = `${m.name || 'Someone'} — ${m.reason || 'New message'}`;
 
-    if (unread > 0){
+        const row = document.createElement('div');
+        row.className = 'list-row';
+        row.innerHTML = `<span class="list-row-icon"><i class="bx bx-envelope"></i></span>
+          <span class="list-row-body"><span class="list-row-title">${escapeHtml(title)}</span>
+          <span class="list-row-meta">${when}</span></span>`;
+        listEl.appendChild(row);
+
+        const bellRow = document.createElement('div');
+        bellRow.className = 'notif-row';
+        bellRow.innerHTML = `<i class="bx bx-envelope"></i>
+          <div><div class="notif-title">${escapeHtml(title)}</div>
+          <div class="notif-time">${when}</div></div>`;
+        bellListEl.appendChild(bellRow);
+      });
+
       document.getElementById('bellBadge').hidden = false;
       const navBadge = document.getElementById('navBadgeNotifications');
-      navBadge.textContent = unread; navBadge.hidden = false;
+      navBadge.textContent = unread.length;
+      navBadge.hidden = false;
+    },
+    (err) => {
+      console.error(err);
+      listEl.innerHTML = '<p class="list-empty">Couldn\'t load notifications.</p>';
+      bellListEl.innerHTML = '<p class="dropdown-empty">Couldn\'t load notifications.</p>';
     }
-  }catch(e){
-    console.error(e);
-    listEl.innerHTML = '<p class="list-empty">Couldn\'t load notifications.</p>';
-    bellListEl.innerHTML = '<p class="dropdown-empty">Couldn\'t load notifications.</p>';
-  }
-}
-function iconForType(type){
-  switch(type){
-    case 'application': return 'bx bx-clipboard';
-    case 'quiz': return 'bx bx-edit-alt';
-    case 'message': return 'bx bx-envelope';
-    default: return 'bx bx-bell';
-  }
+  );
 }
 
 loadStudentsCount();
 loadAttendanceToday();
 loadUpcomingEvents();
 loadApplications();
-loadNotifications();
+setupNotifications();
