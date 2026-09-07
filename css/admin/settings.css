@@ -400,6 +400,9 @@ textarea,input{font-family:inherit;}
 }
 .restricted-card h3{font-size:1.05rem;}
 .restricted-card p{font-size:.86rem;max-width:340px;margin-top:4px;}
+.restricted-card[hidden]{
+  display:none !important;
+}
 
 .dash-bottom-spacer{height:4px;}
 
