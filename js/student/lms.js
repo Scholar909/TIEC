@@ -175,14 +175,22 @@ async function loadLms(studentUid){
 
     // one attempts-history fetch per test — fine at this club's scale
     const attemptSnaps = await Promise.all(
-      tests.map(t => getDocs(query(collection(db, 'students', studentUid, 'testAttempts', t.id, 'attempts'), orderBy('submittedAt', 'desc'))))
+      tests.map(t => getDocs(collection(db, 'students', studentUid, 'testAttempts', t.id, 'attempts')))
     );
+
 
     const available = [];
     const completed = [];
 
     tests.forEach((test, i) => {
-      const attempts = attemptSnaps[i].docs.map(d => ({ id: d.id, ...d.data() }));
+        const attempts = attemptSnaps[i].docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => {
+          const timeA = a.submittedAt?.toMillis ? a.submittedAt.toMillis() : 0;
+          const timeB = b.submittedAt?.toMillis ? b.submittedAt.toMillis() : 0;
+          return timeB - timeA;
+        });
+
       const attemptsUsed = attempts.length;
       const attemptsAllowed = test.attemptsAllowed || 1;
       const attemptsRemaining = Math.max(0, attemptsAllowed - attemptsUsed);
@@ -265,8 +273,10 @@ function renderCompleted(items){
   empty.hidden = true;
   empty.style.display = 'none';
   list.innerHTML = items.map(({ test, latest, attemptId, attemptsUsed, attemptsAllowed, canRetake }) => {
+    // Ensure score and totalMarks are strictly pulled from the latest attempt object
     const totalMarks = latest.totalMarks || test.totalMarks || 0;
-    const pct = totalMarks ? Math.round(((latest.score || 0) / totalMarks) * 100) : 0;
+    const score = typeof latest.score === 'number' ? latest.score : 0;
+    const pct = totalMarks ? Math.round((score / totalMarks) * 100) : 0;
     const showScore = test.showScoreToStudent !== false;
     const showPreview = test.allowPreview !== false;
 
@@ -289,7 +299,7 @@ function renderCompleted(items){
         <div class="completed-card-right">
           ${showScore ? `
             <div class="score-total-pair">
-              <span class="score-fraction">${latest.score || 0}/${totalMarks}</span>
+              <span class="score-fraction">${score}/${totalMarks}</span>
               <span class="test-score-badge">${pct}%</span>
             </div>
           ` : ''}
@@ -299,6 +309,7 @@ function renderCompleted(items){
     `;
   }).join('');
 }
+
 
 function paintStats(availableCount, completedItems){
   document.getElementById('statAvailable').textContent = availableCount;
