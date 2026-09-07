@@ -512,10 +512,6 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   </ul>
 
   <div class="nav-right">
-    <div class="search-wrap" id="searchWrap">
-      <input type="text" class="search-input" placeholder="Search...">
-      <button class="icon-btn" id="searchToggle" aria-label="Toggle search"><i class="bx bx-search"></i></button>
-    </div>
     <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="bx bx-moon"></i></button>
     <a href="pages/membership.html" class="btn btn-lime nav-join"><span class="full">Join Community</span></a>
     <button class="icon-btn hamburger" id="hamburger" aria-label="Toggle menu"><i class="bx bx-menu"></i></button>
@@ -844,12 +840,6 @@ window.addEventListener('scroll', () => {
 const hamburger = document.getElementById('hamburger');
 const navMenu = document.getElementById('navMenu');
 hamburger.addEventListener('click', () => navMenu.classList.toggle('open'));
-
-const searchWrap = document.getElementById('searchWrap');
-document.getElementById('searchToggle').addEventListener('click', () => {
-  searchWrap.classList.toggle('open');
-  if (searchWrap.classList.contains('open')) searchWrap.querySelector('input').focus();
-});
 
 /* Dark / light toggle (persisted) */
 const themeToggle = document.getElementById('themeToggle');
