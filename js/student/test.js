@@ -8,7 +8,7 @@ import {
   getAuth, onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 import {
-  getFirestore, doc, getDoc, collection, addDoc, getDocs, onSnapshot, serverTimestamp
+  getFirestore, doc, getDoc, collection, addDoc, getDocs, updateDoc, onSnapshot, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 // Your web app's Firebase configuration
@@ -82,6 +82,8 @@ let timerInterval = null;
 let expiryInterval = null;
 let secondsLeft = 0;
 let submitted = false;
+let currentAttemptId = null;
+
 
 /* ---------- theme (persisted) ---------- */
 const themeToggle = document.getElementById('themeToggle');
@@ -380,21 +382,33 @@ async function submitTest(autoSubmitted, reason){
 
   const percentage = totalMarks ? Math.round((earned / totalMarks) * 100) : 0;
 
-  try{
-    await addDoc(collection(db, 'students', uid, 'testAttempts', testId, 'attempts'), {
-      answers,
-      score: earned,       // raw points earned — admin side computes % itself
-      totalMarks,
-      testId,
-      studentId: uid,
-      studentName,
-      studentLevel,
-      submittedAt: serverTimestamp(),
-      totalQuestions: questions.length
-    });
+    try{
+    if (currentAttemptId) {
+      await updateDoc(doc(db, 'students', uid, 'testAttempts', testId, 'attempts', currentAttemptId), {
+        answers,
+        score: earned,       // raw points earned — admin side computes % itself
+        totalMarks,
+        submittedAt: serverTimestamp(),
+        status: 'completed'
+      });
+    } else {
+      await addDoc(collection(db, 'students', uid, 'testAttempts', testId, 'attempts'), {
+        answers,
+        score: earned,
+        totalMarks,
+        testId,
+        studentId: uid,
+        studentName,
+        studentLevel,
+        submittedAt: serverTimestamp(),
+        totalQuestions: questions.length,
+        status: 'completed'
+      });
+    }
   } catch (err){
     console.error('Submit failed:', err);
   }
+
 
   showResult(percentage, autoSubmitted, reason);
 }
@@ -482,11 +496,27 @@ onAuthStateChanged(auth, async (user) => {
       return;
     }
 
-    document.getElementById('testTitle').textContent = testData.title || 'Test';
+        document.getElementById('testTitle').textContent = testData.title || 'Test';
     document.getElementById('testDesc').textContent = testData.description || '';
     currentPage = 0;
     renderQuestions();
     showState('testBody');
+
+    // Instantly create an attempt doc so exiting without submitting consumes this attempt
+    const newAttemptRef = await addDoc(collection(db, 'students', uid, 'testAttempts', testId, 'attempts'), {
+      answers: {},
+      score: 0,
+      totalMarks: testData.totalMarks || (testData.questions || []).length || 0,
+      testId,
+      studentId: uid,
+      studentName,
+      studentLevel,
+      submittedAt: serverTimestamp(),
+      totalQuestions: (testData.questions || []).length,
+      status: 'incomplete'
+    });
+    currentAttemptId = newAttemptRef.id;
+
 
     startExpiryWatchdog(openUntil);
     if (testData.durationSeconds){
