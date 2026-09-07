@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>(function(){try{if(localStorage.getItem('iec-theme')==='light'){document.documentElement.classList.add('light-mode');}}catch(e){}})();</script>
 
-<title>FAQ — Innovative Explorer Club</title>
+<title>FAQ — Innovation Explorer Club</title>
   <link
   rel="icon"
   type="image/png"
@@ -15,7 +15,7 @@
   rel="apple-touch-icon"
   href="../assets/images/icon.png"
 >
-<meta name="description" content="Answers to common questions about membership, programs, competitions, certificates, fees, age requirements and parent questions at the Innovative Explorer Club.">
+<meta name="description" content="Answers to common questions about membership, programs, competitions, certificates, fees, age requirements and parent questions at the Innovation Explorer Club.">
 
 <!-- Default typeface: Poppins, all weights used across headings and body -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -456,8 +456,8 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
      ========================================================= -->
 <nav class="navbar" id="navbar">
   <a href="../index.html" class="nav-logo">
-    <img src="../assets/images/logo-icon.png" alt="Innovative Explorer Club logo">
-    <span class="logo-text">Innovative Explorer Club</span>
+    <img src="../assets/images/logo-icon.png" alt="Innovation Explorer Club logo">
+    <span class="logo-text">Innovation Explorer Club</span>
   </a>
 
   <ul class="nav-menu" id="navMenu">
@@ -473,10 +473,6 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   </ul>
 
   <div class="nav-right">
-    <div class="search-wrap" id="searchWrap">
-      <input type="text" class="search-input" placeholder="Search...">
-      <button class="icon-btn" id="searchToggle" aria-label="Toggle search"><i class="bx bx-search"></i></button>
-    </div>
     <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode"><i class="bx bx-moon"></i></button>
     <a href="membership.html" class="btn btn-lime nav-join"><span class="full">Join Community</span></a>
     <button class="icon-btn hamburger" id="hamburger" aria-label="Toggle menu"><i class="bx bx-menu"></i></button>
@@ -533,7 +529,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   <div class="faq-list reveal" id="faqList">
 
     <div class="faq-item glass" data-category="general">
-      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-info-circle"></i></div><h4>What is the Innovative Explorer Club (TIEC)?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
+      <div class="faq-question"><div class="faq-cat-icon"><i class="bx bx-info-circle"></i></div><h4>What is the Innovation Explorer Club (TIEC)?</h4><div class="faq-chevron"><i class="bx bx-plus"></i></div></div>
       <div class="faq-answer"><div class="faq-answer-inner">TIEC is a student technology and innovation club offering hands-on learning across eight academies — Robotics, Coding, AI, Maker Space, Entrepreneurship, Creative Media, Green Innovation, and Future Skills.</div></div>
     </div>
 
@@ -677,8 +673,8 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   <div class="footer-grid">
     <div>
       <div class="footer-brand">
-        <img src="../assets/images/logo-icon-footer.png" alt="Innovative Explorer Club logo">
-        Innovative Explorer Club
+        <img src="../assets/images/logo-icon-footer.png" alt="Innovation Explorer Club logo">
+        Innovation Explorer Club
       </div>
       <p style="font-size:.86rem;">Empowering young minds through technology and innovation.</p>
       <div class="social-row">
@@ -762,7 +758,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     </div>
   </div>
   <div class="footer-bottom">
-    <span>&copy; <span id="year"></span> Innovative Explorer Club. All rights reserved.</span>
+    <span>&copy; <span id="year"></span> Innovation Explorer Club. All rights reserved.</span>
     <span>Learn. Build. Innovate. Explore.</span>
   </div>
 </footer>
@@ -779,12 +775,6 @@ window.addEventListener('scroll', () => {
 const hamburger = document.getElementById('hamburger');
 const navMenu = document.getElementById('navMenu');
 hamburger.addEventListener('click', () => navMenu.classList.toggle('open'));
-
-const searchWrap = document.getElementById('searchWrap');
-document.getElementById('searchToggle').addEventListener('click', () => {
-  searchWrap.classList.toggle('open');
-  if (searchWrap.classList.contains('open')) searchWrap.querySelector('input').focus();
-});
 
 /* Dark / light toggle (persisted) */
 const themeToggle = document.getElementById('themeToggle');
