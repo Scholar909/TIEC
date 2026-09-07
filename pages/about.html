@@ -321,21 +321,46 @@ html.light-mode .story-visual i{color:rgba(11,27,41,.14);}
 /* =========================================================
    LEADERSHIP TEAM
    ========================================================= */
-.team-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;}
-.team-card{padding:28px 20px;text-align:center;transition:transform .4s var(--ease), border-color .4s var(--ease);}
-.team-card:hover{transform:translateY(-6px);border-color:rgba(74,166,255,.35);}
-.team-avatar{
-  width:72px;height:72px;border-radius:50%;margin:0 auto 16px;
-  background:var(--placeholder-grad);display:flex;align-items:center;justify-content:center;
-  color:var(--accent-text);font-size:1.4rem;font-weight:700;border:1px solid var(--card-border);
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
 }
-.team-card h4{font-size:.94rem;font-weight:600;}
-.team-card .role{font-size:.76rem;color:var(--accent-lime-text);margin-top:4px;display:block;}
-.team-socials{display:flex;justify-content:center;gap:8px;margin-top:14px;}
-.team-socials .icon-btn{width:32px;height:32px;font-size:.82rem;}
-@media (max-width:960px){.team-grid{grid-template-columns:repeat(3,1fr);}}
-@media (max-width:560px){.team-grid{grid-template-columns:repeat(2,1fr);}}
+.team-card {
+  padding: 28px 20px;
+  text-align: center;
+  transition: transform .4s var(--ease), border-color .4s var(--ease);
+}
+.team-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(74,166,255,.35);
+}
+.team-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  background: var(--placeholder-grad);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-text);
+  font-size: 1.4rem;
+  font-weight: 700;
+  border: 1px solid var(--card-border);
+}
+.team-card h4 { font-size: .94rem; font-weight: 600; }
+.team-card .role { font-size: .76rem; color: var(--accent-lime-text); margin-top: 4px; display: block; }
+.team-socials { display: flex; justify-content: center; gap: 8px; margin-top: 14px; }
+.team-socials .icon-btn { width: 32px; height: 32px; font-size: .82rem; }
 
+/* Responsive break for mobile screens */
+@media (max-width: 600px) {
+  .team-grid {
+    grid-template-columns: 1fr;
+  }
+}
+  
 /* =========================================================
    MEMBERSHIP STRUCTURE TABLE
    ========================================================= */
@@ -628,47 +653,11 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   <div class="team-grid container reveal">
     <div class="team-card glass">
       <div class="team-avatar">NA</div>
-      <h4>Ngozi A.</h4>
+      <h4>Olugbemi J. Oluwatosin</h4>
       <span class="role">Founder &amp; Executive Director</span>
       <div class="team-socials">
-        <a href="#" class="icon-btn" aria-label="LinkedIn"><i class="bx bx-user-voice"></i></a>
-        <a href="#" class="icon-btn" aria-label="Email"><i class="bx bx-envelope"></i></a>
-      </div>
-    </div>
-    <div class="team-card glass">
-      <div class="team-avatar">EU</div>
-      <h4>Emeka U.</h4>
-      <span class="role">Head of Programs</span>
-      <div class="team-socials">
-        <a href="#" class="icon-btn" aria-label="LinkedIn"><i class="bx bx-user-voice"></i></a>
-        <a href="#" class="icon-btn" aria-label="Email"><i class="bx bx-envelope"></i></a>
-      </div>
-    </div>
-    <div class="team-card glass">
-      <div class="team-avatar">BI</div>
-      <h4>Blessing I.</h4>
-      <span class="role">Robotics &amp; AI Lead</span>
-      <div class="team-socials">
-        <a href="#" class="icon-btn" aria-label="LinkedIn"><i class="bx bx-user-voice"></i></a>
-        <a href="#" class="icon-btn" aria-label="Email"><i class="bx bx-envelope"></i></a>
-      </div>
-    </div>
-    <div class="team-card glass">
-      <div class="team-avatar">YM</div>
-      <h4>Yusuf M.</h4>
-      <span class="role">Partnerships &amp; Outreach</span>
-      <div class="team-socials">
-        <a href="#" class="icon-btn" aria-label="LinkedIn"><i class="bx bx-user-voice"></i></a>
-        <a href="#" class="icon-btn" aria-label="Email"><i class="bx bx-envelope"></i></a>
-      </div>
-    </div>
-    <div class="team-card glass">
-      <div class="team-avatar">AB</div>
-      <h4>Aisha B.</h4>
-      <span class="role">Volunteer &amp; Mentor Coordinator</span>
-      <div class="team-socials">
-        <a href="#" class="icon-btn" aria-label="LinkedIn"><i class="bx bx-user-voice"></i></a>
-        <a href="#" class="icon-btn" aria-label="Email"><i class="bx bx-envelope"></i></a>
+        <a href="https://www.linkedin.com/in/oluwatosin-olugbemi-bb066a106/" class="icon-btn" aria-label="LinkedIn"><i class="bx bx-user-voice"></i></a>
+        <a href="jimmyolugbemi@gmail.com" class="icon-btn" aria-label="Email"><i class="bx bx-envelope"></i></a>
       </div>
     </div>
   </div>
