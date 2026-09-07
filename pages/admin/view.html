@@ -184,6 +184,17 @@ input,textarea,select{font-family:inherit;}
 .bottom-link span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
 .bottom-link.active{color:var(--accent-lime-text);}
 @media (min-width:960px){.bottom-nav{left:var(--sidebar-w);}}
+/* Hide notifications link from the navigation sidebar */
+.side-link[data-page="notifications"],
+.side-link[href*="notifications"] {
+  display: none !important;
+}
+
+/* Hide the notification bell button and its dropdown container */
+.topbar-right .dropdown-wrap:has(#bellBtn) {
+  display: none !important;
+}
+
 </style>
 </head>
 <body>
