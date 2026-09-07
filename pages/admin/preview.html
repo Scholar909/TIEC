@@ -96,9 +96,18 @@ button{font-family:inherit;cursor:pointer;}
 .pv-legend span{display:inline-flex;align-items:center;gap:6px;}
 .pv-legend i{font-size:.95rem;}
 
+/* attempt pagination — bottom of page, transaction-history style */
+.pv-pagination{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top: 10px}
+.pv-pagination-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:10px;font-weight:600;font-size:.82rem;border:1px solid var(--card-border);background:rgba(120,140,160,.06);color:var(--white);transition:background .3s var(--ease), opacity .3s var(--ease), transform .3s var(--ease);}
+.pv-pagination-btn:hover:not(:disabled){background:rgba(120,140,160,.14);transform:translateY(-1px);}
+.pv-pagination-btn:disabled{opacity:.32;cursor:not-allowed;transform:none;}
+.pv-pagination-info{font-size:.8rem;font-weight:700;color:var(--gray);white-space:nowrap;text-align:center;flex:1;}
+
 @media (max-width:480px){
   .subject-card{flex-direction:column;align-items:flex-start;}
   .score-pill{align-items:flex-start;}
+  .pv-pagination-btn span{display:none;}
+  .pv-pagination-btn{padding:10px 14px;}
 }
 </style>
 </head>
@@ -150,6 +159,12 @@ button{font-family:inherit;cursor:pointer;}
     </div>
 
     <div id="questionsWrap" style="display:flex;flex-direction:column;gap:14px;"></div>
+
+    <div class="card glass pv-pagination" id="pvPagination">
+      <button class="pv-pagination-btn" id="pvPrevBtn"><i class="bx bx-chevron-left"></i><span>Previous</span></button>
+      <span class="pv-pagination-info" id="pvPaginationInfo">Attempt 1 of 1</span>
+      <button class="pv-pagination-btn" id="pvNextBtn"><span>Next</span><i class="bx bx-chevron-right"></i></button>
+    </div>
   </div>
 
 </main>
@@ -157,7 +172,7 @@ button{font-family:inherit;cursor:pointer;}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, onSnapshot, collection, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDBRvD87vNdWMS1wvufAd_RNZhuCf2CN4g",
@@ -220,54 +235,95 @@ function blockWith(message){
 }
 
 /* =========================================================
-   LOAD — reads students/{studentUid}/testAttempts/{testId}/attempts/{attemptId}
-   URL params required: testId, attemptId, studentUid
+   LOAD — reads ALL docs in students/{studentUid}/testAttempts/{testId}/attempts
+   URL params required: testId, studentUid
+   Optional: attemptId (opens directly on that attempt if present, e.g. from
+   an older link) — otherwise the most recent attempt is shown first.
    ========================================================= */
+let testData = null;
+let attempts = [];
+let currentIndex = 0;
+
 async function loadPreview(){
   const p = new URLSearchParams(window.location.search);
   const testId = p.get('testId');
-  const attemptId = p.get('attemptId');
   const studentUid = p.get('studentUid');
+  const requestedAttemptId = p.get('attemptId');
 
-  if (!testId || !attemptId || !studentUid){
+  if (!testId || !studentUid){
     blockWith('This preview link is missing information.');
     return;
   }
 
   try{
-    const [testSnap, attemptSnap] = await Promise.all([
+    const [testSnap, attemptsSnap] = await Promise.all([
       getDoc(doc(db, 'tests', testId)),
-      getDoc(doc(db, 'students', studentUid, 'testAttempts', testId, 'attempts', attemptId))
+      getDocs(query(collection(db, 'students', studentUid, 'testAttempts', testId, 'attempts'), orderBy('submittedAt', 'desc')))
     ]);
 
     if (!testSnap.exists()){ blockWith('This test no longer exists.'); return; }
-    if (!attemptSnap.exists()){ blockWith("This submission couldn't be found."); return; }
+    if (attemptsSnap.empty){ blockWith("This submission couldn't be found."); return; }
 
-    const test = testSnap.data();
-    const sub = attemptSnap.data();
+    testData = testSnap.data();
+    attempts = attemptsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-    document.getElementById('pvTitle').textContent = test.title || 'Untitled';
-    document.getElementById('pvType').textContent = test.type === 'exam' ? 'Exam' : 'Test';
-    document.getElementById('pvType').classList.toggle('exam', test.type === 'exam');
-    document.getElementById('pvLevel').textContent = test.level || 'All';
+    currentIndex = 0;
+    if (requestedAttemptId){
+      const foundIdx = attempts.findIndex(a => a.id === requestedAttemptId);
+      if (foundIdx !== -1) currentIndex = foundIdx;
+    }
 
-    const name = sub.studentName || 'Student';
-    document.getElementById('subjectAvatar').textContent = initials(name);
-    document.getElementById('subjectName').textContent = name;
-    document.getElementById('subjectMeta').textContent = sub.studentLevel || '';
+    document.getElementById('pvType').textContent = testData.type === 'exam' ? 'Exam' : 'Test';
+    document.getElementById('pvType').classList.toggle('exam', testData.type === 'exam');
+    document.getElementById('pvLevel').textContent = testData.level || 'All';
 
-    const totalMarks = sub.totalMarks || test.totalMarks || 0;
-    const pct = totalMarks ? Math.round(((sub.score || 0) / totalMarks) * 100) : 0;
-    document.getElementById('scoreFraction').textContent = `${sub.score || 0}/${totalMarks}`;
-    document.getElementById('scorePct').textContent = `${pct}%`;
-
-    renderQuestions(test.questions || [], sub.answers || {});
+    renderAttempt(currentIndex);
     showState('pvBody');
   }catch(err){
     console.error(err);
     blockWith("Something went wrong loading this submission.");
   }
 }
+
+/* Renders whichever attempt is at `index` — most recent is index 0.
+   Calls the existing renderQuestions() function unchanged for grading marks. */
+function renderAttempt(index){
+  const sub = attempts[index];
+
+  document.getElementById('pvTitle').textContent = testData.title || 'Untitled';
+
+  const name = sub.studentName || 'Student';
+  document.getElementById('subjectAvatar').textContent = initials(name);
+  document.getElementById('subjectName').textContent = name;
+  document.getElementById('subjectMeta').textContent = sub.submittedAt?.toDate
+    ? `Submitted ${sub.submittedAt.toDate().toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`
+    : (sub.studentLevel || '');
+
+  const totalMarks = sub.totalMarks || testData.totalMarks || 0;
+  const pct = totalMarks ? Math.round(((sub.score || 0) / totalMarks) * 100) : 0;
+  document.getElementById('scoreFraction').textContent = `${sub.score || 0}/${totalMarks}`;
+  document.getElementById('scorePct').textContent = `${pct}%`;
+
+  const attemptNumber = attempts.length - index;
+  document.getElementById('pvPaginationInfo').textContent = `Attempt ${attemptNumber} of ${attempts.length}`;
+  document.getElementById('pvPrevBtn').disabled = index <= 0;
+  document.getElementById('pvNextBtn').disabled = index >= attempts.length - 1;
+
+  renderQuestions(testData.questions || [], sub.answers || {});
+}
+
+document.getElementById('pvPrevBtn').addEventListener('click', () => {
+  if (currentIndex > 0){
+    currentIndex--;
+    renderAttempt(currentIndex);
+  }
+});
+document.getElementById('pvNextBtn').addEventListener('click', () => {
+  if (currentIndex < attempts.length - 1){
+    currentIndex++;
+    renderAttempt(currentIndex);
+  }
+});
 
 function renderQuestions(questions, answers){
   const wrap = document.getElementById('questionsWrap');
