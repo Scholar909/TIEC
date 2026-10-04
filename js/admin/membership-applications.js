@@ -444,6 +444,28 @@ async function sendApprovalEmail(a, card){
         permanent password.
       </p>
 
+            <p>
+        To stay updated with club activities, announcements, events, and other
+        important information, parents and students are encouraged to join our
+        official WhatsApp group.
+      </p>
+
+      <p style="margin:25px 0;">
+        <a
+          href="https://chat.whatsapp.com/IJHcEUiBsHCC8gbcJ6seee?s=cl&p=a&mlu=4&ilr=4"
+          style="
+            display:inline-block;
+            padding:12px 20px;
+            background:#111;
+            color:#fff;
+            text-decoration:none;
+            border-radius:8px;
+          "
+        >
+          Join Official WhatsApp Group
+        </a>
+      </p>
+
       <p>
         If you have any questions, please reply to this email.
       </p>
@@ -463,7 +485,7 @@ async function sendApprovalEmail(a, card){
       {
         /* Dynamic EmailJS fields */
         to_email: `${a.parentEmail}, ${a.studentEmail}`,
-        from_name: 'IEC Membership System',
+        from_name: 'TIEC Membership System',
         reply_to: "jimmyolugbemi@gmail.com",
         subject: `Membership Approved: ${a.studentName || 'Student'}`,
 
