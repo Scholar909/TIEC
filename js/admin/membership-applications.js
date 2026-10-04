@@ -654,28 +654,151 @@ async function approveApplication(a){
   }
 }
 
-/* ---------- reject: status change only — admin follows up with parents directly ---------- */
+/* ---------- reject: status change + rejection email ---------- */
+
+async function sendRejectionEmail(a, reason){
+
+  const emailBody = `
+    <div style="font-family:Arial,sans-serif;max-width:650px;margin:auto;color:#222;">
+
+      <h2 style="margin-bottom:8px;">
+        Membership Application Update
+      </h2>
+
+      <p>
+        Hello ${escapeHtml(a.parentName || 'Parent/Guardian')},
+      </p>
+
+      <p>
+        Thank you for your interest in
+        <strong>The Innovation Explorer Club</strong>.
+      </p>
+
+      <p>
+        After reviewing the membership application submitted for
+        <strong>${escapeHtml(a.studentName || 'the student')}</strong>,
+        we are unable to approve the application at this time.
+      </p>
+
+      <div style="background:#f5f5f5;padding:18px;border-radius:10px;margin:20px 0;">
+        <p style="margin:0 0 8px;">
+          <strong>Student:</strong>
+          ${escapeHtml(a.studentName || '')}
+        </p>
+
+        <p style="margin:0 0 8px;">
+          <strong>Membership Level:</strong>
+          ${escapeHtml(a.level || '')}
+        </p>
+
+        <p style="margin:0;">
+          <strong>Reason for Rejection:</strong><br>
+          ${escapeHtml(reason)}
+        </p>
+      </div>
+
+      <p>
+        We encourage you to review the reason above and, once the issue has
+        been cleared up, submit another membership application with the
+        necessary correction applied.
+      </p>
+
+      <p>
+        We look forward to having
+        <strong>${escapeHtml(a.studentName || 'the student')}</strong>
+        as part of the Innovation Explorer Club.
+      </p>
+
+      <p>
+        If you need more details or have any questions about this decision,
+        you are free to reply to this email.
+      </p>
+
+      <p style="margin-top:30px;">
+        Regards,<br>
+        <strong>The Innovation Explorer Club</strong>
+      </p>
+
+    </div>
+  `;
+
+  try{
+
+    await emailjs.send(
+      EMAILJS_SERVICE_ID,
+      EMAILJS_TEMPLATE_ID,
+      {
+        /* Dynamic EmailJS fields */
+        to_email: [a.parentEmail, a.studentEmail]
+          .filter(Boolean)
+          .join(', '),
+
+        from_name: 'TIEC Membership System',
+
+        reply_to: 'jimmyolugbemi@gmail.com',
+
+        subject: `Membership Application Update: ${a.studentName || 'Student'}`,
+
+        /* Dynamic email body */
+        email_body: emailBody
+      }
+    );
+
+    return true;
+
+  }catch(err){
+
+    console.error('EmailJS rejection email error:', err);
+
+    return false;
+  }
+}
+
+
+/* ---------- reject: status change + rejection email ---------- */
+
 async function rejectApplication(a, card){
+
   const textarea = card.querySelector('[data-role="reject-reason-input"]');
   const reason = textarea.value.trim();
+
   if (!reason){
     card.querySelector('[data-role="reject-reason-err"]').classList.remove('hidden');
     return;
   }
+
   const btn = card.querySelector('[data-role="confirm-reject"]');
+
   btn.disabled = true;
+  btn.innerHTML = '<span class="mini-spinner"></span> Rejecting…';
+
   try{
+
+    /* First mark the application as rejected */
     await updateDoc(doc(db, 'applications', a.id), {
       status: 'rejected',
       rejectedAt: serverTimestamp(),
       rejectedBy: operator.username,
       rejectionReason: reason
     });
+
     expandedState.set(a.id, false);
-    showToast('Application rejected');
+
+    /* Then send the rejection email */
+    const emailSent = await sendRejectionEmail(a, reason);
+
+    if (emailSent){
+      showToast('Application rejected — email sent to parent and student');
+    }else{
+      showToast('Application rejected — email could not be sent');
+    }
+
   }catch(e){
+
     console.error(e);
     showToast("Couldn't reject — try again");
+
     btn.disabled = false;
+    btn.innerHTML = 'Confirm Rejection';
   }
 }
