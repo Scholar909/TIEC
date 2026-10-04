@@ -388,8 +388,8 @@ async function sendApprovalEmail(a, card){
       <p>
         We are pleased to inform you that
         <strong>${escapeHtml(a.studentName || 'the student')}</strong>
-        has been approved for membership in the
-        <strong>Innovation Explorer Club</strong>.
+        has been approved for membership in
+        <strong>The Innovation Explorer Club</strong>.
       </p>
 
       <p>
@@ -450,7 +450,7 @@ async function sendApprovalEmail(a, card){
 
       <p style="margin-top:30px;">
         Regards,<br>
-        <strong>Innovation Explorer Club</strong>
+        <strong>The Innovation Explorer Club</strong>
       </p>
 
     </div>
