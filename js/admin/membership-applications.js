@@ -7,6 +7,13 @@ import {
   collection, query, orderBy, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
+emailjs.init({
+  publicKey: "l3a0ppvzcfugMl2ja"
+});
+
+const EMAILJS_SERVICE_ID = "service_62tyel1";
+const EMAILJS_TEMPLATE_ID = "template_0fmcsps";
+
 const firebaseConfig = {
   apiKey: "AIzaSyDBRvD87vNdWMS1wvufAd_RNZhuCf2CN4g",
   authDomain: "the-innovative-explorer-club.firebaseapp.com",
@@ -290,20 +297,41 @@ function approvedSectionHtml(a){
   const tempPassword = tempPasswordFor(a.studentName);
   const username = a.username || usernameFor(a.studentName);
   const link = `${window.location.origin}/pages/student/student-login.html?email=${encodeURIComponent(a.studentEmail || '')}&pwd=${encodeURIComponent(tempPassword)}`;
+
   return `
     <div class="detail-section-title"><i class="bx bx-shield-quarter"></i> Membership</div>
     <div class="detail-grid">
       <div class="detail-item"><span class="detail-label">Username</span><span class="detail-value">${escapeHtml(username)}</span></div>
       <div class="detail-item"><span class="detail-label">Approved On</span><span class="detail-value">${formatDate(a.approvedAt)}</span></div>
     </div>
+
     <p class="temp-pw-note">Share this link so the family can log in and set their permanent password:</p>
+
     <div class="link-box">
       <input type="text" readonly value="${escapeHtml(link)}" data-role="link-input">
-      <button class="btn btn-lime" data-role="copy-link" data-link="${escapeHtml(link)}"><i class="bx bx-copy"></i></button>
+
+      <button
+        class="btn btn-lime link-action"
+        data-role="copy-link"
+        data-link="${escapeHtml(link)}"
+        title="Copy login link"
+        aria-label="Copy login link"
+      >
+        <i class="bx bx-copy"></i>
+      </button>
+
+      <button
+        class="btn btn-outline link-action send-link-btn"
+        data-role="send-approval-email"
+        title="Send approval email"
+        aria-label="Send approval email"
+      >
+        <i class="bx bx-send"></i>
+      </button>
     </div>
+
     <p class="temp-pw-note">Temporary password: <code>${escapeHtml(tempPassword)}</code></p>`;
 }
-
 function rejectedSectionHtml(a){
   return `
     <div class="detail-section-title"><i class="bx bx-x-circle"></i> Rejection</div>
@@ -330,6 +358,145 @@ function pendingActionsHtml(a){
     </div>`;
 }
 
+async function sendApprovalEmail(a, card){
+  const sendBtn = card.querySelector('[data-role="send-approval-email"]');
+
+  if (!a.parentEmail){
+    showToast("This application has no parent email.");
+    return;
+  }
+
+  const tempPassword = tempPasswordFor(a.studentName);
+  const username = a.username || usernameFor(a.studentName);
+
+  const loginLink = `${window.location.origin}/pages/student/student-login.html?email=${encodeURIComponent(a.studentEmail || '')}&pwd=${encodeURIComponent(tempPassword)}`;
+
+  const originalHtml = sendBtn.innerHTML;
+
+  sendBtn.disabled = true;
+  sendBtn.innerHTML = '<span class="spinner"></span>';
+
+  const emailBody = `
+    <div style="font-family:Arial,sans-serif;max-width:650px;margin:auto;color:#222;">
+      
+      <h2 style="margin-bottom:8px;">
+        Membership Approved
+      </h2>
+
+      <p>Hello ${escapeHtml(a.parentName || 'Parent/Guardian')},</p>
+
+      <p>
+        We are pleased to inform you that
+        <strong>${escapeHtml(a.studentName || 'the student')}</strong>
+        has been approved for membership in the
+        <strong>Innovation Explorer Club</strong>.
+      </p>
+
+      <p>
+        The student's account has been created successfully.
+        Please use the details below to access the student portal.
+      </p>
+
+      <div style="background:#f5f5f5;padding:18px;border-radius:10px;margin:20px 0;">
+        <p style="margin:0 0 8px;">
+          <strong>Student:</strong>
+          ${escapeHtml(a.studentName || '')}
+        </p>
+
+        <p style="margin:0 0 8px;">
+          <strong>Username:</strong>
+          ${escapeHtml(username)}
+        </p>
+
+        <p style="margin:0 0 8px;">
+          <strong>Temporary Password:</strong>
+          ${escapeHtml(tempPassword)}
+        </p>
+
+        <p style="margin:0;">
+          <strong>Student Email:</strong>
+          ${escapeHtml(a.studentEmail || '')}
+        </p>
+      </div>
+
+      <p>
+        Click the button below to access the student login page:
+      </p>
+
+      <p style="margin:25px 0;">
+        <a
+          href="${loginLink}"
+          style="
+            display:inline-block;
+            padding:12px 20px;
+            background:#111;
+            color:#fff;
+            text-decoration:none;
+            border-radius:8px;
+          "
+        >
+          Open Student Portal
+        </a>
+      </p>
+
+      <p>
+        After logging in, the student will be able to activate their
+        permanent password.
+      </p>
+
+      <p>
+        If you have any questions, please reply to this email.
+      </p>
+
+      <p style="margin-top:30px;">
+        Regards,<br>
+        <strong>Innovation Explorer Club</strong>
+      </p>
+
+    </div>
+  `;
+
+  try{
+    await emailjs.send(
+      EMAILJS_SERVICE_ID,
+      EMAILJS_TEMPLATE_ID,
+      {
+        /* Dynamic EmailJS fields */
+        to_email: `${a.parentEmail}, ${a.studentEmail}`,
+        from_name: 'IEC Membership System',
+        reply_to: "jimmyolugbemi@gmail.com",
+        subject: `Membership Approved: ${a.studentName || 'Student'}`,
+
+        /* Dynamic email body */
+        email_body: emailBody,
+
+        /* Optional variables available to the template if needed */
+        parent_email: a.parentEmail || '',
+        parent_name: a.parentName || '',
+        parent_phone: a.parentPhone || '',
+
+        student_name: a.studentName || '',
+        student_email: a.studentEmail || '',
+        username: username,
+        temporary_password: tempPassword,
+
+        login_link: loginLink,
+
+        admin_email: 'jimmyolugbemi@gmail.com'
+      }
+    );
+
+    showToast(`Approval email sent to ${a.parentEmail}`);
+
+  }catch(err){
+    console.error('EmailJS approval email error:', err);
+    showToast("Couldn't send approval email — try again.");
+
+  }finally{
+    sendBtn.disabled = false;
+    sendBtn.innerHTML = originalHtml;
+  }
+}
 function wireCardEvents(){
   appListEl.querySelectorAll('.app-card').forEach(card => {
     const id = card.dataset.id;
@@ -363,6 +530,7 @@ function wireCardEvents(){
     const copyBtn = card.querySelector('[data-role="copy-link"]');
     if (copyBtn) copyBtn.addEventListener('click', async () => {
       const link = copyBtn.dataset.link;
+
       try{
         await navigator.clipboard.writeText(link);
       }catch(e){
@@ -370,11 +538,18 @@ function wireCardEvents(){
         input.select();
         document.execCommand('copy');
       }
+
       showToast('Link copied');
     });
+
+    const sendApprovalBtn = card.querySelector('[data-role="send-approval-email"]');
+    if (sendApprovalBtn){
+      sendApprovalBtn.addEventListener('click', () => {
+        sendApprovalEmail(a, card);
+      });
+    }
   });
 }
-
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
