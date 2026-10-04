@@ -1318,18 +1318,127 @@ joinForm.addEventListener('submit', async (e) => {
       submittedAt: serverTimestamp()
     });
 
-    try{
-      await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-        student_name: studentName,
-        student_email: studentEmail,
-        parent_name: parentName,
-        parent_email: parentEmail,
-        parent_phone: parentPhone,
-        admin_link: ADMIN_DASHBOARD_URL
-      });
-    } catch (emailErr){
-      console.error('Admin alert email failed to send (application was still saved):', emailErr);
+try{
+
+  const emailBody = `
+    <div style="font-family:Arial,sans-serif;max-width:650px;margin:auto;color:#222;">
+
+      <h2 style="margin-bottom:8px;">
+        New Membership Application
+      </h2>
+
+      <p>
+        A new membership application has been submitted to the
+        <strong>Innovation Explorer Club</strong>.
+      </p>
+
+      <div style="background:#f5f5f5;padding:18px;border-radius:10px;margin:20px 0;">
+
+        <p style="margin:0 0 10px;">
+          <strong>Student Name:</strong>
+          ${studentName}
+        </p>
+
+        <p style="margin:0 0 10px;">
+          <strong>Student Email:</strong>
+          ${studentEmail}
+        </p>
+
+        <p style="margin:0 0 10px;">
+          <strong>Date of Birth:</strong>
+          ${dob}
+        </p>
+
+        <p style="margin:0 0 10px;">
+          <strong>Preferred Academy:</strong>
+          ${academy}
+        </p>
+
+        <p style="margin:0 0 10px;">
+          <strong>Membership Level:</strong>
+          ${level}
+        </p>
+
+        <p style="margin:0 0 10px;">
+          <strong>Experience:</strong>
+          ${experience}
+        </p>
+
+        <p style="margin:0 0 10px;">
+          <strong>Parent/Guardian:</strong>
+          ${parentName}
+        </p>
+
+        <p style="margin:0 0 10px;">
+          <strong>Parent Email:</strong>
+          ${parentEmail}
+        </p>
+
+        <p style="margin:0 0 10px;">
+          <strong>Parent Phone:</strong>
+          ${parentPhone || 'Not provided'}
+        </p>
+
+        <p style="margin:0;">
+          <strong>Notes / Interests:</strong>
+          ${notes || 'None provided'}
+        </p>
+
+      </div>
+
+      <p>
+        The application is currently <strong>Pending</strong>.
+      </p>
+
+      <p style="margin:25px 0;">
+        <a
+          href="${ADMIN_DASHBOARD_URL}"
+          style="
+            display:inline-block;
+            padding:12px 20px;
+            background:#111;
+            color:#fff;
+            text-decoration:none;
+            border-radius:8px;
+          "
+        >
+          Open Admin Dashboard
+        </a>
+      </p>
+
+      <p>
+        Log in to the admin dashboard to review and approve or reject
+        this application.
+      </p>
+
+      <p style="margin-top:30px;">
+        <strong>Innovation Explorer Club</strong>
+      </p>
+
+    </div>
+  `;
+
+  await window.emailjs.send(
+    EMAILJS_SERVICE_ID,
+    EMAILJS_TEMPLATE_ID,
+    {
+      /* EmailJS template fields */
+      to_email: 'jimmyolugbemi@gmail.com',
+      from_name: 'TIEC Membership System',
+      reply_to: parentEmail,
+      subject: `New Membership Application: ${studentName}`,
+
+      /* Entire email body */
+      email_body: emailBody
     }
+  );
+
+} catch (emailErr){
+  console.error(
+    'Admin alert email failed to send (application was still saved):',
+    emailErr
+  );
+}
 
     joinForm.classList.add('hide');
     formSuccess.classList.add('show');
