@@ -706,7 +706,7 @@ async function sendRejectionEmail(a, reason){
       <p>
         We look forward to having
         <strong>${escapeHtml(a.studentName || 'the student')}</strong>
-        as part of the Innovation Explorer Club.
+        as part of The Innovation Explorer Club.
       </p>
 
       <p>
