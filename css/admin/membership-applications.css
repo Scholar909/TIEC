@@ -315,6 +315,28 @@ textarea,input{font-family:inherit;}
   flex:1;min-width:0;padding:10px 12px;border-radius:10px;font-size:.8rem;
   background:rgba(120,140,160,.08);border:1px solid var(--card-border);color:var(--white);
 }
+.link-box .link-action{
+  width:44px;
+  min-width:44px;
+  height:42px;
+  padding:0;
+  flex:0 0 44px;
+}
+
+.link-box .send-link-btn{
+  border-color:rgba(74,166,255,.45);
+  color:var(--accent-text);
+}
+
+.link-box .send-link-btn:hover{
+  background:rgba(74,166,255,.10);
+  border-color:var(--blue-2);
+  box-shadow:0 0 18px rgba(74,166,255,.25);
+}
+
+.link-box .link-action i{
+  font-size:1.1rem;
+}
 .temp-pw-note{font-size:.8rem;margin-top:12px;}
 code{font-family:'Courier New',monospace;background:rgba(120,140,160,.14);padding:2px 7px;border-radius:6px;font-size:.85em;color:var(--white);}
 
