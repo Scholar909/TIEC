@@ -486,7 +486,7 @@ async function sendApprovalEmail(a, card){
       }
     );
 
-    showToast(`Approval email sent to ${a.parentEmail}`);
+    showToast(`Approval email sent to Parent and Student`);
 
   }catch(err){
     console.error('EmailJS approval email error:', err);
