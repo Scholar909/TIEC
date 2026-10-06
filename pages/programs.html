@@ -15,7 +15,7 @@
   rel="apple-touch-icon"
   href="../assets/images/icon.png"
 >
-<meta name="description" content="Explore the Innovation Explorer Club's learning ecosystem — Robotics, Coding, Aerospace Engineering, AI, Maker Space, Entrepreneurship, Creative Media, Green Innovation, Reverse Engineering, and Future Skills academies.">
+<meta name="description" content="Explore the Innovation Explorer Club's learning ecosystem — Robotics, Coding, Aerospace Engineering, AI, IT &amp; Cyber Security, Maker Space, Entrepreneurship, Creative Media, Green Innovation, Reverse Engineering, and Future Skills academies.">
 
 <!-- Default typeface: Poppins, all weights used across headings and body -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -345,6 +345,16 @@ html.light-mode .navbar.scrolled{background:rgba(238,243,248,.75);}
   .academy-body-inner{padding:0 20px 24px;}
 }
 
+/* Level breakdown inside an academy */
+.level-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px;}
+.level-box{padding:18px 20px;border-radius:12px;background:rgba(120,140,160,.08);border:1px solid var(--card-border);}
+.level-box .lv{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-text);}
+.level-box h4{font-size:.95rem;font-weight:600;margin:6px 0 8px;}
+.level-box p{font-size:.84rem;}
+.flight-path{font-size:.84rem;margin-top:18px;}
+.flight-path strong{color:var(--white);font-weight:600;}
+@media (max-width:860px){.level-grid{grid-template-columns:1fr;}}
+
 /* =========================================================
    CTA — same pattern as home page
    ========================================================= */
@@ -503,7 +513,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
 
   <div class="hero-content">
     <span class="eyebrow">Our Learning Ecosystem</span>
-    <h1>Ten Academies. Endless Possibilities.</h1>
+    <h1>Eleven Academies. Endless Possibilities.</h1>
     <p class="subtitle">From first solder joint to shipped prototype — every track is hands-on, mentor-guided, and built around things you actually make.</p>
     <div class="hero-actions">
       <a href="membership.html" class="btn btn-lime">Join a Program</a>
@@ -522,6 +532,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
     <a href="#coding">Coding</a>
     <a href="#aerospace">Aerospace</a>
     <a href="#ai">AI</a>
+    <a href="#it-cyber">IT &amp; Cyber</a>
     <a href="#makerspace">Maker Space</a>
     <a href="#entrepreneurship">Entrepreneurship</a>
     <a href="#creative-media">Creative Media</a>
@@ -598,7 +609,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       <div class="academy-body">
         <div class="academy-body-inner">
           <ul class="chip-list">
-            <li>Scratch</li><li>Python</li><li>JavaScript</li><li>Web Development</li><li>Mobile Apps</li><li>AI Programming</li><li>Robotics Programming</li>
+            <li>Scratch</li><li>Python</li><li>JavaScript</li><li>Web Design &amp; Development</li><li>Mobile Apps</li><li>AI Programming</li><li>Robotics Programming</li>
           </ul>
         </div>
       </div>
@@ -615,7 +626,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
             <p>Design, build, and explore the science of flight, space technology, and autonomous aerial systems.</p>
         </div>
 
-        <span class="academy-count">8 tracks</span>
+        <span class="academy-count">11 tracks</span>
 
         <div class="academy-chevron">
             <i class="bx bx-plus"></i>
@@ -633,7 +644,28 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
                 <li>UAV Programming</li>
                 <li>Mission Planning</li>
                 <li>Space Exploration</li>
+                <li>Drone Piloting</li>
+                <li>Drone Making</li>
+                <li>Intro to Space &amp; Aeronautics</li>
             </ul>
+            <div class="level-grid">
+                <div class="level-box">
+                    <span class="lv">Level 1 · Ages 6–9</span>
+                    <h4>Young Explorers</h4>
+                    <p>Why do things fly? Aircraft, the four forces of flight, Newton's laws of motion, paper planes, gliders and a first look at drones.</p>
+                </div>
+                <div class="level-box">
+                    <span class="lv">Level 2 · Ages 10–13</span>
+                    <h4>Junior Innovators</h4>
+                    <p>Build, control and experiment. Aircraft components, pitch, roll and yaw, how a drone flies, and building simple aircraft.</p>
+                </div>
+                <div class="level-box">
+                    <span class="lv">Level 3 · Ages 14–18</span>
+                    <h4>Teen Innovators</h4>
+                    <p>Engineer the drone. Aerodynamics, frame design, propulsion and power, flight controllers, programming and real-world applications.</p>
+                </div>
+            </div>
+            <p class="flight-path"><strong>Learning path:</strong> Paper Aircraft → Glider → RC Aircraft → Drone Anatomy → Drone Assembly → Drone Flight → Sensors &amp; Flight Controller → Programming → Autonomous Systems → Drone for Good Project</p>
         </div>
     </div>
 </div>
@@ -657,6 +689,25 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       </div>
     </div>
 
+    <div class="academy-card glass" id="it-cyber">
+      <div class="academy-header">
+        <div class="academy-icon"><i class="bx bx-shield-alt-2"></i></div>
+        <div class="academy-title">
+          <h3>IT &amp; Cyber Security Academy</h3>
+          <p>From staying safe online to securing and running real networks.</p>
+        </div>
+        <span class="academy-count">6 tracks</span>
+        <div class="academy-chevron"><i class="bx bx-plus"></i></div>
+      </div>
+      <div class="academy-body">
+        <div class="academy-body-inner">
+          <ul class="chip-list">
+            <li>Digital Literacy</li><li>Digital Safety &amp; Security Awareness</li><li>Operating Systems &amp; Computer Hardware</li><li>Cyber Security</li><li>Computer Networking Basics</li><li>Network Technician</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
     <div class="academy-card glass" id="makerspace">
       <div class="academy-header">
         <div class="academy-icon"><i class="bx bx-printer"></i></div>
@@ -670,7 +721,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
       <div class="academy-body">
         <div class="academy-body-inner">
           <ul class="chip-list">
-            <li>3D Printing</li><li>CAD</li><li>Electronics</li><li>PCB</li><li>Arduino</li><li>Raspberry Pi</li><li>Laser Cutting</li><li>Prototyping</li>
+            <li>3D Printing &amp; Additive Manufacturing</li><li>CAD</li><li>Electronics</li><li>PCB</li><li>Arduino</li><li>Raspberry Pi</li><li>Laser Cutting</li><li>Prototyping</li>
           </ul>
         </div>
       </div>
