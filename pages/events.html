@@ -428,13 +428,64 @@ html.light-mode .navbar.scrolled{background:rgba(238,243,248,.75);}
 .past-scroll::-webkit-scrollbar-thumb{background:var(--card-border);border-radius:6px;}
 .past-card{min-width:280px;scroll-snap-align:start;overflow:hidden;transition:transform .4s var(--ease);}
 .past-card:hover{transform:translateY(-6px);}
-.past-card .thumb{height:170px;background:var(--placeholder-grad);background-size:cover;background-position:center;position:relative;}
-.past-card .thumb .badge{position:absolute;top:12px;left:12px;font-size:.68rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:5px 12px;border-radius:999px;background:rgba(7,20,32,.55);color:var(--white);backdrop-filter:blur(6px);}
-.past-card .body{padding:20px;}
-.past-card h4{font-size:1rem;margin-bottom:6px;font-weight:600;}
-.past-card p{font-size:.85rem;}
-@media (max-width:480px){.past-card{min-width:230px;} .past-card .thumb{height:140px;}}
+.past-card .thumb{
+  height:170px;
+  background:var(--placeholder-grad);
+  background-size:cover;
+  background-position:center;
+  position:relative;
+  overflow:hidden;
+}
 
+.past-card .thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  display:block;
+}
+
+.past-card .thumb .badge{
+  position:absolute;
+  top:12px;
+  left:12px;
+  z-index:2;
+  font-size:.68rem;
+  font-weight:700;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  padding:5px 12px;
+  border-radius:999px;
+  background:rgba(7,20,32,.55);
+  color:var(--white);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+}
+
+.past-card .body{
+  padding:20px;
+}
+
+.past-card h4{
+  font-size:1rem;
+  margin-bottom:6px;
+  font-weight:600;
+}
+
+.past-card p{
+  font-size:.85rem;
+}
+
+@media (max-width:480px){
+  .past-card{
+    min-width:230px;
+  }
+
+  .past-card .thumb{
+    height:140px;
+  }
+  }
+    
 /* =========================================================
    CTA — same pattern as home page
    ========================================================= */
@@ -882,32 +933,74 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   <div class="section-head reveal">
     <span class="eyebrow">Looking back</span>
     <h2>Past Events</h2>
-    <p>A few highlights from recent terms.</p>
+    <p>A few highlights from the people, projects and competitions that shaped our journey.</p>
   </div>
+
   <div class="past-scroll container reveal">
+
+    <!-- 1. FGC Rubochi Robot -->
     <div class="past-card glass">
-      <div class="thumb"><span class="badge">Flagship</span></div>
-      <div class="body"><h4>Innovation Explorers Summit 2026</h4><p>Our biggest turnout yet, with showcases from all eight academies.</p></div>
+      <div class="thumb">
+        <span class="badge">Student Innovation</span>
+        <img src="../assets/images/pi1.jpg" alt="FGC Rubochi student robotics project">
+      </div>
+      <div class="body">
+        <h4>FGC Rubochi Robot Showcase</h4>
+        <p>Students from Federal Government College Rubochi developed a waiter robot and presented their work to the Ministry of Education.</p>
+      </div>
     </div>
+
+    <!-- 2. Robot Dog -->
     <div class="past-card glass">
-      <div class="thumb"><span class="badge">Competition</span></div>
-      <div class="body"><h4>WRO National Qualifiers</h4><p>Three club teams advanced to the national finals in RoboMission.</p></div>
+      <div class="thumb">
+        <span class="badge">Robotics</span>
+        <img src="../assets/images/pi2.jpg" alt="Robot Dog">
+      </div>
+      <div class="body">
+        <h4>Robot Dog Development</h4>
+        <p>A student-built robotic dog brought together strong mechanical design, camera-based vision and the potential for smart surveillance applications.</p>
+      </div>
     </div>
+
+    <!-- 3. FTC Robot -->
     <div class="past-card glass">
-      <div class="thumb"><span class="badge">Workshop</span></div>
-      <div class="body"><h4>3D Printing Bootcamp</h4><p>A weekend intensive on CAD-to-print workflow for Maker Space members.</p></div>
+      <div class="thumb">
+        <span class="badge">Competition</span>
+        <img src="../assets/images/pi3.jpg" alt="FTC Robot">
+      </div>
+      <div class="body">
+        <h4>FTC Competition Robot</h4>
+        <p>Built for the FIRST Tech Challenge, this competition robot was designed to collect and place game elements as the team competed for a place at the next stage.</p>
+      </div>
     </div>
+
+    <!-- 4. Sign-to-Speech Gloves -->
     <div class="past-card glass">
-      <div class="thumb"><span class="badge">Flagship</span></div>
-      <div class="body"><h4>Drone Racing Championship</h4><p>Our fastest lap time yet, set on the redesigned indoor gate course.</p></div>
+      <div class="thumb">
+        <span class="badge">Assistive Technology</span>
+        <img src="../assets/images/pi4.jpg" alt="S2S Glove">
+      </div>
+      <div class="body">
+        <h4>Sign-to-Speech Gloves</h4>
+        <p>Mohammed developed an assistive technology system that translates hand and finger signs into spoken words, exploring a new way to bridge communication gaps.</p>
+      </div>
     </div>
+
+    <!-- 5. FTC Team Leader Award -->
     <div class="past-card glass">
-      <div class="thumb"><span class="badge">Awards</span></div>
-      <div class="body"><h4>Innovation Awards Night</h4><p>Celebrating the year's standout projects, mentors, and members.</p></div>
+      <div class="thumb">
+        <span class="badge">Recognition</span>
+        <img src="../assets/images/pi5.jpg" alt="Awarding">
+      </div>
+      <div class="body">
+        <h4>FTC Team Leader Recognition</h4>
+        <p>The FTC season closed with a moment of recognition as a team leader was honoured for her contribution, leadership and commitment throughout the competition.</p>
+      </div>
     </div>
+
   </div>
 </section>
-
+  
 <!-- =========================================================
      CALL TO ACTION
      ========================================================= -->
