@@ -15,7 +15,7 @@
   rel="apple-touch-icon"
   href="../assets/images/icon.png"
 >
-<meta name="description" content="Everything members build — featured projects across Robotics, AI, IoT, Websites, Apps, Smart Devices and Drones, plus open source work, student showcases, research and innovation challenges.">
+<meta name="description" content="Projects our students have built — competition robots, LEGO and REV robotics, drones, 3D printing, electronics and more.">
 
 <!-- Default typeface: Poppins, all weights used across headings and body -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -305,7 +305,17 @@ html.light-mode .project-thumb i{color:rgba(11,27,41,.22);}
   letter-spacing:.04em;text-transform:uppercase;padding:5px 12px;border-radius:999px;
   background:rgba(7,20,32,.55);color:var(--white);backdrop-filter:blur(6px);
 }
-.project-body{padding:22px;}
+.project-thumb{overflow:hidden;}
+.project-thumb img,.project-thumb video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.project-thumb.duo img{width:50%;}
+.project-thumb.duo img:nth-of-type(2){left:auto;right:0;}
+.project-thumb .p-badge{z-index:2;}
+.project-card{display:flex;flex-direction:column;}
+.project-body{padding:22px;flex:1;display:flex;flex-direction:column;}
+.project-body p + p{margin-top:10px;}
+.project-foot{margin-top:16px;}
+.project-tags + .project-foot{margin-top:auto;}
+.project-tags{margin-bottom:16px;}
 .project-body h4{font-size:1.02rem;font-weight:600;margin-bottom:8px;}
 .project-body p{font-size:.86rem;}
 .project-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
@@ -319,75 +329,6 @@ html.light-mode .project-thumb i{color:rgba(11,27,41,.22);}
 
 .gallery-empty{text-align:center;padding:60px 20px;color:var(--gray);font-size:.95rem;display:none;}
 .gallery-empty.show{display:block;}
-
-/* =========================================================
-   OPEN SOURCE
-   ========================================================= */
-.repo-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
-.repo-card{padding:24px 26px;transition:transform .4s var(--ease), border-color .4s var(--ease);}
-.repo-card:hover{transform:translateY(-5px);border-color:rgba(154,230,0,.35);}
-.repo-top{display:flex;align-items:center;gap:12px;}
-.repo-icon{width:42px;height:42px;border-radius:10px;background:rgba(154,230,0,.12);color:var(--accent-lime-text);display:flex;align-items:center;justify-content:center;font-size:1.15rem;flex-shrink:0;}
-.repo-top h4{font-size:.98rem;font-weight:600;}
-.repo-card p{font-size:.85rem;margin-top:12px;}
-.repo-foot{display:flex;align-items:center;justify-content:space-between;margin-top:16px;}
-.repo-lang{display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--gray);}
-.repo-lang .dot{width:8px;height:8px;border-radius:50%;background:var(--blue-2);}
-.repo-stats{display:flex;gap:14px;font-size:.78rem;color:var(--gray);}
-.repo-stats span{display:flex;align-items:center;gap:4px;}
-@media (max-width:700px){.repo-grid{grid-template-columns:1fr;}}
-
-/* =========================================================
-   STUDENT SHOWCASE — horizontal scroll
-   ========================================================= */
-.showcase-scroll{display:flex;gap:20px;overflow-x:auto;padding:4px 4px 16px;scroll-snap-type:x mandatory;scroll-padding-left:4px;}
-.showcase-scroll::-webkit-scrollbar{height:6px;}
-.showcase-scroll::-webkit-scrollbar-thumb{background:var(--card-border);border-radius:6px;}
-.showcase-card{min-width:270px;scroll-snap-align:start;padding:26px;text-align:center;}
-.showcase-avatar{
-  width:64px;height:64px;border-radius:50%;margin:0 auto 16px;
-  background:var(--placeholder-grad);display:flex;align-items:center;justify-content:center;
-  color:var(--accent-text);font-size:1.3rem;font-weight:700;border:1px solid var(--card-border);
-}
-.showcase-card h4{font-size:.98rem;font-weight:600;}
-.showcase-card .role{font-size:.76rem;color:var(--accent-lime-text);text-transform:uppercase;letter-spacing:.04em;font-weight:600;margin-top:4px;display:block;}
-.showcase-card p{font-size:.84rem;margin-top:12px;}
-@media (max-width:480px){.showcase-card{min-width:230px;padding:20px;}}
-
-/* =========================================================
-   RESEARCH PROJECTS
-   ========================================================= */
-.research-list{display:flex;flex-direction:column;gap:16px;}
-.research-item{display:flex;gap:20px;padding:26px 28px;align-items:flex-start;}
-.research-icon{flex-shrink:0;width:48px;height:48px;border-radius:12px;background:rgba(21,123,255,.12);color:var(--accent-text);display:flex;align-items:center;justify-content:center;font-size:1.2rem;}
-.research-body{flex:1;min-width:0;}
-.research-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
-.research-body h4{font-size:1rem;font-weight:600;}
-.status-tag{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:4px 12px;border-radius:999px;flex-shrink:0;}
-.status-ongoing{background:rgba(21,123,255,.15);color:var(--accent-text);}
-.status-published{background:rgba(154,230,0,.15);color:var(--accent-lime-text);}
-.research-body p{font-size:.86rem;margin-top:8px;}
-.research-meta{font-size:.78rem;color:var(--gray);margin-top:10px;}
-@media (max-width:640px){.research-item{flex-direction:column;padding:22px;}}
-
-/* =========================================================
-   INNOVATION CHALLENGES
-   ========================================================= */
-.challenge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
-.challenge-card{padding:28px 24px;transition:transform .4s var(--ease), border-color .4s var(--ease);position:relative;}
-.challenge-card:hover{transform:translateY(-6px);border-color:rgba(74,166,255,.35);}
-.challenge-status{position:absolute;top:20px;right:20px;font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:4px 12px;border-radius:999px;}
-.status-open{background:rgba(154,230,0,.15);color:var(--accent-lime-text);}
-.status-upcoming{background:rgba(21,123,255,.15);color:var(--accent-text);}
-.status-closed{background:rgba(199,207,217,.12);color:var(--gray);}
-.challenge-card .icon{font-size:1.5rem;color:var(--accent-text);margin-bottom:14px;display:block;}
-.challenge-card h4{font-size:1rem;font-weight:600;margin-bottom:8px;padding-right:70px;}
-.challenge-card p{font-size:.85rem;}
-.challenge-deadline{display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--gray);margin-top:14px;}
-.challenge-deadline i{color:var(--accent-text);}
-.challenge-card .btn{margin-top:18px;width:100%;}
-@media (max-width:960px){.challenge-grid{grid-template-columns:repeat(2,1fr);}}
-@media (max-width:600px){.challenge-grid{grid-template-columns:1fr;}}
 
 /* =========================================================
    CTA — same pattern as home page
@@ -548,10 +489,10 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   <div class="hero-content">
     <span class="eyebrow">Everything members build</span>
     <h1>Projects</h1>
-    <p class="subtitle">Robots, apps, drones, and research — built end-to-end by our members, one term at a time.</p>
+    <p class="subtitle">Robots, drones, 3D prints and more — built by our students from whatever materials fit the job.</p>
     <div class="hero-actions">
       <a href="membership.html" class="btn btn-lime">Submit a Project</a>
-      <a href="#open-source" class="btn btn-outline">Browse Open Source</a>
+      <a href="#featured" class="btn btn-outline">Browse Projects</a>
     </div>
   </div>
 </header>
@@ -562,10 +503,7 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
 <div class="subnav-wrap">
   <div class="subnav" id="subnav">
     <a href="#featured">Featured</a>
-    <a href="#open-source">Open Source</a>
-    <a href="#showcase">Student Showcase</a>
-    <a href="#research">Research</a>
-    <a href="#challenges">Innovation Challenges</a>
+    <a href="#submit">Submit a Project</a>
   </div>
 </div>
 
@@ -576,310 +514,175 @@ footer{border-top:1px solid var(--card-border);padding:70px 6vw 30px;background:
   <div class="section-head reveal">
     <span class="eyebrow">Featured</span>
     <h2>Projects members are proud of</h2>
-    <p>A running showcase of what comes out of the workshop, filterable by category.</p>
+    <p>A selection of what our students have built.</p>
   </div>
 
   <div class="subnav filter-bar container reveal" id="filterBar" style="justify-content:center;position:static;overflow:visible;flex-wrap:wrap;">
     <button data-filter="all" class="active">All</button>
     <button data-filter="robotics">Robotics</button>
-    <button data-filter="ai">AI</button>
-    <button data-filter="iot">IoT</button>
-    <button data-filter="websites">Websites</button>
-    <button data-filter="apps">Apps</button>
-    <button data-filter="smart-devices">Smart Devices</button>
-    <button data-filter="drones">Drones</button>
+    <button data-filter="drones">Drones &amp; Flight</button>
+    <button data-filter="3d-printing">3D Printing</button>
+    <button data-filter="electronics">Electronics</button>
   </div>
 
   <div class="project-grid container reveal" id="projectGrid">
 
     <div class="project-card glass" data-category="robotics">
-      <div class="project-thumb"><span class="p-badge">Robotics</span><i class="bx bx-wrench"></i></div>
+      <div class="project-thumb duo"><img src="../assets/images/p-ruby-comp.jpg" alt="FLL competition robot built by student team members" loading="lazy" onerror="this.remove()"><img src="../assets/images/p-ruby.jpg" alt="FLL robot" loading="lazy" onerror="this.remove()"><span class="p-badge">Competition</span><i class="bx bx-trophy"></i></div>
       <div class="project-body">
-        <h4>Autonomous Line-Follower Bot</h4>
-        <p>A sensor-guided robot built for the RoboMission track, tuned across six PID iterations.</p>
-        <div class="project-tags"><span>Arduino</span><span>PID Control</span><span>C++</span></div>
+        <h4>FLL Competition Robot</h4>
+        <p><strong>Robot Name:</strong> Ruby-bot</p>
+        <p>A relatively tall competition robot built by student team members for FIRST LEGO League. It took the team through multiple competitions and helped them qualify for the national level.</p>
+        <div class="project-tags"><span>FIRST LEGO League</span><span>Competition</span></div>
         <div class="project-foot">
-          <span class="project-team"><i class="bx bx-group"></i> Robotics Academy</span>
-          <a href="#" class="project-link">View <i class="bx bx-chevron-right"></i></a>
+          <span class="project-team"><i class="bx bx-trophy"></i> Qualified for nationals</span>
         </div>
       </div>
     </div>
-
-    <div class="project-card glass" data-category="ai">
-      <div class="project-thumb"><span class="p-badge">AI</span><i class="bx bx-bulb"></i></div>
+    <div class="project-card glass" data-category="electronics">
+      <div class="project-thumb"><img src="../assets/images/p-nhed.png" alt="Sign-to-speech glove prototype" loading="lazy" onerror="this.remove()"><span class="p-badge">Electronics</span><i class="bx bx-chip"></i></div>
       <div class="project-body">
-        <h4>Crop Disease Classifier</h4>
-        <p>A computer vision model that flags common crop diseases from a phone photo, trained by the AI Academy.</p>
-        <div class="project-tags"><span>Python</span><span>Computer Vision</span><span>TensorFlow</span></div>
-        <div class="project-foot">
-          <span class="project-team"><i class="bx bx-group"></i> AI Academy</span>
-          <a href="#" class="project-link">View <i class="bx bx-chevron-right"></i></a>
-        </div>
+        <h4>NHED Smart Glove</h4>
+        <p><strong>Built by:</strong> Muhammad Habib</p>
+        <p>Gloves that recognise specific sign-language gestures and translate them into speech, designed and built by one of our students.</p>
+        <div class="project-tags"><span>Gesture recognition</span><span>Speech output</span></div>
       </div>
     </div>
-
-    <div class="project-card glass" data-category="iot">
-      <div class="project-thumb"><span class="p-badge">IoT</span><i class="bx bx-network-chart"></i></div>
-      <div class="project-body">
-        <h4>Smart Irrigation Controller</h4>
-        <p>Soil-moisture sensors and a scheduled pump relay, monitored from a live web dashboard.</p>
-        <div class="project-tags"><span>ESP32</span><span>MQTT</span><span>Green Innovation</span></div>
-        <div class="project-foot">
-          <span class="project-team"><i class="bx bx-group"></i> Maker Space</span>
-          <a href="#" class="project-link">View <i class="bx bx-chevron-right"></i></a>
-        </div>
-      </div>
-    </div>
-
-    <div class="project-card glass" data-category="websites">
-      <div class="project-thumb"><span class="p-badge">Websites</span><i class="bx bx-globe"></i></div>
-      <div class="project-body">
-        <h4>Local Market Directory</h4>
-        <p>A directory site connecting neighborhood vendors to shoppers, built as a Coding Academy term project.</p>
-        <div class="project-tags"><span>HTML/CSS</span><span>JavaScript</span><span>Firebase</span></div>
-        <div class="project-foot">
-          <span class="project-team"><i class="bx bx-group"></i> Coding Academy</span>
-          <a href="#" class="project-link">View <i class="bx bx-chevron-right"></i></a>
-        </div>
-      </div>
-    </div>
-
-    <div class="project-card glass" data-category="apps">
-      <div class="project-thumb"><span class="p-badge">Apps</span><i class="bx bx-mobile-alt"></i></div>
-      <div class="project-body">
-        <h4>Study Streak</h4>
-        <p>A habit-tracking mobile app for revision schedules, with reminders and streak badges.</p>
-        <div class="project-tags"><span>React Native</span><span>Mobile</span></div>
-        <div class="project-foot">
-          <span class="project-team"><i class="bx bx-group"></i> Coding Academy</span>
-          <a href="#" class="project-link">View <i class="bx bx-chevron-right"></i></a>
-        </div>
-      </div>
-    </div>
-
-    <div class="project-card glass" data-category="smart-devices">
-      <div class="project-thumb"><span class="p-badge">Smart Devices</span><i class="bx bx-broadcast"></i></div>
-      <div class="project-body">
-        <h4>Gesture-Controlled Desk Lamp</h4>
-        <p>An ultrasonic sensor and RGB strip combo that dims and shifts color with a hand wave.</p>
-        <div class="project-tags"><span>Raspberry Pi</span><span>Electronics</span></div>
-        <div class="project-foot">
-          <span class="project-team"><i class="bx bx-group"></i> Maker Space</span>
-          <a href="#" class="project-link">View <i class="bx bx-chevron-right"></i></a>
-        </div>
-      </div>
-    </div>
-
-    <div class="project-card glass" data-category="drones">
-      <div class="project-thumb"><span class="p-badge">Drones</span><i class="bx bx-compass"></i></div>
-      <div class="project-body">
-        <h4>FPV Racing Quad — "Falcon"</h4>
-        <p>A custom-built racing quadcopter on a Pixhawk flight controller, built for our indoor gate course.</p>
-        <div class="project-tags"><span>Pixhawk</span><span>FPV</span><span>Drone Tech</span></div>
-        <div class="project-foot">
-          <span class="project-team"><i class="bx bx-group"></i> Drone Technology</span>
-          <a href="#" class="project-link">View <i class="bx bx-chevron-right"></i></a>
-        </div>
-      </div>
-    </div>
-
     <div class="project-card glass" data-category="robotics">
-      <div class="project-thumb"><span class="p-badge">Robotics</span><i class="bx bx-wrench"></i></div>
+      <div class="project-thumb duo"><img src="../assets/images/p-sumo.jpg" alt="Sumo robot built with LEGO EV3" loading="lazy" onerror="this.remove()"><img src="../assets/images/p-sumo-uganda.jpg" alt="Sumo robot at the exhibition in Uganda" loading="lazy" onerror="this.remove()"><span class="p-badge">Robotics</span><i class="bx bx-wrench"></i></div>
       <div class="project-body">
-        <h4>Sumo Bot "Tremor"</h4>
-        <p>A low-center-of-gravity pusher built for club sumo brackets — undefeated this term.</p>
-        <div class="project-tags"><span>3D Printed</span><span>Torque Motors</span></div>
+        <h4>Sumo Robot</h4>
+        <p>A fully functional sumo robot built with LEGO EV3, shown at an exhibition in Uganda.</p>
+        <div class="project-tags"><span>LEGO EV3</span><span>Exhibition</span></div>
         <div class="project-foot">
-          <span class="project-team"><i class="bx bx-group"></i> Robotics Academy</span>
-          <a href="#" class="project-link">View <i class="bx bx-chevron-right"></i></a>
+          <span class="project-team"><i class="bx bx-map"></i> Exhibited in Uganda</span>
         </div>
       </div>
     </div>
-
-    <div class="project-card glass" data-category="ai">
-      <div class="project-thumb"><span class="p-badge">AI</span><i class="bx bx-bulb"></i></div>
+    <div class="project-card glass" data-category="3d-printing electronics">
+      <div class="project-thumb duo"><img src="../assets/images/p-headphones.png" alt="3D-printed headphone chassis" loading="lazy" onerror="this.remove()"><img src="../assets/images/p-headchassis.jpg" alt="Headphone Parts" loading="lazy" onerror="this.remove()"><span class="p-badge">3D Printing</span><i class="bx bx-cube"></i></div>
       <div class="project-body">
-        <h4>Homework Helper Chatbot</h4>
-        <p>A prompt-engineered study assistant scoped to explain, not just answer, built with AI ethics guardrails.</p>
-        <div class="project-tags"><span>Prompt Engineering</span><span>AI Ethics</span></div>
+        <h4>3D-Printed Headphone Chassis</h4>
+        <p><strong>Built by:</strong> Ogbole Favour</p>
+        <p>One of our students designed a custom headphone frame in AutoCAD and 3D-printed it. The parts snap together without screws, so if one breaks it can simply be redesigned and printed again.</p>
+        <p>The electronics came from the student's previous headphones, which still worked. Instead of replacing them, a new frame was designed around them.</p>
+        <div class="project-tags"><span>AutoCAD</span><span>3D Printing</span><span>Snap-fit design</span><span>Reused electronics</span></div>
+      </div>
+    </div>
+    <div class="project-card glass" data-category="robotics">
+      <div class="project-thumb duo"><img src="../assets/images/pi1.png" alt="Ruby Waiter Bot" loading="lazy" onerror="this.remove()"><img src="../assets/images/p-waiter-bot.jpg" alt="Students presenting the Ruby Waiter Bot at the Ministry of Education" loading="lazy" onerror="this.remove()"><span class="p-badge">Robotics</span><i class="bx bx-bot"></i></div>
+      <div class="project-body">
+        <h4>Ruby Waiter Bot</h4>
+        <p>Built by students from FGC Robotics using scrap materials and plastic, together with motors and a REV Hub from an FTC kit.</p>
+        <p>The robot is programmable and moves around a set location. It is controlled from a tablet and can carry food, documents or other items. The students were invited to present it at the Ministry of Education.</p>
+        <div class="project-tags"><span>Scrap materials</span><span>FTC kit parts</span><span>Tablet control</span></div>
         <div class="project-foot">
-          <span class="project-team"><i class="bx bx-group"></i> AI Academy</span>
-          <a href="#" class="project-link">View <i class="bx bx-chevron-right"></i></a>
+          <span class="project-team"><i class="bx bx-building"></i> Presented at the Ministry of Education</span>
         </div>
+      </div>
+    </div>
+    <div class="project-card glass" data-category="robotics">
+      <div class="project-thumb">
+        <img src="../assets/images/p-walking.jpg" alt="Walking Robot built by Ogbole Favour" loading="lazy" onerror="this.remove()">
+        <span class="p-badge">Robotics</span>
+        <i class="bx bx-bot"></i>
+      </div>
+      <div class="project-body">
+        <h4>Walking Robot</h4>
+        <p><strong>Robot Name:</strong> Robert</p>
+        <p>A walking robot assembled step by step using a building manual and programmed to walk forward and backwards on its feet.</p>
+        <div class="project-tags"><span>LEGO EV3</span><span>Manual Assembly</span><span>Programming</span></div>
+      </div>
+    </div>
+    <div class="project-card glass" data-category="robotics">
+      <div class="project-thumb"><img src="../assets/images/p-robosteer.jpg" alt="Robo Steer 2.0" loading="lazy" onerror="this.remove()"><span class="p-badge">Robotics</span><i class="bx bx-joystick"></i></div>
+      <div class="project-body">
+        <h4>RoboSteer 2.0</h4>
+        <p><strong>Built by:</strong> Ogbole Favour</p>
+        <p>A remote-controlled car built with LEGO SPIKE Essential, a system with real limits compared to larger LEGO kits. Through research and experimentation, the student went past the usual two-port limit and connected it to Scratch for button controls and speed control.</p>
+        <div class="project-tags"><span>LEGO SPIKE Essential</span><span>Scratch</span><span>Remote control</span></div>
+      </div>
+    </div>
+    <div class="project-card glass" data-category="robotics">
+      <div class="project-thumb">
+        <img src="../assets/images/p-survey.jpg" alt="Surveillance Robot built by students using FTC parts" loading="lazy" onerror="this.remove()">
+        <span class="p-badge">Robotics</span>
+        <i class="bx bx-cctv"></i>
+      </div>
+      <div class="project-body">
+        <h4>Surveillance Robot</h4>
+        <p>A student-built robotic project assembled using parts from an FTC robotics kit. The project explores how robotics components can be combined to create a mobile platform for surveillance applications.</p>
+        <div class="project-tags">
+          <span>FTC Robotics</span>
+          <span>Robot Assembly</span>
+          <span>Surveillance</span>
+        </div>
+      </div>
+    </div>
+    <div class="project-card glass" data-category="robotics">
+      <div class="project-thumb">
+        <img src="../assets/images/p-wagon.jpg" alt="Walking Wagon built by Ogbole Favour" loading="lazy" onerror="this.remove()">
+        <span class="p-badge">Robotics</span>
+        <i class="bx bx-bot"></i>
+      </div>
+      <div class="project-body">
+        <h4>Walking Wagon</h4>
+        <p><strong>Built by:</strong> Ogbole Favour</p>
+        <p>A manually assembled and programmed robot that combines two walking legs at the front with wheels at the back to enable movement.</p>
+        <div class="project-tags"><span>LEGO EV3</span><span>Manual Assembly</span><span>Programming</span></div>
+      </div>
+    </div>
+    <div class="project-card glass" data-category="drones">
+      <div class="project-thumb"><video src="../assets/videos/drone-flight.mp4" aria-label="Drone during a flight test" autoplay muted loop playsinline preload="metadata" onerror="this.remove()"></video><span class="p-badge">Drones</span><i class="bx bx-compass"></i></div>
+      <div class="project-body">
+        <h4>Custom Drone Build</h4>
+        <p><strong>Built by:</strong> Ogbole Gabriel</p>
+        <p>A student built a drone from a collection of loose parts taken from different drones. The first job was identifying each part and what it does, then assembling the drone from scratch, calibrating it, building it's frame, testing and troubleshooting.</p>
+        <p>Research was a big part of it, including AI-assisted research where appropriate. The drone is still in development but has made it through flight testing.</p>
+        <div class="project-tags"><span>Drone build</span><span>Calibration</span><span>Programming</span><span>Flight testing</span></div>
+      </div>
+    </div>
+    <div class="project-card glass" data-category="robotics 3d-printing">
+      <div class="project-thumb"><img src="../assets/images/p-rc-car.png" alt="3D-printed remote-control car" loading="lazy" onerror="this.remove()"><span class="p-badge">3D Printing</span><i class="bx bx-cube-alt"></i></div>
+      <div class="project-body">
+        <h4>3D-Printed Remote-Control Car</h4>
+        <p>A remote-control car made from 3D-printed plastic parts, with the electronics and control system built on a LEGO SPIKE Prime Hub. It brings together 3D design, printing, robotics, electronics and programming.</p>
+        <div class="project-tags"><span>3D Printing</span><span>LEGO SPIKE Prime</span><span>Programming</span></div>
+      </div>
+    </div>
+    <div class="project-card glass" data-category="robotics">
+      <div class="project-thumb duo"><img src="../assets/images/p-rc-car-yellow.jpg" alt="REV remote-control car" loading="lazy" onerror="this.remove()"><img src="../assets/images/p-rc-uganda.jpg" alt="REV remote-control car during activities in Uganda" loading="lazy" onerror="this.remove()"><span class="p-badge">Robotics</span><i class="bx bx-car"></i></div>
+      <div class="project-body">
+        <h4>REV Remote-Control Car</h4>
+        <p>A custom remote-control car built with a REV motor and REV Hub, also used during activities in Uganda.</p>
+        <div class="project-tags"><span>REV Robotics</span></div>
+        <div class="project-foot">
+          <span class="project-team"><i class="bx bx-map"></i> Used in Uganda activities</span>
+        </div>
+      </div>
+    </div>
+    <div class="project-card glass" data-category="drones">
+      <div class="project-thumb"><video src="../assets/videos/plane-flight.mp4" aria-label="Paper aircraft piloting system in operation" autoplay muted loop playsinline preload="metadata" onerror="this.remove()"></video><span class="p-badge">Drones &amp; Flight</span><i class="bx bx-paper-plane"></i></div>
+      <div class="project-body">
+        <h4>Paper Aircraft Piloting System</h4>
+        <p>Instead of a toy aircraft, two small fans carry a folded paper airplane. Students control the fans remotely to experiment with flight, movement, landing and basic piloting.</p>
+        <div class="project-tags"><span>Piloting</span><span>Flight</span><span>Remote control</span></div>
       </div>
     </div>
 
   </div>
 
   <p class="gallery-empty" id="filterEmpty">Nothing in this category yet — check back soon.</p>
-</section>
 
-<!-- =========================================================
-     OPEN SOURCE PROJECTS
-     ========================================================= -->
-<section class="section" id="open-source" style="background:var(--bg-secondary);">
-  <div class="section-head reveal">
-    <span class="eyebrow">Give back</span>
-    <h2>Open Source Projects</h2>
-    <p>Club-maintained repos — fork them, file issues, or open a pull request.</p>
-  </div>
-  <div class="repo-grid container reveal">
-    <div class="repo-card glass">
-      <div class="repo-top"><div class="repo-icon"><i class="bx bx-printer"></i></div><h4>tiec-line-follower-firmware</h4></div>
-      <p>Reusable Arduino firmware for PID-based line-following robots, used across our Robotics Academy kits.</p>
-      <div class="repo-foot">
-        <span class="repo-lang"><span class="dot"></span> C++</span>
-        <span class="repo-stats"><span><i class="bx bx-star"></i> —</span><span><i class="bx bx-git-repo-forked"></i> Fork</span></span>
-      </div>
-    </div>
-    <div class="repo-card glass">
-      <div class="repo-top"><div class="repo-icon"><i class="bx bx-printer"></i></div><h4>iot-dashboard-starter</h4></div>
-      <p>A drop-in MQTT-to-web dashboard template for member IoT projects, built on Firebase.</p>
-      <div class="repo-foot">
-        <span class="repo-lang"><span class="dot" style="background:#f0c419;"></span> JavaScript</span>
-        <span class="repo-stats"><span><i class="bx bx-star"></i> —</span><span><i class="bx bx-git-repo-forked"></i> Fork</span></span>
-      </div>
-    </div>
-    <div class="repo-card glass">
-      <div class="repo-top"><div class="repo-icon"><i class="bx bx-printer"></i></div><h4>crop-vision-model</h4></div>
-      <p>Training scripts and a lightweight inference pipeline for the AI Academy's crop disease classifier.</p>
-      <div class="repo-foot">
-        <span class="repo-lang"><span class="dot" style="background:#3572A5;"></span> Python</span>
-        <span class="repo-stats"><span><i class="bx bx-star"></i> —</span><span><i class="bx bx-git-repo-forked"></i> Fork</span></span>
-      </div>
-    </div>
-    <div class="repo-card glass">
-      <div class="repo-top"><div class="repo-icon"><i class="bx bx-printer"></i></div><h4>fpv-flight-configs</h4></div>
-      <p>Shared Pixhawk and Betaflight configuration presets tuned for our indoor racing course.</p>
-      <div class="repo-foot">
-        <span class="repo-lang"><span class="dot" style="background:#e34c26;"></span> Config</span>
-        <span class="repo-stats"><span><i class="bx bx-star"></i> —</span><span><i class="bx bx-git-repo-forked"></i> Fork</span></span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- =========================================================
-     STUDENT SHOWCASE
-     ========================================================= -->
-<section class="section" id="showcase">
-  <div class="section-head reveal">
-    <span class="eyebrow">Meet the builders</span>
-    <h2>Student Showcase</h2>
-    <p>A few members and the projects that define their term.</p>
-  </div>
-  <div class="showcase-scroll container reveal">
-    <div class="showcase-card glass">
-      <div class="showcase-avatar">AK</div>
-      <h4>Amaka K.</h4>
-      <span class="role">Robotics Academy</span>
-      <p>Built "Tremor," our undefeated sumo bot, from a scratch CAD design.</p>
-    </div>
-    <div class="showcase-card glass">
-      <div class="showcase-avatar">DO</div>
-      <h4>David O.</h4>
-      <span class="role">AI Academy</span>
-      <p>Trained the crop disease classifier now piloting with two local farms.</p>
-    </div>
-    <div class="showcase-card glass">
-      <div class="showcase-avatar">CN</div>
-      <h4>Chiamaka N.</h4>
-      <span class="role">Drone Technology</span>
-      <p>Set the fastest lap on our indoor FPV gate course this term.</p>
-    </div>
-    <div class="showcase-card glass">
-      <div class="showcase-avatar">TE</div>
-      <h4>Tunde E.</h4>
-      <span class="role">Coding Academy</span>
-      <p>Shipped the Local Market Directory site now used by 40+ vendors.</p>
-    </div>
-    <div class="showcase-card glass">
-      <div class="showcase-avatar">FB</div>
-      <h4>Fatima B.</h4>
-      <span class="role">Entrepreneurship Hub</span>
-      <p>Pitched a recycling-collection app at Startup Demo Day, now in beta.</p>
-    </div>
-  </div>
-</section>
-
-<!-- =========================================================
-     RESEARCH PROJECTS
-     ========================================================= -->
-<section class="section" id="research" style="background:var(--bg-secondary);">
-  <div class="section-head reveal">
-    <span class="eyebrow">Deeper work</span>
-    <h2>Research Projects</h2>
-    <p>Longer-term, mentor-guided investigations into open questions.</p>
-  </div>
-  <div class="research-list container reveal">
-    <div class="research-item glass">
-      <div class="research-icon"><i class="bx bx-bar-chart-alt-2"></i></div>
-      <div class="research-body">
-        <div class="research-top"><h4>Low-Cost Soil Sensing for Smallholder Farms</h4><span class="status-tag status-ongoing">Ongoing</span></div>
-        <p>Evaluating budget capacitive moisture sensors against lab-grade equipment to see how much accuracy a low-cost IoT kit can realistically deliver.</p>
-        <div class="research-meta">Green Innovation · Started March 2026</div>
-      </div>
-    </div>
-    <div class="research-item glass">
-      <div class="research-icon"><i class="bx bx-bulb"></i></div>
-      <div class="research-body">
-        <div class="research-top"><h4>Bias in Small-Scale Vision Datasets</h4><span class="status-tag status-published">Published</span></div>
-        <p>A student-led audit of the crop disease classifier's training data, documenting where model accuracy dropped and why.</p>
-        <div class="research-meta">AI Academy · Presented at STEM Expo 2026</div>
-      </div>
-    </div>
-    <div class="research-item glass">
-      <div class="research-icon"><i class="bx bx-compass"></i></div>
-      <div class="research-body">
-        <div class="research-top"><h4>Battery Efficiency Across FPV Frame Sizes</h4><span class="status-tag status-ongoing">Ongoing</span></div>
-        <p>Comparing flight time and stability across three frame sizes to inform the next generation of club racing builds.</p>
-        <div class="research-meta">Drone Technology · Started June 2026</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- =========================================================
-     INNOVATION CHALLENGES
-     ========================================================= -->
-<section class="section" id="challenges">
-  <div class="section-head reveal">
-    <span class="eyebrow">Take on a brief</span>
-    <h2>Innovation Challenges</h2>
-    <p>Open prompts any member can enter — solo or in a team.</p>
-  </div>
-  <div class="challenge-grid container reveal">
-    <div class="challenge-card glass">
-      <span class="challenge-status status-open">Open</span>
-      <i class="icon bx bx-tree"></i>
-      <h4>Design a Low-Cost Water Filter</h4>
-      <p>Build a working prototype that filters visibly cloudy water using materials under a set budget.</p>
-      <div class="challenge-deadline"><i class="bx bx-calendar"></i> Entries close Oct 1, 2026</div>
-      <a href="membership.html" class="btn btn-outline btn-sm">Enter Challenge</a>
-    </div>
-    <div class="challenge-card glass">
-      <span class="challenge-status status-upcoming">Upcoming</span>
-      <i class="icon bx bx-sun"></i>
-      <h4>AI for Accessibility</h4>
-      <p>Prototype a tool that uses AI to make everyday tasks easier for someone with a physical or sensory disability.</p>
-      <div class="challenge-deadline"><i class="bx bx-calendar"></i> Opens Sept 15, 2026</div>
-      <a href="membership.html" class="btn btn-outline btn-sm">Get Notified</a>
-    </div>
-    <div class="challenge-card glass">
-      <span class="challenge-status status-closed">Closed</span>
-      <i class="icon bx bx-printer"></i>
-      <h4>Reinvent an Everyday Object</h4>
-      <p>Redesign and 3D print a common household object to solve a problem with its original design.</p>
-      <div class="challenge-deadline"><i class="bx bx-calendar"></i> Closed July 2026</div>
-      <a href="#" class="btn btn-outline btn-sm">View Winners</a>
-    </div>
+  <div style="text-align:center;margin-top:44px;">
+    <a href="gallery.html" class="btn btn-outline">See more in the Gallery</a>
   </div>
 </section>
 
 <!-- =========================================================
      CALL TO ACTION
      ========================================================= -->
-<section class="section cta-section container reveal">
+<section class="section cta-section container reveal" id="submit">
   <div class="cta-box glass">
     <span class="eyebrow">Have something to show?</span>
     <h2>Submit your project</h2>
@@ -1151,7 +954,7 @@ filterBar.querySelectorAll('button').forEach(btn => {
     const filter = btn.dataset.filter;
     let visibleCount = 0;
     projectCards.forEach(card => {
-      const match = filter === 'all' || card.dataset.category === filter;
+      const match = filter === 'all' || card.dataset.category.split(' ').includes(filter);
       card.classList.toggle('hidden', !match);
       if (match) visibleCount++;
     });
