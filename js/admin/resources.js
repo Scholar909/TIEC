@@ -4,7 +4,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 import {
   getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, deleteField, onSnapshot,
-  collection, query, where, orderBy, getDocs, serverTimestamp
+  collection, query, where, orderBy, getDocs, writeBatch, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -51,14 +51,25 @@ async function uploadToCloudinary(file){
 /* ▓▓▓ END CLOUDINARY SECTION ▓▓▓ */
 
 /* =========================================================
-   SCHEMA — matches pages/student/resources.js exactly, club-wide
-   (no per-student copies):
+   SCHEMA — club-wide resources + per-student submissions
 
    resources/{autoId}
-     title, description, category ('pdf'|'assignment'|'video'|'other'),
-     level ('All'|'Young Explorers'|'Junior Innovators'|'Teen Innovators'
-     — students only see resources matching their own level, or 'All'),
-     fileURL, uploadDate (Timestamp), uploadedBy (operator username)
+     title, description,
+     category ('assignment'|'homework'|'exercise'|'practical'|'project'|'worksheet'|
+               'reading'|'notes'|'pdf'|'pastq'|'video'|'other'),
+     level ('All'|'Young Explorers'|'Junior Innovators'|'Teen Innovators'),
+     fileURL, uploadDate (Timestamp), uploadedBy,
+     requiresSubmission (bool — missing/false on older resources = no submission),
+     deadline ('YYYY-MM-DD', inclusive: students may still submit ON that day),
+     maxScore (number — the "out of" the admin grades against)
+
+   resourceSubmissions/{resourceId_studentUid}   (one live doc per student per resource)
+     resourceId, resourceTitle, category, studentId, studentName, studentLevel,
+     files: [{url, name, type}], note, attempt, submittedAt,
+     status ('pending'|'approved'|'declined'),
+     approved → score, maxScore, feedback?, gradedAt, gradedBy
+     declined → declineReason, newDeadline ('YYYY-MM-DD'), declinedAt, declinedBy
+     history: [{reason, by, at}]  (earlier declines, appended when the student resubmits)
    ========================================================= */
 
 const operatorRaw = sessionStorage.getItem('iec_operator');
@@ -142,14 +153,26 @@ document.getElementById('logoutBtnSide').addEventListener('click', doSignOut);
 document.getElementById('logoutBtnTop').addEventListener('click', doSignOut);
 
 /* =========================================================
-   RESOURCE LIST
+   TYPES
+   group: tasks | reading | video | other   (drives the filter tabs)
+   cls:   css class for the icon colour
+   submit: whether "needs a submission" defaults to YES for this type
    ========================================================= */
 const typeMeta = {
-  pdf:        { icon: 'bx bxs-file-pdf',   label: 'PDF Notes' },
-  assignment: { icon: 'bx bx-task',        label: 'Assignment' },
-  video:      { icon: 'bx bxs-video',      label: 'Video' },
-  other:      { icon: 'bx bx-folder',      label: 'Other' }
+  assignment: { icon: 'bx bx-task',        label: 'Assignment',      group: 'tasks',   cls: 'tasks',   submit: true  },
+  homework:   { icon: 'bx bx-pencil',      label: 'Homework',        group: 'tasks',   cls: 'tasks',   submit: true  },
+  exercise:   { icon: 'bx bx-edit',        label: 'Exercise',        group: 'tasks',   cls: 'tasks',   submit: true  },
+  practical:  { icon: 'bx bx-wrench',      label: 'Practical Task',  group: 'tasks',   cls: 'tasks',   submit: true  },
+  project:    { icon: 'bx bx-rocket',      label: 'Project',         group: 'tasks',   cls: 'tasks',   submit: true  },
+  worksheet:  { icon: 'bx bx-clipboard',   label: 'Worksheet',       group: 'tasks',   cls: 'tasks',   submit: true  },
+  reading:    { icon: 'bx bx-book-open',   label: 'Reading Material',group: 'reading', cls: 'reading', submit: false },
+  notes:      { icon: 'bx bx-notepad',     label: 'Notes',           group: 'reading', cls: 'reading', submit: false },
+  pdf:        { icon: 'bx bxs-file-pdf',   label: 'PDF Notes',       group: 'reading', cls: 'pdf',     submit: false },
+  pastq:      { icon: 'bx bx-history',     label: 'Past Questions',  group: 'reading', cls: 'reading', submit: false },
+  video:      { icon: 'bx bxs-video',      label: 'Video',           group: 'video',   cls: 'video',   submit: false },
+  other:      { icon: 'bx bx-folder',      label: 'Other',           group: 'other',   cls: 'other',   submit: false }
 };
+function metaFor(cat){ return typeMeta[cat] || typeMeta.other; }
 
 function levelBadgeClass(level){
   if (level === 'Young Explorers') return 'level-young';
@@ -158,14 +181,47 @@ function levelBadgeClass(level){
   return 'level-all';
 }
 
+/* ---------- date helpers (deadlines are plain 'YYYY-MM-DD' strings, inclusive) ---------- */
+function todayStr(){
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function fmtDay(str){
+  if (!str) return '';
+  const [y,m,d] = str.split('-').map(Number);
+  return new Date(y, m-1, d).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+}
+function fmtStamp(ts){
+  const d = toDate(ts);
+  return d ? d.toLocaleString('en-GB', { day:'numeric', month:'short', hour:'numeric', minute:'2-digit' }) : '';
+}
+function numFmt(n){ return Number.isInteger(n) ? String(n) : String(Math.round(n*100)/100); }
+
+/* =========================================================
+   STATE
+   ========================================================= */
 let allResources = [];
+let allStudents = [];                 // approved, non-blocked students (for the "not submitted" list)
+let subsByResource = new Map();       // resourceId -> [submission docs]
 let currentFilter = 'all';
 let currentSearch = '';
 const gridEl = document.getElementById('resourceGrid');
 
+function subsOf(resId){ return subsByResource.get(resId) || []; }
+function pendingOf(resId){ return subsOf(resId).filter(s => s.status === 'pending').length; }
+function totalPending(){ let n = 0; subsByResource.forEach(list => list.forEach(s => { if (s.status === 'pending') n++; })); return n; }
+
 function render(){
+  const pendingTotal = totalPending();
+  const rc = document.getElementById('reviewCount');
+  rc.textContent = pendingTotal; rc.hidden = pendingTotal === 0;
+
   const filtered = allResources.filter(r => {
-    const matchesCat = currentFilter === 'all' || r.category === currentFilter;
+    const meta = metaFor(r.category);
+    let matchesCat = true;
+    if (currentFilter === 'submit') matchesCat = r.requiresSubmission === true;
+    else if (currentFilter === 'review') matchesCat = pendingOf(r.id) > 0;
+    else if (currentFilter !== 'all') matchesCat = meta.group === currentFilter;
     const matchesSearch = !currentSearch ||
       (r.title || '').toLowerCase().includes(currentSearch) ||
       (r.description || '').toLowerCase().includes(currentSearch);
@@ -173,26 +229,47 @@ function render(){
   });
 
   if (!filtered.length){
-    gridEl.innerHTML = `<p class="list-empty">No resources${currentFilter !== 'all' ? ' in this category' : ''}${currentSearch ? ' match your search' : ''} yet.</p>`;
+    const what = currentFilter === 'review' ? 'Nothing is waiting for review — all caught up.' :
+      `No resources${currentFilter !== 'all' ? ' in this view' : ''}${currentSearch ? ' match your search' : ''} yet.`;
+    gridEl.innerHTML = `<p class="list-empty">${what}</p>`;
     return;
   }
 
+  const today = todayStr();
   gridEl.innerHTML = filtered.map(r => {
-    const meta = typeMeta[r.category] || typeMeta.other;
+    const meta = metaFor(r.category);
     const level = r.level || 'All';
+    let chips = '';
+    let subsBtn = '';
+    if (r.requiresSubmission){
+      const closed = r.deadline && r.deadline < today;
+      const pend = pendingOf(r.id);
+      const list = subsOf(r.id);
+      const approved = list.filter(s => s.status === 'approved').length;
+      chips = `<div class="res-chips">
+        <span class="res-chip ${closed ? 'closed' : 'due'}"><i class="bx bx-time-five"></i> ${closed ? 'Closed' : 'Due'} ${escapeHtml(fmtDay(r.deadline))}</span>
+        <span class="res-chip"><i class="bx bx-star"></i> /${escapeHtml(numFmt(r.maxScore || 100))}</span>
+        ${pend ? `<span class="res-chip pend"><i class="bx bx-hourglass"></i> ${pend} to review</span>` : ''}
+        ${approved ? `<span class="res-chip ok"><i class="bx bx-check"></i> ${approved} graded</span>` : ''}
+      </div>`;
+      subsBtn = `<button class="subs-btn" data-id="${r.id}" title="Submissions">
+        <i class="bx bx-inbox"></i>${pend ? `<span class="pip">${pend}</span>` : ''}</button>`;
+    }
     return `
       <div class="resource-card" data-id="${r.id}">
-        <div class="resource-icon type-${r.category || 'other'}"><i class="${meta.icon}"></i></div>
+        <div class="resource-icon type-${meta.cls}"><i class="${meta.icon}"></i></div>
         <div class="resource-body">
           <div class="resource-title">${escapeHtml(r.title || 'Untitled resource')}</div>
           ${r.description ? `<div class="resource-desc">${escapeHtml(r.description)}</div>` : ''}
           <span class="level-badge ${levelBadgeClass(level)}">${escapeHtml(level)}</span>
+          ${chips}
           <div class="resource-meta">
             <div>
-              <span class="resource-date"><i class="bx bx-calendar"></i> ${formatDate(r._date)}</span>
+              <span class="resource-date"><i class="bx ${meta.icon.replace(/^bx /,'')}"></i> ${escapeHtml(meta.label)} · ${formatDate(r._date)}</span>
               ${r.uploadedBy ? `<div class="resource-uploader">by ${escapeHtml(r.uploadedBy)}</div>` : ''}
             </div>
             <div class="resource-actions">
+              ${subsBtn}
               <a class="resource-open" href="${escapeHtml(r.fileURL || '#')}" target="_blank" rel="noopener" title="Open"><i class="bx bx-link-external"></i></a>
               <button class="edit-res" data-id="${r.id}" title="Edit"><i class="bx bx-edit-alt"></i></button>
               <button class="del-res" data-id="${r.id}" title="Delete"><i class="bx bx-trash"></i></button>
@@ -204,6 +281,7 @@ function render(){
 
   gridEl.querySelectorAll('.edit-res').forEach(btn => btn.addEventListener('click', () => openEditForm(btn.dataset.id)));
   gridEl.querySelectorAll('.del-res').forEach(btn => btn.addEventListener('click', () => openDeleteConfirm(btn.dataset.id)));
+  gridEl.querySelectorAll('.subs-btn').forEach(btn => btn.addEventListener('click', () => openSubs(btn.dataset.id)));
 }
 
 document.querySelectorAll('#filterTabs .tab-btn').forEach(btn => {
@@ -236,6 +314,14 @@ async function notifyEligibleStudents(level, { title, message, type, link }){
     console.error('Notification write failed:', err);
   }
 }
+async function notifyStudent(uid, { title, message, type, link }){
+  try{
+    await setDoc(doc(collection(db, 'students', uid, 'notifications')), {
+      title, message: message || '', type: type || 'resource', link: link || 'resources.html',
+      read: false, createdAt: serverTimestamp()
+    });
+  }catch(err){ console.error('Notification write failed:', err); }
+}
 
 async function loadResources(){
   gridEl.innerHTML = '<div class="list-skeleton"></div><div class="list-skeleton"></div><div class="list-skeleton"></div>';
@@ -252,6 +338,34 @@ async function loadResources(){
   }
 }
 
+async function loadStudents(){
+  try{
+    const snap = await getDocs(collection(db, 'students'));
+    allStudents = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      .filter(s => s.blocked !== true)
+      .sort((a,b) => (a.fullName || '').localeCompare(b.fullName || ''));
+    if (subResId) renderSubs();
+  }catch(err){ console.error('Could not load students:', err); }
+}
+
+/* live feed of every submission — drives pending badges + the review sheet */
+let subsErrorShown = false;
+onSnapshot(collection(db, 'resourceSubmissions'), (snap) => {
+  const map = new Map();
+  snap.docs.forEach(d => {
+    const s = { id: d.id, ...d.data() };
+    if (!s.resourceId) return;
+    if (!map.has(s.resourceId)) map.set(s.resourceId, []);
+    map.get(s.resourceId).push(s);
+  });
+  subsByResource = map;
+  render();
+  if (subResId) renderSubs();
+}, (err) => {
+  console.error('Submissions listener failed:', err);
+  if (!subsErrorShown){ subsErrorShown = true; showToast("Couldn't load submissions — check the Firestore rules for resourceSubmissions."); }
+});
+
 /* =========================================================
    FORM (create / edit)
    ========================================================= */
@@ -266,6 +380,20 @@ function setSourceMode(mode){
 }
 document.querySelectorAll('input[name="fSourceMode"]').forEach(r => {
   r.addEventListener('change', () => setSourceMode(r.value));
+});
+
+function wantsSubmission(){ return document.querySelector('input[name="fSubmit"]:checked').value === 'yes'; }
+function setSubmitChoice(yes){
+  document.querySelector(`input[name="fSubmit"][value="${yes ? 'yes' : 'no'}"]`).checked = true;
+  document.getElementById('submitBox').classList.toggle('hidden', !yes);
+}
+document.querySelectorAll('input[name="fSubmit"]').forEach(r => {
+  r.addEventListener('change', () => document.getElementById('submitBox').classList.toggle('hidden', !wantsSubmission()));
+});
+// picking a type pre-selects the sensible answer (assignment → yes, notes → no); admin can still flip it
+document.getElementById('fCategory').addEventListener('change', (e) => {
+  if (editingId) return;
+  setSubmitChoice(metaFor(e.target.value).submit);
 });
 
 function resetFileDrop(){
@@ -284,6 +412,10 @@ document.getElementById('fFile').addEventListener('change', (e) => {
 });
 document.getElementById('fileClear').addEventListener('click', resetFileDrop);
 
+function clearFormErrors(){
+  ['fTitleErr','fLinkErr','fDeadlineErr','fMaxScoreErr'].forEach(id => document.getElementById(id).classList.add('hidden'));
+}
+
 function openNewForm(){
   editingId = null;
   document.getElementById('formTitle').textContent = 'Add Resource';
@@ -291,8 +423,12 @@ function openNewForm(){
   resourceForm.reset();
   resetFileDrop();
   setSourceMode('file');
-  document.getElementById('fTitleErr').classList.add('hidden');
-  document.getElementById('fLinkErr').classList.add('hidden');
+  clearFormErrors();
+  document.getElementById('fCategory').value = 'assignment';
+  setSubmitChoice(metaFor('assignment').submit);
+  document.getElementById('fDeadline').min = todayStr();
+  document.getElementById('fDeadline').value = '';
+  document.getElementById('fMaxScore').value = 100;
   formModal.classList.add('open');
 }
 document.getElementById('fabAdd').addEventListener('click', openNewForm);
@@ -304,14 +440,18 @@ function openEditForm(id){
   editingId = id;
   document.getElementById('formTitle').textContent = 'Edit Resource';
   document.getElementById('formDeleteBtn').classList.remove('hidden');
-  document.getElementById('fTitleErr').classList.add('hidden');
-  document.getElementById('fLinkErr').classList.add('hidden');
+  clearFormErrors();
 
   document.getElementById('fLevel').value = r.level || 'All';
-  document.getElementById('fCategory').value = r.category || 'other';
+  document.getElementById('fCategory').value = typeMeta[r.category] ? r.category : 'other';
   document.getElementById('fTitle').value = r.title || '';
   document.getElementById('fDescription').value = r.description || '';
   resetFileDrop();
+
+  setSubmitChoice(r.requiresSubmission === true);
+  document.getElementById('fDeadline').removeAttribute('min');   // old deadlines may already be past
+  document.getElementById('fDeadline').value = r.deadline || '';
+  document.getElementById('fMaxScore').value = r.maxScore || 100;
 
   // Editing keeps the existing link/file as-is unless a new one is provided —
   // default to "link" mode prefilled with the current URL so admins can see
@@ -325,20 +465,32 @@ function openEditForm(id){
 
 resourceForm.addEventListener('submit', async (e) => {
   e.preventDefault();
+  clearFormErrors();
   const title = document.getElementById('fTitle').value.trim();
   if (!title){ document.getElementById('fTitleErr').classList.remove('hidden'); return; }
-  document.getElementById('fTitleErr').classList.add('hidden');
 
   const mode = document.querySelector('input[name="fSourceMode"]:checked').value;
   const level = document.getElementById('fLevel').value;
   const category = document.getElementById('fCategory').value;
   const description = document.getElementById('fDescription').value.trim();
+  const needsSub = wantsSubmission();
+
+  let deadline = '', maxScore = 100;
+  if (needsSub){
+    deadline = document.getElementById('fDeadline').value;
+    maxScore = parseFloat(document.getElementById('fMaxScore').value);
+    if (!deadline){ document.getElementById('fDeadlineErr').classList.remove('hidden'); return; }
+    if (!editingId && deadline < todayStr()){
+      document.getElementById('fDeadlineErr').textContent = "The deadline can't be in the past.";
+      document.getElementById('fDeadlineErr').classList.remove('hidden'); return;
+    }
+    if (!(maxScore > 0)){ document.getElementById('fMaxScoreErr').classList.remove('hidden'); return; }
+  }
 
   let fileURL = null;
   if (mode === 'link'){
     fileURL = document.getElementById('fLink').value.trim();
     if (!fileURL){ document.getElementById('fLinkErr').classList.remove('hidden'); return; }
-    document.getElementById('fLinkErr').classList.add('hidden');
   } else if (mode === 'file' && !chosenFile && !editingId){
     showToast('Choose a file, or switch to "Paste a link".');
     return;
@@ -363,20 +515,31 @@ resourceForm.addEventListener('submit', async (e) => {
     }
 
     if (editingId){
-      const payload = { level, category, title, description, updatedBy: operator.username, updatedAt: serverTimestamp() };
+      const payload = {
+        level, category, title, description,
+        requiresSubmission: needsSub,
+        deadline: needsSub ? deadline : deleteField(),
+        maxScore: needsSub ? maxScore : deleteField(),
+        updatedBy: operator.username, updatedAt: serverTimestamp()
+      };
       if (fileURL) payload.fileURL = fileURL;
       await updateDoc(doc(db, 'resources', editingId), payload);
       showToast('Resource updated');
     } else {
-      await setDoc(doc(collection(db, 'resources')), {
+      const data = {
         level, category, title, description, fileURL,
+        requiresSubmission: needsSub,
         uploadDate: serverTimestamp(),
         uploadedBy: operator.username
-      });
+      };
+      if (needsSub){ data.deadline = deadline; data.maxScore = maxScore; }
+      await setDoc(doc(collection(db, 'resources')), data);
       showToast('Resource added');
       notifyEligibleStudents(level, {
-        title: `New resource: ${title}`,
-        message: `A new ${typeMeta[category] ? typeMeta[category].label.toLowerCase() : 'resource'} was just uploaded — "${title}".`,
+        title: needsSub ? `New ${metaFor(category).label.toLowerCase()}: ${title}` : `New resource: ${title}`,
+        message: needsSub
+          ? `"${title}" needs your submission — due ${fmtDay(deadline)}. Open it in Resources to submit.`
+          : `A new ${metaFor(category).label.toLowerCase()} was just uploaded — "${title}".`,
         type: 'resource',
         link: 'resources.html'
       });
@@ -391,11 +554,240 @@ resourceForm.addEventListener('submit', async (e) => {
   btn.classList.remove('loading'); btn.disabled = false;
 });
 
-/* ---------- delete ---------- */
+/* =========================================================
+   SUBMISSIONS — review sheet
+   ========================================================= */
+const subModal = document.getElementById('subModal');
+let subResId = null;
+let subTab = 'pending';
+let openKey = null;           // student uid whose row is expanded
+let openForm = null;          // 'approve' | 'decline' for the expanded row
+
+function resById(id){ return allResources.find(r => r.id === id); }
+function eligibleStudents(r){
+  const lvl = r.level || 'All';
+  return allStudents.filter(s => lvl === 'All' || s.membershipLevel === lvl);
+}
+
+function openSubs(id){
+  subResId = id;
+  const r = resById(id);
+  subTab = pendingOf(id) > 0 ? 'pending' : (subsOf(id).length ? 'approved' : 'missing');
+  openKey = null; openForm = null;
+  document.getElementById('subTitle').textContent = r ? r.title : 'Submissions';
+  subModal.classList.add('open');
+  renderSubs();
+}
+document.getElementById('subClose').addEventListener('click', () => { subModal.classList.remove('open'); subResId = null; });
+document.getElementById('subTabs').querySelectorAll('.sub-tab').forEach(b => b.addEventListener('click', () => {
+  subTab = b.dataset.st; openKey = null; openForm = null; renderSubs();
+}));
+
+function fileTile(f, i){
+  const isImg = (f.type || '').startsWith('image') || /\.(jpe?g|png|gif|webp|heic)(\?|$)/i.test(f.url || '');
+  const inner = isImg
+    ? `<img src="${escapeHtml(f.url)}" alt="Page ${i+1}" loading="lazy">`
+    : `<i class="bx bxs-file"></i><span>${escapeHtml(f.name || 'File')}</span>`;
+  return `<a class="file-tile" href="${escapeHtml(f.url)}" target="_blank" rel="noopener"><span class="page-no">${i+1}</span>${inner}</a>`;
+}
+
+function renderSubs(){
+  if (!subResId) return;
+  const r = resById(subResId);
+  if (!r) return;
+  const list = subsOf(subResId);
+  const eligible = eligibleStudents(r);
+  const submittedIds = new Set(list.map(s => s.studentId));
+  const missing = eligible.filter(s => !submittedIds.has(s.id));
+  const max = r.maxScore || 100;
+  const today = todayStr();
+
+  document.getElementById('subMeta').innerHTML = `
+    <span><i class="bx bx-layer"></i> ${escapeHtml(r.level || 'All')}</span>
+    <span><i class="bx bx-time-five"></i> Due ${escapeHtml(fmtDay(r.deadline))}${r.deadline && r.deadline < today ? ' (closed)' : ''}</span>
+    <span><i class="bx bx-star"></i> Out of ${escapeHtml(numFmt(max))}</span>`;
+
+  const by = (st) => list.filter(s => s.status === st);
+  document.getElementById('stPending').textContent = by('pending').length;
+  document.getElementById('stApproved').textContent = by('approved').length;
+  document.getElementById('stDeclined').textContent = by('declined').length;
+  document.getElementById('stMissing').textContent = missing.length;
+  document.querySelectorAll('#subTabs .sub-tab').forEach(b => b.classList.toggle('active', b.dataset.st === subTab));
+
+  const body = document.getElementById('subBody');
+  if (subTab === 'missing'){
+    if (!missing.length){ body.innerHTML = '<p class="sub-empty">Everyone eligible has submitted.</p>'; return; }
+    const closed = r.deadline && r.deadline < today;
+    body.innerHTML = missing.map(s => `
+      <div class="sub-row"><div class="sub-row-head" style="cursor:default;">
+        <span class="sub-avatar">${escapeHtml(initials(s.fullName))}</span>
+        <div class="sub-who"><div class="sub-name">${escapeHtml(s.fullName || 'Student')}</div><div class="sub-when">${escapeHtml(s.membershipLevel || '')}</div></div>
+        <span class="sub-pill ${closed ? 'late' : 'missing'}">${closed ? 'Missed' : 'Not yet'}</span>
+      </div></div>`).join('');
+    return;
+  }
+
+  const rows = by(subTab).sort((a,b) => (toDate(a.submittedAt)?.getTime() || 0) - (toDate(b.submittedAt)?.getTime() || 0));
+  if (!rows.length){
+    body.innerHTML = `<p class="sub-empty">${subTab === 'pending' ? 'Nothing waiting for review.' : `No ${subTab} submissions.`}</p>`;
+    return;
+  }
+
+  body.innerHTML = rows.map(s => {
+    const isOpen = openKey === s.studentId;
+    const files = Array.isArray(s.files) ? s.files : [];
+    const history = Array.isArray(s.history) ? s.history : [];
+    let pill = `<span class="sub-pill ${s.status}">${s.status === 'approved' ? `${escapeHtml(numFmt(s.score))}/${escapeHtml(numFmt(s.maxScore || max))}` : s.status === 'pending' ? 'Pending' : 'Declined'}</span>`;
+
+    let statusBlock = '';
+    if (s.status === 'approved'){
+      statusBlock = `
+        <div class="sub-grade-box">
+          <div class="big">${escapeHtml(numFmt(s.score))}<span style="font-size:.8rem;color:var(--gray);font-weight:600;"> / ${escapeHtml(numFmt(s.maxScore || max))}</span></div>
+          <div class="txt">Approved${s.gradedBy ? ` by ${escapeHtml(s.gradedBy)}` : ''}${s.gradedAt ? ` · ${escapeHtml(fmtStamp(s.gradedAt))}` : ''}${s.feedback ? `<br>“${escapeHtml(s.feedback)}”` : ''}</div>
+          <button class="btn btn-ghost" data-act="edit-grade" data-uid="${s.studentId}"><i class="bx bx-edit-alt"></i> Edit grade</button>
+        </div>`;
+    } else if (s.status === 'declined'){
+      statusBlock = `
+        <div class="sub-decline-box">
+          <b>Declined${s.declinedBy ? ` by ${escapeHtml(s.declinedBy)}` : ''}</b> — ${escapeHtml(s.declineReason || '')}<br>
+          Redo deadline: <b>${escapeHtml(fmtDay(s.newDeadline))}</b>${s.newDeadline && s.newDeadline < today ? ' (passed)' : ''}. Waiting for the student to resubmit.
+        </div>
+        <div class="review-actions"><button class="btn btn-ghost" data-act="show-approve" data-uid="${s.studentId}"><i class="bx bx-check"></i> Approve anyway</button></div>`;
+    } else {
+      statusBlock = `
+        <div class="review-actions">
+          <button class="btn btn-success" data-act="show-approve" data-uid="${s.studentId}"><i class="bx bx-check"></i> Approve</button>
+          <button class="btn btn-outline-danger" data-act="show-decline" data-uid="${s.studentId}"><i class="bx bx-x"></i> Decline</button>
+        </div>`;
+    }
+
+    const approveForm = `
+      <div class="review-form ${isOpen && openForm === 'approve' ? 'show' : ''}" id="approveForm_${s.studentId}">
+        <div class="form-group"><label>Score</label>
+          <div class="score-line"><input type="number" step="any" min="0" inputmode="decimal" id="scoreIn_${s.studentId}" value="${s.status === 'approved' ? escapeHtml(s.score) : ''}" placeholder="0"><span>/ ${escapeHtml(numFmt(s.maxScore || max))}</span></div>
+          <span class="field-err hidden" id="scoreErr_${s.studentId}"></span></div>
+        <div class="form-group"><label>Comment for the student (optional)</label>
+          <textarea rows="2" id="fbIn_${s.studentId}" placeholder="Well done…">${escapeHtml(s.feedback || '')}</textarea></div>
+        <button class="btn btn-success" data-act="approve" data-uid="${s.studentId}"><i class="bx bx-check-circle"></i> ${s.status === 'approved' ? 'Save grade' : 'Approve &amp; record score'}</button>
+      </div>`;
+    const declineForm = `
+      <div class="review-form ${isOpen && openForm === 'decline' ? 'show' : ''}" id="declineForm_${s.studentId}">
+        <div class="form-group"><label>Reason (the student will see this)</label>
+          <textarea rows="3" id="reasonIn_${s.studentId}" placeholder="e.g. The photo is blurry — please scan again."></textarea>
+          <span class="field-err hidden" id="reasonErr_${s.studentId}">Please give a reason.</span></div>
+        <div class="form-group"><label>New deadline to redo it</label>
+          <input type="date" id="newDlIn_${s.studentId}" min="${today}">
+          <span class="field-err hidden" id="newDlErr_${s.studentId}">Pick a new deadline (today or later).</span></div>
+        <button class="btn btn-danger" data-act="decline" data-uid="${s.studentId}"><i class="bx bx-x-circle"></i> Decline &amp; ask to redo</button>
+      </div>`;
+
+    return `
+      <div class="sub-row ${isOpen ? 'open' : ''}" data-uid="${s.studentId}">
+        <button class="sub-row-head" data-toggle="${s.studentId}">
+          <span class="sub-avatar">${escapeHtml(initials(s.studentName))}</span>
+          <div class="sub-who">
+            <div class="sub-name">${escapeHtml(s.studentName || 'Student')}</div>
+            <div class="sub-when">${s.submittedAt ? escapeHtml(fmtStamp(s.submittedAt)) : ''}${(s.attempt || 1) > 1 ? ` · attempt ${s.attempt}` : ''} · ${files.length} file${files.length === 1 ? '' : 's'}</div>
+          </div>
+          ${pill}
+          <i class="bx bx-chevron-down sub-chev"></i>
+        </button>
+        <div class="sub-panel">
+          <div class="sub-label">Submitted work</div>
+          <div class="file-grid">${files.map(fileTile).join('') || '<span class="sub-when">No files attached.</span>'}</div>
+          ${s.note ? `<div class="sub-label">Note from the student</div><div class="sub-note">${escapeHtml(s.note)}</div>` : ''}
+          ${history.length ? `<div class="sub-label">Earlier attempts</div><div class="sub-history">${history.map(h => `<div>Declined${h.by ? ` by ${escapeHtml(h.by)}` : ''}: ${escapeHtml(h.reason || '')}</div>`).join('')}</div>` : ''}
+          ${statusBlock}
+          ${approveForm}
+          ${s.status !== 'approved' ? declineForm : ''}
+        </div>
+      </div>`;
+  }).join('');
+
+  body.querySelectorAll('[data-toggle]').forEach(b => b.addEventListener('click', () => {
+    const uid = b.dataset.toggle;
+    openKey = openKey === uid ? null : uid; openForm = null;
+    renderSubs();
+  }));
+  body.querySelectorAll('[data-act]').forEach(b => b.addEventListener('click', () => handleReviewAction(b.dataset.act, b.dataset.uid)));
+}
+
+async function handleReviewAction(act, uid){
+  const r = resById(subResId);
+  if (!r) return;
+  const sub = subsOf(subResId).find(s => s.studentId === uid);
+  if (!sub) return;
+  const subRef = doc(db, 'resourceSubmissions', sub.id);
+  const max = sub.maxScore || r.maxScore || 100;
+
+  if (act === 'show-approve' || act === 'edit-grade'){ openKey = uid; openForm = 'approve'; renderSubs(); return; }
+  if (act === 'show-decline'){ openKey = uid; openForm = 'decline'; renderSubs(); return; }
+
+  if (act === 'approve'){
+    const raw = document.getElementById(`scoreIn_${uid}`).value.trim();
+    const err = document.getElementById(`scoreErr_${uid}`);
+    const score = parseFloat(raw);
+    if (raw === '' || isNaN(score) || score < 0){ err.textContent = 'Enter a score (0 or more).'; err.classList.remove('hidden'); return; }
+    if (score > max){ err.textContent = `The score can't be more than ${numFmt(max)}.`; err.classList.remove('hidden'); return; }
+    err.classList.add('hidden');
+    const feedback = document.getElementById(`fbIn_${uid}`).value.trim();
+    const wasApproved = sub.status === 'approved';
+    try{
+      await updateDoc(subRef, {
+        status: 'approved', score, maxScore: max,
+        feedback: feedback || deleteField(),
+        gradedAt: serverTimestamp(), gradedBy: operator.username,
+        declineReason: deleteField(), declinedAt: deleteField(), declinedBy: deleteField(), newDeadline: deleteField()
+      });
+      showToast(wasApproved ? 'Grade updated' : 'Approved — score recorded');
+      notifyStudent(uid, {
+        title: wasApproved ? `Grade updated: ${r.title}` : `Approved: ${r.title}`,
+        message: `You scored ${numFmt(score)}/${numFmt(max)}.${feedback ? ` “${feedback}”` : ''}`,
+        type: 'resource', link: 'resources.html'
+      });
+      openKey = null; openForm = null;
+    }catch(e){ console.error(e); showToast("Couldn't save — try again"); }
+    return;
+  }
+
+  if (act === 'decline'){
+    const reason = document.getElementById(`reasonIn_${uid}`).value.trim();
+    const newDl = document.getElementById(`newDlIn_${uid}`).value;
+    const reasonErr = document.getElementById(`reasonErr_${uid}`);
+    const dlErr = document.getElementById(`newDlErr_${uid}`);
+    let bad = false;
+    if (!reason){ reasonErr.classList.remove('hidden'); bad = true; } else reasonErr.classList.add('hidden');
+    if (!newDl || newDl < todayStr()){ dlErr.classList.remove('hidden'); bad = true; } else dlErr.classList.add('hidden');
+    if (bad) return;
+    try{
+      await updateDoc(subRef, {
+        status: 'declined', declineReason: reason, newDeadline: newDl,
+        declinedAt: serverTimestamp(), declinedBy: operator.username,
+        score: deleteField(), gradedAt: deleteField(), gradedBy: deleteField(), feedback: deleteField()
+      });
+      showToast('Declined — the student can redo it');
+      notifyStudent(uid, {
+        title: `Please redo: ${r.title}`,
+        message: `${reason} — resubmit by ${fmtDay(newDl)}.`,
+        type: 'resource', link: 'resources.html'
+      });
+      openKey = null; openForm = null;
+    }catch(e){ console.error(e); showToast("Couldn't save — try again"); }
+  }
+}
+
+/* =========================================================
+   DELETE (cascades to the resource's submissions)
+   ========================================================= */
 const deleteModal = document.getElementById('deleteModal');
 let pendingDeleteId = null;
 function openDeleteConfirm(id){
   pendingDeleteId = id;
+  const n = subsOf(id).length;
+  document.getElementById('deleteMsg').textContent = n
+    ? `Students will no longer see it, and its ${n} submission${n === 1 ? '' : 's'} and grades will be deleted too. This can't be undone.`
+    : "Students will no longer see it in their Resources tab. This can't be undone.";
   deleteModal.classList.add('open');
 }
 document.getElementById('formDeleteBtn').addEventListener('click', () => {
@@ -407,6 +799,12 @@ document.getElementById('deleteConfirm').addEventListener('click', async () => {
   const btn = document.getElementById('deleteConfirm');
   btn.disabled = true;
   try{
+    const subSnap = await getDocs(query(collection(db, 'resourceSubmissions'), where('resourceId', '==', pendingDeleteId)));
+    if (!subSnap.empty){
+      const batch = writeBatch(db);
+      subSnap.docs.forEach(d => batch.delete(d.ref));
+      await batch.commit();
+    }
     await deleteDoc(doc(db, 'resources', pendingDeleteId));
     showToast('Resource deleted');
   }catch(err){
@@ -422,3 +820,4 @@ document.getElementById('deleteConfirm').addEventListener('click', async () => {
 
 /* ---------- init ---------- */
 loadResources();
+loadStudents();
