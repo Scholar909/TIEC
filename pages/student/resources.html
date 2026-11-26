@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>(function(){try{if(localStorage.getItem('iec-theme')==='light'){document.documentElement.classList.add('light-mode');}}catch(e){}})();</script>
-<title>Resources — Student Portal — Innovative Explorer Club</title>
+<title>Resources — Student Portal — The Innovation Explorers Club</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/png" href="../../assets/images/icon.webp">
 <link rel="apple-touch-icon" href="../../assets/images/icon.webp">
@@ -31,8 +31,8 @@
 <!-- ============ SIDEBAR ============ -->
 <aside class="sidebar" id="sidebar">
   <a href="../../index.html" class="side-logo">
-    <img src="../../assets/images/logo-icon-footer.webp" alt="Innovative Explorer Club logo">
-    <span>Innovative Explorer Club</span>
+    <img src="../../assets/images/logo-icon-footer.webp" alt="The Innovation Explorers Club logo">
+    <span>The Innovation Explorers Club</span>
   </a>
 
   <nav class="side-nav">
@@ -97,8 +97,9 @@
   <section class="filter-card glass">
     <div class="filter-tabs" id="filterTabs">
       <button class="filter-tab active" data-cat="all"><i class="bx bx-grid-alt"></i> All</button>
-      <button class="filter-tab" data-cat="pdf"><i class="bx bxs-file-pdf"></i> PDF Notes</button>
-      <button class="filter-tab" data-cat="assignment"><i class="bx bx-task"></i> Assignments</button>
+      <button class="filter-tab" data-cat="todo"><i class="bx bx-upload"></i> To Submit <span class="tab-count" id="todoCount" hidden>0</span></button>
+      <button class="filter-tab" data-cat="tasks"><i class="bx bx-task"></i> Tasks</button>
+      <button class="filter-tab" data-cat="reading"><i class="bx bx-book-open"></i> Reading &amp; Notes</button>
       <button class="filter-tab" data-cat="video"><i class="bx bxs-video"></i> Videos</button>
       <button class="filter-tab" data-cat="other"><i class="bx bx-folder"></i> Other</button>
     </div>
@@ -129,6 +130,21 @@
   <a href="lms.html" class="bottom-link" data-page="lms"><i class="bx bx-edit-alt"></i><span>LMS</span></a>
   <a href="calendar.html" class="bottom-link" data-page="calendar"><i class="bx bx-calendar"></i><span>Calendar</span></a>
 </nav>
+
+<!-- ============ SUBMIT WORK SHEET ============ -->
+<div class="sub-overlay" id="subOverlay">
+  <div class="sub-sheet" id="subSheet">
+    <div class="sub-sheet-head">
+      <div style="min-width:0;">
+        <h3 id="subSheetTitle">Submit work</h3>
+        <div class="sub-sheet-meta" id="subSheetMeta"></div>
+      </div>
+      <button class="icon-btn" id="subSheetClose" aria-label="Close"><i class="bx bx-x"></i></button>
+    </div>
+    <div class="sub-sheet-body" id="subSheetBody"></div>
+  </div>
+</div>
+<div class="sub-toast" id="subToast"></div>
 
 <script type="module" src="../../js/student/resources.js"></script>
 </body>
